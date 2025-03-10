@@ -5,6 +5,15 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    proxy: {
+      "/auth": {
+        target: "http://localhost:8000", // Your backend server URL
+        changeOrigin: true, // Ensures the origin is changed to the target URL
+        rewrite: (path) => path.replace(/^\/api/, ""), // Optional: Remove /api from the path
+      },
+    },
+  },
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

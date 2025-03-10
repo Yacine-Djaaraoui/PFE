@@ -86,16 +86,16 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({
 
   return (
     <div className="flex flex-row w-full h-[100vh] shadow-lg rounded-lg overflow-hidden">
-      <div className="w-[56%] bg-linear-to-b from-[#97B2DF] to-[#19488E] flex flex-col items-start justify-center pl-[10%] text-white">
-        <h1 className="text-5xl font-extrabold mb-4">{title}</h1>
+      <div className="w-[56%] bg-linear-to-b from-accent to-secondary flex flex-col items-start justify-center pl-[10%] text-white">
+        <h1 className="text-5xl font-extrabold mb-4 ">{title}</h1>
         <p className="text-4xl font-medium">{description}</p>
       </div>
       <div className="w-[44%] mx-auto px-20 ">
         <div className="h-full w-[90%] flex flex-col  justify-center mx-auto">
-          <h2 className="text-3xl font-extrabold text-[#1E1E1E] mb-1.5">
+          <h2 className="text-3xl font-extrabold text-primary mb-1.5">
             Bienvenue !
           </h2>
-          <p className="text-[20px] font-medium mb-6 text-[#19488E]">
+          <p className="text-[20px] font-medium mb-6 text-secondary">
             Connectez-vous avec votre adresse e-mail et
             <br /> mot de passe attribué par l'école .
           </p>
@@ -137,7 +137,7 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-[60%] h-16 px-4 py-2 mt-7 text-white font-medium text-[20px] bg-[#19488E] rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                  className="w-[60%] h-16 px-4 py-2 mt-7 text-white font-medium text-[20px] bg-secondary rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
                 >
                   {isSubmitting ? "Connexion..." : "Se connecter"}
                 </button>
@@ -148,7 +148,7 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({
                   <p className="text-red-600  text-[18px] mt-3">{error}</p>
                 )}
 
-          <p className="mt-4 font-medium text-[18px] text-[#19488E]">
+          <p className="mt-4 font-medium text-[18px] text-secondary">
             Pour toute assistance, contactez l'administrateur.
           </p>
         </div>

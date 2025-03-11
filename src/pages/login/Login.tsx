@@ -7,24 +7,16 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { login } from "@/api/login";
 import { loginSuccess } from "@/redux/reducers/AuthReducer";
+import image from "@/assets/loginIcon.png";
 import { jwtDecode } from "jwt-decode";
-
-interface LoginLayoutProps {
-  title: string;
-  description: string;
-  loginType: "teacher" | "student" | "partenaire";
-}
+import { FaEnvelope, FaLock } from "react-icons/fa"; // Import icons from react-icons
 
 interface LoginFormValues {
   email: string;
   password: string;
 }
 
-const LoginLayout: React.FC<LoginLayoutProps> = ({
-  title,
-  description,
-  loginType,
-}) => {
+const Login: React.FC = () => {
   const { t } = useTranslation("login"); // Use the 'login' namespace
   const dispatch = useDispatch();
   const [error, setError] = useState<string>("");
@@ -45,12 +37,6 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({
       }
     },
     onSuccess: (data: any) => {
-      const decodedToken = jwtDecode(data.refresh);
-      const userType = decodedToken?.user_type;
-      if (userType !== loginType) {
-        navigate("/correct-login-page");
-        return;
-      }
       dispatch(loginSuccess({ token: data.access }));
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
@@ -85,13 +71,25 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({
   };
 
   return (
-    <div className="flex flex-row w-full h-[100vh] shadow-lg rounded-lg overflow-hidden">
-      <div className="w-[56%] bg-linear-to-b from-accent to-secondary flex flex-col items-start justify-center pl-[10%] text-white">
-        <h1 className="text-5xl font-extrabold mb-4 ">{title}</h1>
-        <p className="text-4xl font-medium">{description}</p>
+    <div className="flex flex-row w-full h-[100vh] overflow-hidden">
+      <div className="relative w-[56%] bg-linear-to-b from-accent to-secondary flex flex-col items-start justify-center pl-[10%] text-white">
+        <h1 className="text-5xl font-extrabold mb-4 ">
+          Bienvenue sur ProjecTrack
+        </h1>
+        <p className="text-4xl font-medium md:pr-90">
+          Collaborez, innovez , Gérez votre projet en un clic !
+        </p>
+        <button className="w-[25%] h-10 px-4 mt-5 text-white font-normal text-[18px] bg-accent rounded-lg hover:opacity-80">
+          un œil sur les projets
+        </button>
+        <img
+          src={image}
+          alt="icon"
+          className="absolute top-4 left-4 w-16 h-14"
+        />
       </div>
       <div className="w-[44%] mx-auto px-20 ">
-        <div className="h-full w-[90%] flex flex-col  justify-center mx-auto">
+        <div className="h-full w-[90%] flex flex-col justify-center mx-auto">
           <h2 className="text-3xl font-extrabold text-primary mb-1.5">
             Bienvenue !
           </h2>
@@ -106,49 +104,53 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({
           >
             {({ isSubmitting }) => (
               <Form className="w-full space-y-4">
-                <div>
-                  <Field
-                    type="email"
-                    name="email"
-                    className="w-4/5 h-15 px-4 py-2 mt-1 font-medium text-[17px] border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Email professionnel"
-                  />
+                <div className="relative">
+                  <div className="flex items-center">
+                    <FaEnvelope className="absolute left-7 text-gray-400 w-6 h-6 " />
+                    <Field
+                      type="email"
+                      name="email"
+                      className="w-4/5 h-15 pl-16 px-4 py-2 mt-1 font-medium text-[17px] border border-accent rounded-lg hover:border-secondary"
+                      placeholder="Email professionnel"
+                    />
+                  </div>
                   <ErrorMessage
                     name="email"
                     component="div"
                     className="text-red-600 text-[16px] mt-1"
                   />
                 </div>
-                <div>
-                  <Field
-                    type="password"
-                    name="password"
-                    className="w-4/5 h-16 px-4 py-2 mt-1 font-medium text-[17px] border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Mot de passe"
-                  />
+                <div className="relative">
+                  <div className="flex items-center">
+                    <FaLock className="absolute left-7 text-gray-400 w-6 h-6" />
+                    <Field
+                      type="password"
+                      name="password"
+                      className="w-4/5 h-16 pl-16 px-4 py-2 mt-1 font-medium text-[17px] border border-accent rounded-lg hover:border-secondary"
+                      placeholder="Mot de passe"
+                    />
+                  </div>
                   <ErrorMessage
                     name="password"
                     component="div"
                     className="text-red-600 text-[16px] mt-1"
                   />
                 </div>
-                {!error && <p className=" mt-3"></p>}
-                
+                {!error && <p className="mt-3"></p>}
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-[60%] h-16 px-4 py-2 mt-7 text-white font-medium text-[20px] bg-secondary rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                  className="w-[60%] h-16 px-4 py-2 mt-7 text-white font-medium text-[20px] bg-secondary rounded-lg hover:opacity-90"
                 >
                   {isSubmitting ? "Connexion..." : "Se connecter"}
                 </button>
               </Form>
             )}
           </Formik>
-          {error && (
-                  <p className="text-red-600  text-[18px] mt-3">{error}</p>
-                )}
+          {error && <p className="text-red-600 text-[18px] mt-3">{error}</p>}
 
-          <p className="mt-4 font-medium text-[18px] text-secondary">
+          <p className="mt-4 font-medium text-[16px] text-secondary">
             Pour toute assistance, contactez l'administrateur.
           </p>
         </div>
@@ -157,4 +159,4 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({
   );
 };
 
-export default LoginLayout;
+export default Login;

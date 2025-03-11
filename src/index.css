@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
-@plugin "tailwindcss-animate";
+@theme {
+  --color-primary: #092149;
+  --color-secondary: #19488e;
+  --color-accent: #97b2de;
+}
+
+/* @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,7 +51,7 @@
   }
 }
 
-:root {
+@theme {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -79,9 +85,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --color-primary: #092149; 
-  --color-secondary: #1A488E; 
-  --color-accent: #97B2DE;
+  --color-primary: #092149;
+  --color-secondary: #19488e;
+  --color-accent: #97b2de;
 }
 
 .dark {
@@ -159,18 +165,27 @@
 }
 
 /* Custom Border Radius */
-@layer utilities {
-  .rounded-lg { border-radius: var(--radius); }
-  .rounded-md { border-radius: calc(var(--radius) - 2px); }
-  .rounded-sm { border-radius: calc(var(--radius) - 4px); }
+/* @layer utilities {
+  .rounded-lg {
+    border-radius: var(--radius);
+  }
+  .rounded-md {
+    border-radius: calc(var(--radius) - 2px);
+  }
+  .rounded-sm {
+    border-radius: calc(var(--radius) - 4px);
+  }
 }
 
 /* Custom Heights */
-@layer utilities {
-  .h-custom-height { height: calc(100vh - 95px); }
-  .h-custom-heightsmallscreen { height: calc(100vh - 66px); }
+/* @layer utilities {
+  .h-custom-height {
+    height: calc(100vh - 95px);
+  }
+  .h-custom-heightsmallscreen {
+    height: calc(100vh - 66px);
+  }
 }
-
 
 @layer base {
   * {
@@ -179,4 +194,4 @@
   body {
     @apply bg-background text-foreground;
   }
-}
+}  */

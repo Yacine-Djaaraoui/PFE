@@ -25,17 +25,3 @@
 body {
   font-family: "Urbanist", sans-serif;
 }
-
-[class*="-primary"] {
-  color: var(--color-primary);
-}
-
-
-[class*="-secondary"] {
-  color: var(--color-secondary);
-}
-
-
-[class*="-accent"] {
-  color: var(--color-accent);
-}

@@ -5,11 +5,6 @@
   --color-secondary: #19488e;
   --color-accent: #97b2de;
 }
-
-/* @plugin "tailwindcss-animate";
-
-@custom-variant dark (&:is(.dark *));
-
 @layer base {
   .container {
     margin-left: auto;
@@ -50,6 +45,11 @@
     }
   }
 }
+
+/* @plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
 
 @theme {
   --background: oklch(1 0 0);

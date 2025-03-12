@@ -111,7 +111,7 @@ function ApiClient(config: ApiClientConfig = {}): AxiosInstance {
           } else if (
             originalRequest &&
             !originalRequest._retry &&
-            message === "No active account found with the given credentials" &&
+            message === "Given token not valid for any token type" &&
             localStorage.getItem("refresh_token")
           ) {
             originalRequest._retry = true;
@@ -129,7 +129,7 @@ function ApiClient(config: ApiClientConfig = {}): AxiosInstance {
           } else {
             return Promise.reject(message);
           }
-        } else if (statusCode > 500) {
+        } else if (statusCode >= 500) {
           return Promise.reject(translations.serverError);
         } else {
           return Promise.reject(message);

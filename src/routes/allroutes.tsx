@@ -19,5 +19,5 @@ export const pferoutes: RouteConfig[] = [
   { path: "/dashboard", element: <Dashboard /> },
   { path: "/colleagues", element: <Colleuges /> },
   { path: "/messaging", element: <Messagerie /> },
-  { path: "/mon-projet", element: <MonProjet /> },
+  { path: "/mon-projet/:idof", element: <MonProjet /> },
 ];

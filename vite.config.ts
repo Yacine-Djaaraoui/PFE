@@ -7,8 +7,8 @@ import path from "path";
 export default defineConfig({
   server: {
     proxy: {
-      "/auth": {
-        target: "http://localhost:8000", // Your backend server URL
+      "/api": {
+        target: "http://localhost:8000/api", // Your backend server URL
         changeOrigin: true, // Ensures the origin is changed to the target URL
         rewrite: (path) => path.replace(/^\/api/, ""), // Optional: Remove /api from the path
       },

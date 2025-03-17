@@ -97,7 +97,7 @@ const Home = () => {
                   avec votre équipe et réussir votre soutenance
                 </p>
                 <button
-                  onClick={() => navigate("/portail-etudiant")}
+                  onClick={() => navigate("/login")}
                   className="bg-white max-md:text-lg text-2xl font-bold rounded-lg hover:bg-white/90 cursor-pointer text-secondary px-6 py-3 "
                 >
                   Se connecter

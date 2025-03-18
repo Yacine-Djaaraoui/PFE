@@ -4,7 +4,7 @@ import Timeline from "./TimeLine";
 
 
 const Dashboard = () => {
-  return <div>
+  return <div >
     <Timeline />
     </div>;
 };

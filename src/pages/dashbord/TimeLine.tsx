@@ -47,7 +47,7 @@ const TimeLine = () => {
   }));
 
   return (
-    <section className="bg-white py-10 ml-7 mr-7">
+    <section className="bg-white py-10 ml-7 mr-7 font-roboto">
       <div className="flex pb-7">
         <div className="text-start w-2/3">
           <p className="text-3xl md:text-[32px] font-semibold text-[#01050B]">

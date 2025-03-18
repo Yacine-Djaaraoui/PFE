@@ -26,9 +26,7 @@ const Login: React.FC = () => {
       return login(values);
     },
     onError: (error: any) => {
-      if (error?.response) {
-        setError(error.response?.data?.detail);
-      } else if (
+      if (
         error == "No active account found with the given credentials"
       ) {
         setError(t("invalidCredentials"));

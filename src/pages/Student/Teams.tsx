@@ -64,7 +64,7 @@ const Teams = () => {
   const { messages } = useWebSocket();
   console.log(message);
   return (
-    <div className="ml-[17%] h-screen py-10 px-8 w-fit mr-[20%]">
+    <div className=" h-screen py-10 px-8 w-fit mr-[20%]">
       <h2 className="text-primaryTitle font-bold text-[20px] font-inter">
         Bienvenue dans l’espace de gestion des équipes !
       </h2>

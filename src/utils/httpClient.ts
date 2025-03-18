@@ -131,6 +131,8 @@ function ApiClient(config: ApiClientConfig = {}): AxiosInstance {
           }
         } else if (statusCode >= 500) {
           return Promise.reject(translations.serverError);
+        } else if (statusCode == 404) {
+          return Promise.reject("ForBidden Request");
         } else {
           return Promise.reject(message);
         }

@@ -58,7 +58,7 @@ const Home = () => {
     <div className="flex w-full">
       {isLoggedIn && profile ? (
         <>
-          <Sidebar />
+          
           <div className="bg-gray-50 p-6 rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">
               Welcome, {profile.first_name}!

@@ -90,7 +90,7 @@ const Login: React.FC = () => {
       </div>
       <div className="w-[44%] mx-auto px-20 ">
         <div className="h-full w-[90%] flex flex-col justify-center mx-auto">
-          <h2 className="text-3xl font-extrabold text-primary mb-1.5">
+          <h2 className="text-3xl font-extrabold text-primaryTitle mb-1.5">
             Bienvenue !
           </h2>
           <p className="text-[20px] font-medium mb-6 text-secondary">

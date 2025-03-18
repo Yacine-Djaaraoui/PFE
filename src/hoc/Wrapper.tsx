@@ -1,3 +1,4 @@
+import Header from "@/components/ui/Header";
 import Sidebar from "@/pages/home/sidebar";
 import React, { useEffect } from "react";
 
@@ -14,7 +15,11 @@ const Wrapper = <P extends object>(
     return (
       <>
         <Sidebar />
-        <WrappedComponent {...props} />
+        
+        <div className="ml-[17%]"> 
+        <Header />
+          <WrappedComponent  {...props} />
+          </div>
       </>
     );
   };

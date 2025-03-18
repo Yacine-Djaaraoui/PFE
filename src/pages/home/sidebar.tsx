@@ -12,7 +12,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="bg-white w-[17%] flex py-10 border-r border-[#E6E4F0] shadow-lg flex-col items-center gap-4 min-h-screen">
+    <div className="absolute bg-white w-[17%] flex py-10 border-r border-[#E6E4F0] shadow-lg flex-col items-center gap-4 min-h-screen">
       <img src={logo} alt="#" className="w-[150px]" />
       <nav className="flex flex-col gap-1 items-start text-[16px] mt-12">
         {/* Tableau de bord */}

@@ -1,8 +1,12 @@
+import Header from "@/components/ui/Header";
 import Wrapper from "@/hoc/Wrapper";
-import React from "react";
+import Timeline from "./TimeLine";
+
 
 const Dashboard = () => {
-  return <div>Dashboard</div>;
+  return <div>
+    <Timeline />
+    </div>;
 };
 
 export default Wrapper(Dashboard);

@@ -3,7 +3,6 @@ import { useMyProfile } from "@/hooks/profile";
 import { setProfile } from "@/redux/reducers/AuthReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store"; 
-import Sidebar from "./sidebar";
 
 const Home = () => {
   const { data, error: profileError } = useMyProfile();
@@ -23,7 +22,7 @@ const Home = () => {
     <div className="flex w-full">
       {isLoggedIn && profile ? (
         <>
-          <Sidebar />
+          
           <div className="bg-gray-50 p-6 rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">
               Welcome, {profile.first_name}!
@@ -49,7 +48,7 @@ const Home = () => {
         </>
       ) : (
         <>
-          <Sidebar />
+          
 
           <div className="bg-gray-50 p-6 rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">

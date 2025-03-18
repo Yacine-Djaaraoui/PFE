@@ -1,7 +1,7 @@
 import { ApiClient } from "@/utils/httpClient";
 
 const client = ApiClient({
-  baseURL: "/auth/",
+  baseURL: "/api/",
   withCredentials: false,
 });
 
@@ -15,7 +15,7 @@ export const login = async ({ email, password }: LoginCredentials) => {
         email: email,
         password: password,
     };
-  const response = await client.post("jwt/create/", data);
+  const response = await client.post("auth/jwt/create/", data);
     return response;
     
 };

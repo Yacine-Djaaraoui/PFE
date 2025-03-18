@@ -25,7 +25,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
       throw new Error("No refresh token found");
     }
     const response = await axios.post(
-      "http://localhost:8000/auth/jwt/refresh",
+      "http://localhost:8000/api/auth/jwt/refresh",
       {
         refresh: refreshToken,
       }
@@ -131,6 +131,8 @@ function ApiClient(config: ApiClientConfig = {}): AxiosInstance {
           }
         } else if (statusCode >= 500) {
           return Promise.reject(translations.serverError);
+        } else if (statusCode == 404) {
+          return Promise.reject("ForBidden Request");
         } else {
           return Promise.reject(message);
         }

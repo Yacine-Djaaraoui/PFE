@@ -6,10 +6,10 @@ const client = ApiClient({
   withCredentials: false,
 });
 
-export const fetchProfile = async () => {
+export const fetchTimeLine = async () => {
   const token = localStorage.getItem("access_token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {} ;
-  const response = await client.get(`auth/users/me/`, {
+  const response = await client.get(`timelines/`, {
    headers,
   });
   return response;

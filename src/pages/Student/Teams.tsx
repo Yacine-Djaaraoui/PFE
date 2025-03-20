@@ -17,7 +17,7 @@ import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "@/hooks/useWebsocket";
 
 const Teams = () => {
-  const { data, error: teamsError } = useTeams();
+  const { data, error: teamsError } = useTeams({ match_student_profile: true });
   const joinMutation = useJoinRequest();
   const CreateMutation = useCreateGroupe();
   const queryClient = useQueryClient(); // Get the query client instance
@@ -62,9 +62,10 @@ const Teams = () => {
     setMessage(e.target.value);
   };
   const { messages } = useWebSocket();
+  console.log(messages);
   console.log(message);
   return (
-    <div className=" h-screen py-10 px-8 w-fit mr-[20%]">
+    <div className=" h-screen py-10 pl-8 w-fit ">
       <h2 className="text-primaryTitle font-bold text-[20px] font-inter">
         Bienvenue dans l’espace de gestion des équipes !
       </h2>
@@ -207,7 +208,7 @@ const Teams = () => {
                                 handleJoinRequest(group.id, message);
                               }}
                             >
-                            rejoindre le groupe
+                              rejoindre le groupe
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

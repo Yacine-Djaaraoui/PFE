@@ -5,21 +5,25 @@ export const useWebSocket = () => {
   const [ws, setWs] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8000/invitations/");
+    const token = localStorage.getItem("access_token");
+    const socket = new WebSocket(
+      `ws://localhost:8000/ws/notifications/?token=${token}`
+    );
+
     setWs(socket);
-    console.log(socket);
+
     socket.onopen = () => {
-      console.log("connected");
+      console.log("Connected to WebSocket");
     };
+
     socket.onmessage = (event) => {
-      console.log(event);
       const data = JSON.parse(event.data);
-      setMessages((prev) => [...prev, data]); // Append new message
+      setMessages((prev) => [...prev, data]);
     };
 
     socket.onclose = () => console.log("WebSocket Disconnected");
 
-    return () => socket.close(); // Cleanup WebSocket on unmount
+    return () => socket.close();
   }, []);
 
   return { messages, sendMessage: (msg: string) => ws?.send(msg) };

@@ -1,5 +1,6 @@
 import Colleuges from "@/pages/Colleuges/Colleuges";
 import Dashboard from "@/pages/dashbord/Dashboard";
+import Help from "@/pages/help/Help";
 import Home from "@/pages/home/Home";
 import Login from "@/pages/login/Login";
 import Messagerie from "@/pages/Messagerie/Messagerie";
@@ -20,4 +21,5 @@ export const pferoutes: RouteConfig[] = [
   { path: "/colleagues", element: <Colleuges /> },
   { path: "/messaging", element: <Messagerie /> },
   { path: "/mon-projet/:idof", element: <MonProjet /> },
+  { path: "/help" , element:<Help/> },
 ];

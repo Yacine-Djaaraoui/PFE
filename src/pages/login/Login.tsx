@@ -38,7 +38,7 @@ const Login: React.FC = () => {
       dispatch(loginSuccess({ token: data.access }));
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
-      navigate("/");
+      navigate("/dashboard");
     },
   });
 

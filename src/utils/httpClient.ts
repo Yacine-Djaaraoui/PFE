@@ -97,10 +97,12 @@ function ApiClient(config: ApiClientConfig = {}): AxiosInstance {
     },
     async (error: AxiosError) => {
       const translations = getTranslations();
+
       if (error?.response) {
         const statusCode = error.response?.status;
         const message = error?.response?.data?.detail;
         const originalRequest = error.config;
+
         if (statusCode === 401) {
           if (
             !localStorage.getItem("refresh_token") &&
@@ -134,7 +136,8 @@ function ApiClient(config: ApiClientConfig = {}): AxiosInstance {
         } else if (statusCode == 404) {
           return Promise.reject("ForBidden Request");
         } else {
-          return Promise.reject(message);
+          if (message) return Promise.reject(message);
+          else return Promise.reject(error.response.data);
         }
       } else if (error?.request) {
         return Promise.reject(translations.noInternetConnection);

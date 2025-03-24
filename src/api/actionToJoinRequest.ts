@@ -5,10 +5,22 @@ const client = ApiClient({
   withCredentials: false,
 });
 
-export const getMembers = async ({ id }: { id: string }) => {
+export const actionToJoinRequest = async ({
+  id,
+  action,
+}: {
+  id: string;
+  action: string;
+}) => {
   const token = localStorage.getItem("access_token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const response = await client.get(`teams/${id}/members/`, { headers });
-  return response;
+  const response = await client.put(
+    `join-requests/${id}/`,
+    {
+      action: action,
+    },
+    { headers }
+  );
+  return response.data;
 };

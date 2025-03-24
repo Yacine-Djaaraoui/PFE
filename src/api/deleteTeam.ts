@@ -5,10 +5,10 @@ const client = ApiClient({
   withCredentials: false,
 });
 
-export const getMembers = async ({ id }: { id: string }) => {
+export const deleteTeam = async ({ id }: { id: string }) => {
   const token = localStorage.getItem("access_token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const response = await client.get(`teams/${id}/members/`, { headers });
+  const response = await client.delete(`teams/${id}/`, { headers });
   return response;
 };

@@ -1,8 +1,18 @@
 import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "@/assets/logowithtitle.png";
+import { useDispatch } from "react-redux";
+import { logoutR } from "@/redux/reducers/AuthReducer";
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    dispatch(logoutR());
+    window.location.href = '/login';
+  };
   return (
     <div className="bg-white w-[17%] flex py-5 shadow-lg flex-col items-center gap-4 h-screen fixed">
       <img src={logo} alt="#" className="w-[200px]" />
@@ -105,7 +115,7 @@ const Sidebar = () => {
           Paramétres
         </NavLink>
       </nav>
-      <div
+      <div onClick={handleLogout}
         className={` hover:bg-accent/15 group flex items-center gap-2 py-3 pl-3 mb-2 mt-auto w-[200px] rounded-lg cursor-pointer font-medium 
    `}
       >

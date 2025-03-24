@@ -3,25 +3,11 @@ import searchIcon from "@iconify-icons/mdi/magnify";
 import calenderIcon from "../../assets/calendar-2.svg";
 import { ReactSVG } from "react-svg";
 import MessageQuestionIcon from "../../assets/message-question.svg";
-import { useEffect } from "react";
-import { useMyProfile } from "@/hooks/profile";
-import { setProfile } from "@/redux/reducers/AuthReducer";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store"; 
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
 const Header = () => {
-  const { data, error: profileError } = useMyProfile();
-  const dispatch = useDispatch();
   const profile = useSelector((state: RootState) => state.auth.profile);
-  const isLoggedIn = !!localStorage.getItem("refresh_token");
-
-  useEffect(() => {
-    if (isLoggedIn && !profileError) {
-      dispatch(setProfile(data));
-    } else if (profileError) {
-      console.log(profileError);
-    }
-  }, [isLoggedIn, profileError, data, dispatch]);
 
   return (
     <header className="flex items-center justify-between h-11 mt-7 mb-4 bg-white">
@@ -60,13 +46,13 @@ const Header = () => {
         <div className="flex items-center gap-2 mr-11">
           <div className="flex flex-col items-end space-y-0">
             <p className="text-[#0D062D] text-[16px] font-medium">
-              {profile?.first_name + " " + profile?.last_name}
+              {profile?.username}
             </p>
             <p className="text-[#787486] text-[16px]">Constantine, Algeria</p>
           </div>
           <div className="w-12 h-12 rounded-xl overflow-hidden">
             <img
-              src="../../../src/assets/logowithouttitle.png"
+              src={profile?.profile_picture_url}
               alt="User"
               className="w-full h-full object-cover"
             />

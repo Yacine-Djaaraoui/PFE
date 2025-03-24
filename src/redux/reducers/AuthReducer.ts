@@ -8,7 +8,8 @@ interface UserProfile {
   first_name: string;
   last_name: string;
   user_type: string;
-  profile: Record<string, any>; 
+  profile: Record<string, any>;
+  profile_picture_url : string;
 }
 
 interface AuthState {

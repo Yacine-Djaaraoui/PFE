@@ -21,6 +21,7 @@ import { useCancelRequest } from "@/api/myRequests";
 import { useMyRequests } from "@/hooks/useRequests";
 const RightSidebar = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
+
   const [openGroupe, setOpenGroupe] = useState(false);
   const [openrequests, setopenrequests] = useState(false);
   const { data: teamsData, error: teamsError } = useTeams({
@@ -67,9 +68,9 @@ const RightSidebar = () => {
         </div>
         <div className="w-12 h-12 rounded-xl overflow-hidden">
           <img
-            src="../../../src/assets/logowithouttitle.png"
+            src={profile?.profile_picture_url}
             alt="User"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-full"
           />
         </div>
       </div>

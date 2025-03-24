@@ -1,5 +1,5 @@
 import { useTeams } from "@/hooks/teams";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +32,13 @@ const Teams = () => {
   const [fetchMoreTeams, setFetchMoreTeams] = useState(false);
   const [teams, setTeams] = useState({});
   console.log(fetchMoreTeams);
+    const isMounted = useRef(true);
+ useEffect(() => {
+   return () => {
+     // Set to false when component unmounts
+     isMounted.current = false;
+   };
+ }, []);
   const {
     data,
     error: teamsError,
@@ -55,20 +62,22 @@ const Teams = () => {
     }
   }, [searchResults.searchResult]);
   useEffect(() => {
-    console.log(nextUrl);
-    setNextUrl(teams?.next);
-    console.log("dfd");
-    setTeams((prev) => ({
-      ...prev, // Keep all existing state
-      status: data.status, // Update status
-      count: data.count, // Update total count
-      next: data.next, // Update next page URL
-      previous: data.previous, // Update previous page URL
-      current_page: data.current_page, // Update current page
-      total_pages: data.total_pages, // Update total pages
-      page_size: data.page_size, // Update page size
-      results: [...prev.results, ...data.results], // Append new results to existing ones
-    }));
+    if (nextUrl) {
+      console.log(nextUrl);
+      setNextUrl(teams?.next);
+      console.log("dfd");
+      setTeams((prev) => ({
+        ...prev, // Keep all existing state
+        status: data.status, // Update status
+        count: data.count, // Update total count
+        next: data.next, // Update next page URL
+        previous: data.previous, // Update previous page URL
+        current_page: data.current_page, // Update current page
+        total_pages: data.total_pages, // Update total pages
+        page_size: data.page_size, // Update page size
+        results: [...prev.results, ...data.results], // Append new results to existing ones
+      }));
+    }
   }, [fetchMoreTeams]);
   useEffect(() => {
     console.log(teams);

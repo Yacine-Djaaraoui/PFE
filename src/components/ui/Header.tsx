@@ -27,25 +27,15 @@ import useDebounce from "@/hooks/useDebounce";
 import Teams from "@/pages/Student/Teams";
 import { useTeams } from "@/hooks/teams";
 import { setSearchResult } from "@/redux/reducers/SearchReducer";
+import { useLocation, useParams } from "react-router-dom";
 const Header = () => {
   const { messages } = useWebSocket();
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   console.log("new notifications ", messages);
-  const { data, error: profileError } = useMyProfile();
   const dispatch = useDispatch();
-  const profile = useSelector((state: RootState) => state.auth.profile);
-  const isLoggedIn = !!localStorage.getItem("refresh_token");
   const [isOpen, setIsOpen] = useState(false);
-  const [nextUrl, setNextUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isLoggedIn && !profileError) {
-      dispatch(setProfile(data));
-    } else if (profileError) {
-      console.log(profileError);
-    }
-  }, [isLoggedIn, profileError, data, dispatch]);
   useEffect(() => {
     setIsOpen(false);
   }, [messages]);
@@ -63,7 +53,8 @@ const Header = () => {
     }),
     [DebouncerSearchTerm]
   );
-
+  const location = useLocation();
+  console.log(location.pathname);
   const {
     data: searchResult,
     error: searchResultError,
@@ -71,15 +62,17 @@ const Header = () => {
     isError: searchResultIsError,
     isFetching: searchResultIsFetching,
   } = useTeams(searchParams);
-  dispatch(
-    setSearchResult({
-      searchResult,
-      searchResultError,
-      searchResultLoading,
-      searchResultIsError,
-      searchResultIsFetching,
-    })
-  );
+
+  if (location.pathname === "/mon-projet/teams")
+    dispatch(
+      setSearchResult({
+        searchResult,
+        searchResultError,
+        searchResultLoading,
+        searchResultIsError,
+        searchResultIsFetching,
+      })
+    );
 
   return (
     <header className="flex items-center justify-between h-11 mt-7 mb-4 bg-white ">

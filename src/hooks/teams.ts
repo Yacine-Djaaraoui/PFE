@@ -54,6 +54,7 @@ export const useTeams = ({
       }),
     refetchOnWindowFocus: false,
     retry: false,
-    initialData: { results: [], next: null }, // Update initialData structure
+
+    // Update initialData structure
   });
 };

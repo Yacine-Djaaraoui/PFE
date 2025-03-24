@@ -25,11 +25,8 @@ const InfoCard: React.FC<CardProps> = ({ month, title, description, isOpen, star
   const handleClick = () => {
     const now = new Date();
     const startDate = new Date(start_date);
-    console.log("Now:", now);
-    console.log("Start Date:", startDate);
 
     if (now < startDate) {
-      // Calculate time left
       const diff = startDate.getTime() - now.getTime();
       const days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, "0");
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, "0");

@@ -97,10 +97,12 @@ function ApiClient(config: ApiClientConfig = {}): AxiosInstance {
     },
     async (error: AxiosError) => {
       const translations = getTranslations();
+
       if (error?.response) {
         const statusCode = error.response?.status;
         const message = error?.response?.data?.detail;
         const originalRequest = error.config;
+
         if (statusCode === 401) {
           if (
             !localStorage.getItem("refresh_token") &&

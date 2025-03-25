@@ -127,14 +127,16 @@ function ApiClient(config: ApiClientConfig = {}): AxiosInstance {
               return Promise.reject(message);
             }
           } else {
-            return Promise.reject(message);
+            if (message) return Promise.reject(message)
+            else return Promise.reject(error?.response?.data);
           }
         } else if (statusCode >= 500) {
           return Promise.reject(translations.serverError);
         } else if (statusCode == 404) {
           return Promise.reject("ForBidden Request");
         } else {
-          return Promise.reject(message);
+          if (message) return Promise.reject(message)
+          else return Promise.reject(error?.response?.data);
         }
       } else if (error?.request) {
         return Promise.reject(translations.noInternetConnection);

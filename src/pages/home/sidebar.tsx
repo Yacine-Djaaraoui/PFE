@@ -13,6 +13,7 @@ const Sidebar = () => {
     dispatch(logoutR());
     window.location.href = '/login';
   };
+  
   return (
     <div className="bg-white w-[17%] flex py-5 shadow-lg flex-col items-center gap-4 h-screen fixed">
       <img src={logo} alt="#" className="w-[200px]" />

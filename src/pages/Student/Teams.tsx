@@ -31,7 +31,6 @@ const Teams = () => {
   const [success, setSuccess] = useState("");
   const [fetchMoreTeams, setFetchMoreTeams] = useState(false);
   const [teams, setTeams] = useState({});
-  console.log(fetchMoreTeams);
     const isMounted = useRef(true);
  useEffect(() => {
    return () => {

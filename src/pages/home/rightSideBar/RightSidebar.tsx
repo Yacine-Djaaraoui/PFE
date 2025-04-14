@@ -10,6 +10,7 @@ import {
 import { useDeleteTeam } from "@/hooks/useDeleteTeam";
 import { useCancelRequest } from "@/api/myRequests";
 import { useMyRequests } from "@/hooks/useRequests";
+import { useNavigate } from "react-router-dom";
 import { ThemesSection } from "./ThemesSection";
 
 const RightSidebar = () => {
@@ -40,6 +41,8 @@ const RightSidebar = () => {
   const handleDelete = (id: string) => {
     deleteTeamMutation.mutate({ id });
   };
+  const navigate = useNavigate();
+  console.log(profile);
 
   const cancelRequest = useCancelRequest();
 
@@ -138,36 +141,49 @@ const RightSidebar = () => {
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 bg-secondary rounded-full"></span>
               <span className="text-sm">
-                {teamsData.results[0]?.has_capacity ? "incomplet" : "complet"}
+                {teamsData?.results[0]?.has_capacity ? "incomplet" : "complet"}
               </span>
             </div>
           </div>
-          {profile.id === teamsData.results[0]?.owner.id && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button className="bg-red-500 hover:bg-red-400 text-white mx-auto rounded mt-4  px-2 py-1 text-center cursor-pointer">
-                  Supprumer Le Groupe
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle> supprumer un groupe</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    êtes-vous sûr de suppremer le groupe ?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="hover:bg-secondary hover:text-white">
-                    Annuler
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => handleDelete(teamsData.results[0].id)}
-                  >
-                    suppremer le groupe
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+          {profile?.id === teamsData?.results[0]?.owner.id && (
+            <div className="flex items-center justify-around gap-1">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button className="bg-secondary hover:bg-secondary/90 text-white text-sm mx-auto rounded mt-4  px-2 w-[40%] py-1 text-center cursor-pointer">
+                    Supprumer
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle> supprumer un groupe</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      êtes-vous sûr de suppremer le groupe ?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="hover:bg-secondary hover:text-white">
+                      Annuler
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDelete(teamsData?.results[0]?.id)}
+                    >
+                      suppremer le groupe
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <button
+                disabled={!teamsData?.results[0]?.has_capacity}
+                onClick={() => navigate("/students")}
+                className={`${
+                  teamsData?.results[0]?.has_capacity
+                    ? "bg-secondary  hover:bg-secondary/90"
+                    : "bg-accent"
+                }  text-white text-sm mx-auto rounded mt-4  px-2 w-[40%] py-1 text-center cursor-pointer`}
+              >
+                Ajouter
+              </button>
+            </div>
           )}
         </div>
       )}

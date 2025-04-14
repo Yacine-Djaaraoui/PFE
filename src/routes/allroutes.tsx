@@ -7,6 +7,7 @@ import Messagerie from "@/pages/Messagerie/Messagerie";
 import MonProjet from "@/pages/Mon-projet/MonProjet";
 import Profile from "@/pages/Profile/Profile";
 import Settings from "@/pages/settings/Settings";
+import StudentsList from "@/pages/Student/StudentsList";
 
 interface RouteConfig {
   path: string;
@@ -24,4 +25,5 @@ export const pferoutes: RouteConfig[] = [
   { path: "/mon-projet/:idof", element: <MonProjet /> },
   { path: "/help" , element:<Help/> },
   { path: "/settings" , element:<Settings/> },
+  { path: "/students" , element:<StudentsList/> },
 ];

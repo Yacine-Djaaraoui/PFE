@@ -28,6 +28,7 @@ import Teams from "@/pages/Student/Teams";
 import { useTeams } from "@/hooks/teams";
 import { setSearchResult } from "@/redux/reducers/SearchReducer";
 import { useLocation, useParams } from "react-router-dom";
+import { useStudents } from "@/hooks/useStudents";
 const Header = () => {
   const { messages } = useWebSocket();
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -43,36 +44,89 @@ const Header = () => {
     setIsOpen(true);
   };
   const DebouncerSearchTerm = useDebounce(searchQuery, 1000);
-  const searchParams = useMemo(
+
+  const { isTeamsPage, isStudentsPage } = useMemo(
     () => ({
-      search: DebouncerSearchTerm,
-
-      match_student_profile: true,
-      is_member: false,
-      ordering: "-created_at",
+      isTeamsPage: location.pathname.includes("/mon-projet/teams"),
+      isStudentsPage: location.pathname.includes("/students"),
     }),
-    [DebouncerSearchTerm]
+    [location.pathname]
   );
-  const location = useLocation();
-  console.log(location.pathname);
-  const {
-    data: searchResult,
-    error: searchResultError,
-    isLoading: searchResultLoading,
-    isError: searchResultIsError,
-    isFetching: searchResultIsFetching,
-  } = useTeams(searchParams);
 
-  if (location.pathname === "/mon-projet/teams")
-    dispatch(
-      setSearchResult({
-        searchResult,
-        searchResultError,
-        searchResultLoading,
-        searchResultIsError,
-        searchResultIsFetching,
-      })
-    );
+  // Teams query - only runs when on teams page with proper params
+  const {
+    data: teamsData,
+    error: teamsError,
+    isLoading: teamsLoading,
+    isError: teamsIsError,
+    isFetching: teamsIsFetching,
+  } = useTeams(
+    useMemo(
+      () => ({
+        search: DebouncerSearchTerm,
+        match_student_profile: true,
+        is_member: false,
+        ordering: "-last_name",
+      }),
+      [DebouncerSearchTerm]
+    ),
+    { enabled: isTeamsPage }
+  );
+
+  // Students query - only runs when on students page with proper params
+  const {
+    data: studentsData,
+    error: studentsError,
+    isLoading: studentsLoading,
+    isError: studentsIsError,
+    isFetching: studentsIsFetching,
+  } = useStudents(
+    useMemo(
+      () => ({
+        search: DebouncerSearchTerm,
+        ordering: "-created_at",
+        show_peers_only: true,
+        page_size: 10,
+        has_team: false,
+      }),
+      [DebouncerSearchTerm]
+    ),
+    { enabled: isStudentsPage }
+  );
+
+  // Determine which data to use based on current path
+  const searchResult = isTeamsPage ? teamsData : studentsData;
+  const searchResultError = isTeamsPage ? teamsError : studentsError;
+  const searchResultLoading = isTeamsPage ? teamsLoading : studentsLoading;
+  const searchResultIsError = isTeamsPage ? teamsIsError : studentsIsError;
+  const searchResultIsFetching = isTeamsPage
+    ? teamsIsFetching
+    : studentsIsFetching;
+
+  // Dispatch results to Redux only when on relevant pages
+  useEffect(() => {
+    if (isTeamsPage || isStudentsPage) {
+      dispatch(
+        setSearchResult({
+          searchResult,
+          searchResultError,
+          searchResultLoading,
+          searchResultIsError,
+          searchResultIsFetching,
+          searchTerm: DebouncerSearchTerm,
+        })
+      );
+    }
+  }, [
+    searchResult,
+    searchResultError,
+    searchResultLoading,
+    searchResultIsError,
+    searchResultIsFetching,
+    isTeamsPage,
+    isStudentsPage,
+    dispatch,
+  ]);
 
   return (
     <header className="flex items-center justify-between h-11 mt-7 mb-4 bg-white ">

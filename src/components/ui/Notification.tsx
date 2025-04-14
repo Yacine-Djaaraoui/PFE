@@ -99,7 +99,12 @@ const Notification = () => {
                 key={notification.id} // Always add a unique key when mapping lists
                 className="border-b-[#D0D5DD] relative p-5 w-full border-b text-[#334155] flex-wrap font-normal text-sm  flex items-start justify-between gap-2"
               >
-                <span className="max-w-[85%]">{notification.content}</span>
+                <img
+                  src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                  alt=""
+                  className="rounded-full w-9 aspect-square"
+                />
+                <span className="max-w-[80%]">{notification.content}</span>
                 <span className="">
                   {getTimeDifference(notification.created_at)}
                 </span>
@@ -142,7 +147,14 @@ const Notification = () => {
               key={notification.id} // Always add a unique key when mapping lists
               className="border-b-[#D0D5DD] relative p-5 w-full border-b text-[#334155] flex-wrap font-normal text-sm  flex items-start justify-between gap-2"
             >
-              <span className="max-w-[85%]">{notification.content}</span>
+              <img
+                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                alt=""
+                className="rounded-full aspect-square w-8"
+              />
+              <span className="max-w-[80%] text-sm">
+                {notification.content}
+              </span>
               <span className="">
                 {getTimeDifference(notification.created_at)}
               </span>

@@ -31,13 +31,13 @@ const Teams = () => {
   const [success, setSuccess] = useState("");
   const [fetchMoreTeams, setFetchMoreTeams] = useState(false);
   const [teams, setTeams] = useState({});
-    const isMounted = useRef(true);
- useEffect(() => {
-   return () => {
-     // Set to false when component unmounts
-     isMounted.current = false;
-   };
- }, []);
+  const isMounted = useRef(true);
+  useEffect(() => {
+    return () => {
+      // Set to false when component unmounts
+      isMounted.current = false;
+    };
+  }, []);
   const {
     data,
     error: teamsError,
@@ -105,7 +105,7 @@ const Teams = () => {
           queryClient.invalidateQueries({ queryKey: ["teams"] });
         },
         onError: (error) => {
-          setError("Failed to send join request. Please try again.");
+          setError(error.name[0]);
         },
       }
     );
@@ -164,7 +164,7 @@ const Teams = () => {
               <AlertDialogDescription>
                 {/* Une fois inscrit, vous devrez demander à l’administration pour
                 changer de groupe. */}
-                <label className="font-medium block mt-2 mb-2">
+                {/* <label className="font-medium block mt-2 mb-2">
                   Ajouter un nom a l'equipe
                 </label>
                 <input
@@ -173,7 +173,7 @@ const Teams = () => {
                   onChange={(e) => setGroupeName(e.target.value)}
                   className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder={`name of the team`}
-                />
+                /> */}
                 <label className="font-medium block mt-2 mb-2">
                   Ajouter une description a l'equipe
                 </label>
@@ -225,9 +225,9 @@ const Teams = () => {
                   </span>
                   {!group.has_capacity && <span className="bg-white">🔒</span>}
                 </div>
-                <h3 className="text-[14px] font-inter font-medium mt-2">
+                {/* <h3 className="text-[14px] font-inter font-medium mt-2">
                   {group.name}
-                </h3>
+                </h3> */} 
                 <h3 className="text-[14px] font-inter font-medium mt-2">
                   {group.description}
                 </h3>

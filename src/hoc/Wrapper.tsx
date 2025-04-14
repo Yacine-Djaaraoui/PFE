@@ -1,5 +1,5 @@
 import Header from "@/components/ui/Header";
-import RightSidebar from "@/pages/home/RightSidebar";
+import RightSidebar from "@/pages/home/rightSideBar/RightSidebar";
 import Sidebar from "@/pages/home/sidebar";
 import React, { useEffect } from "react";
 

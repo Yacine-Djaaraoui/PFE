@@ -1,60 +1,47 @@
 import { useTeams } from "@/hooks/teams";
 import { useGetMembers } from "@/hooks/useGetMembers";
 import { RootState } from "@/redux/store";
-import { group } from "console";
 import React, { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialog /* other dialog components */,
 } from "@/components/ui/alert-dialog";
 import { useDeleteTeam } from "@/hooks/useDeleteTeam";
 import { useCancelRequest } from "@/api/myRequests";
 import { useMyRequests } from "@/hooks/useRequests";
+import { ThemesSection } from "./ThemesSection";
+
 const RightSidebar = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
-
   const [openGroupe, setOpenGroupe] = useState(false);
   const [openrequests, setopenrequests] = useState(false);
-  const { data: teamsData, error: teamsError } = useTeams({
+
+  const { data: teamsData } = useTeams({
     is_member: true,
     match_student_profile: true,
   });
-  const { data: requests, isLoading, error } = useMyRequests();
 
-  const cancelRequest = useCancelRequest();
-
-  // Ensure `teamsData` exists before accessing `results`
+  const { data: requests } = useMyRequests();
   const [teamId, setTeamId] = useState<number | null>(null);
 
-  // Update `teamId` when `teamsData` is available
   useEffect(() => {
     if (teamsData?.results?.length > 0) {
       setTeamId(teamsData.results[0].id);
     }
   }, [teamsData]);
-  useEffect(() => {
-    console.log("requests", requests);
-  }, [requests]);
 
-  // Fetch members only when `teamId` is available
-  const { data: membersData, error: membersErr } = useGetMembers(
-    { id: teamId! }, // `teamId!` is safe because we check before updating it
-    { enabled: !!teamId } // Ensures request runs only when `teamId` exists
+  const { data: membersData } = useGetMembers(
+    { id: teamId! },
+    { enabled: !!teamId }
   );
-  const deleteTeamMutation = useDeleteTeam();
 
+  const deleteTeamMutation = useDeleteTeam();
   const handleDelete = (id: string) => {
     deleteTeamMutation.mutate({ id });
   };
+
+  const cancelRequest = useCancelRequest();
 
   return (
     <div className="bg-white w-[20%] flex py-5 flex-col items-center gap-4 h-screen    mr-0 ">
@@ -74,6 +61,9 @@ const RightSidebar = () => {
           />
         </div>
       </div>
+      {/* Themes Section */}
+      <ThemesSection profile={profile} />
+
       {teamsData?.results?.length > 0 && (
         <div
           className="flex items-center gap-2 font-medium text-lg underline cursor-pointer "

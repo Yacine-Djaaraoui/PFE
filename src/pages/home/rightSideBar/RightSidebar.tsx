@@ -5,13 +5,15 @@ import React, { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import {
-  AlertDialog /* other dialog components */,
+  AlertDialog, AlertDialogFooter, /* other dialog components */
+  AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
 import { useDeleteTeam } from "@/hooks/useDeleteTeam";
 import { useCancelRequest } from "@/api/myRequests";
 import { useMyRequests } from "@/hooks/useRequests";
 import { useNavigate } from "react-router-dom";
 import { ThemesSection } from "./ThemesSection";
+import { AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 
 const RightSidebar = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);

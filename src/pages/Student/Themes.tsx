@@ -7,76 +7,96 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-const ThemeDetailsDialog = ({ 
-    isOpen,
-    onOpenChange,
-    theme,
-  }: {
-    isOpen: boolean;
-    onOpenChange: (open: boolean) => void;
-    theme: any;
-  }) => {
-    if (!theme) return null;
-  
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="w-2/5 px-8 py-11 rounded-2xl border-none overflow-y-auto max-h-[80vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-left">
-              Fiche de présentation du thème
-            </DialogTitle>
-          </DialogHeader>
-  
-          <div className=" border border-gray-200 rounded-2xl p-4">
-            <div className="flex justify-between items-start border-b border-gray-200 pb-2">
-              <div>
-                <p className="text-[16px] font-semibold">{theme.proposed_by}</p>
-              </div>
-  
-              <div className="text-gray-700 font-medium text-sm">
-                <p className="font-semibold pb-2">Spécialité</p>
-                <p className="break-words">{theme.specialty}</p>
-              </div>
+import { useSupervisorRequest } from "@/hooks/useSupervisorRequest";
+import { useTeams } from "@/hooks/teams";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
+
+const ThemeDetailsDialog = ({
+  isOpen,
+  onOpenChange,
+  theme,
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  theme: any;
+}) => {
+  if (!theme) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="w-2/5 px-8 py-11 rounded-2xl border-none overflow-y-auto max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-left">
+            Fiche de présentation du thème
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className=" border border-gray-200 rounded-2xl p-4">
+          <div className="flex justify-between items-start border-b border-gray-200 pb-2">
+            <div>
+              <p className="text-[16px] font-semibold">
+                {theme.proposed_by.first_name}
+              </p>
             </div>
-  
-            <div className="mt-4 flex items-start ">
-              <h3 className="text-sm text-[#46494C] font-semibold pr-4">
-                Résumé
-              </h3>
-              <div className="pl-4 font-medium max-w-[85%] ">
-                <p className="font-semibold text-sm">Titre complet: </p>
-                <p className="text-xs break-words whitespace-pre-wrap ">{theme.title}</p>
-                <br />
-                <p className="font-semibold text-sm">Description: </p>
-                <p className="text-xs break-words whitespace-pre-wrap ">{theme.description}</p>
-              </div>
-            </div>
-  
-            <div className="mt-8 flex items-start">
-              <h3 className="text-sm text-[#46494C] font-semibold pr-7.5">
-                Outils
-              </h3>
-              <div className="pl-4 font-medium text-xs break-words whitespace-pre-wrap  max-w-[85%] ">
-                {theme.tools}
-              </div>
+
+            <div className="text-gray-700 font-medium text-sm">
+              <p className="font-semibold pb-2">Spécialité</p>
+              <p className="break-words">{theme.specialty}</p>
             </div>
           </div>
-  
-          <div className="flex justify-end space-x-4 pt-6">
-            <Button variant="outline" className="flex items-center">
-              <span className="mr-2">📤</span> Partager
-            </Button>
-            <Button variant="default" className="flex items-center">
-              <span className="mr-2">📥</span> Télécharger
-            </Button>
+
+          <div className="mt-4 flex items-start ">
+            <h3 className="text-sm text-[#46494C] font-semibold pr-4">
+              Résumé
+            </h3>
+            <div className="pl-4 font-medium max-w-[85%] ">
+              <p className="font-semibold text-sm">Titre complet: </p>
+              <p className="text-xs break-words whitespace-pre-wrap ">
+                {theme.title}
+              </p>
+              <br />
+              <p className="font-semibold text-sm">Description: </p>
+              <p className="text-xs break-words whitespace-pre-wrap ">
+                {theme.description}
+              </p>
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    );
-  };
-  
-  
+
+          <div className="mt-8 flex items-start">
+            <h3 className="text-sm text-[#46494C] font-semibold pr-7.5">
+              Outils
+            </h3>
+            <div className="pl-4 font-medium text-xs break-words whitespace-pre-wrap  max-w-[85%] ">
+              {theme.tools}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-4 pt-6">
+          <Button variant="outline" className="flex items-center">
+            <span className="mr-2">📤</span> Partager
+          </Button>
+          <Button variant="default" className="flex items-center">
+            <span className="mr-2">📥</span> Télécharger
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const Themes = () => {
   const [fetchMoreThemes, setFetchMoreThemes] = useState(false);
@@ -84,8 +104,22 @@ const Themes = () => {
   const [themes, setThemes] = useState({});
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [teamId, setTeamId] = useState();
   const isMounted = useRef(true);
-
+  const joinMutation = useSupervisorRequest();
+  const [demanderror, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const profile = useSelector((state: RootState) => state.auth.profile);
+  const { data: teamsData } = useTeams({
+    is_member: true,
+    match_student_profile: true,
+  });
+  useEffect(() => {
+    if (teamsData?.results?.length > 0) {
+      setTeamId(teamsData.results[0].id);
+    }
+  }, [teamsData]);
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -131,6 +165,27 @@ const Themes = () => {
     setSelectedTheme(theme);
     setIsDialogOpen(true);
   };
+  const handleJoinRequest = (
+    teamId: string,
+    message: string,
+    themeId: string
+  ) => {
+    joinMutation.mutate(
+      { teamId, message, themeId },
+      {
+        onSuccess: () => {
+          setError(""); // Clear any previous errors
+          setSuccess(`Supervisor request sent successfully `);
+        },
+        onError: (error) => {
+          setError(error?.error);
+        },
+      }
+    );
+  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
 
   return (
     <div className="h-screen py-10 pl-8 w-fit">
@@ -155,6 +210,19 @@ const Themes = () => {
           </h2>
         </div>
       </div>
+
+      {success && (
+        <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+          <p> {success}</p>
+        </div>
+      )}
+
+      {/* Display errors from the join request */}
+      {demanderror && (
+        <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          <p>{demanderror}</p>
+        </div>
+      )}
 
       {/* Dynamic Themes Section */}
       <div className="flex flex-col min-h-[calc(100vh-250px)]">
@@ -193,7 +261,7 @@ const Themes = () => {
                     {theme.description.substring(0, 20) + "..."}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Encadrant: {theme?.proposed_by}
+                    Encadrant: {theme?.proposed_by?.first_name}
                   </p>
 
                   <div className="flex items-center justify-between mt-3 text-[#5A5A5A] text-xs">
@@ -208,6 +276,50 @@ const Themes = () => {
                     >
                       Voir plus
                     </Button>
+                    {teamId && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button
+                            className={`w-fit font-semibold text-xs bg-secondary text-white rounded-[3px] font-instrument px-3 py-2 hover:bg-secondary/80`}
+                          >
+                            Demander
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Demander ce encadrant ?{" "}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Une fois inscrit, vous devrez demander à
+                              l’administration pour changer de groupe.
+                              <label className="font-medium block mt-2 mb-2">
+                                Ajouter un message a l'encadrant
+                              </label>
+                              <input
+                                type="text"
+                                value={message}
+                                onChange={handleChange}
+                                className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder={`message`}
+                              />
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="hover:bg-secondary hover:text-white">
+                              Annuler
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                handleJoinRequest(teamId, message, theme.id);
+                              }}
+                            >
+                              Demander
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                   </div>
                 </div>
               ))}

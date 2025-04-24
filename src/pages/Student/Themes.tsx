@@ -7,84 +7,167 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { FileText, Download } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useSupervisorRequest } from "@/hooks/useSupervisorRequest";
+import { useTeams } from "@/hooks/teams";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
-const ThemeDetailsDialog = ({ 
-    isOpen,
-    onOpenChange,
-    theme,
-  }: {
-    isOpen: boolean;
-    onOpenChange: (open: boolean) => void;
-    theme: any;
-  }) => {
-    if (!theme) return null;
-  
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="w-2/5 px-8 py-11 rounded-2xl border-none overflow-y-auto max-h-[80vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-left">
-              Fiche de présentation du thème
-            </DialogTitle>
-          </DialogHeader>
-  
-          <div className=" border border-gray-200 rounded-2xl p-4">
-            <div className="flex justify-between items-start border-b border-gray-200 pb-2">
-              <div>
-                <p className="text-[16px] font-semibold">{theme.proposed_by}</p>
-              </div>
-  
-              <div className="text-gray-700 font-medium text-sm">
-                <p className="font-semibold pb-2">Spécialité</p>
-                <p className="break-words">{theme.specialty}</p>
-              </div>
-            </div>
-  
-            <div className="mt-4 flex items-start ">
-              <h3 className="text-sm text-[#46494C] font-semibold pr-4">
-                Résumé
-              </h3>
-              <div className="pl-4 font-medium max-w-[85%] ">
-                <p className="font-semibold text-sm">Titre complet: </p>
-                <p className="text-xs break-words whitespace-pre-wrap ">{theme.title}</p>
-                <br />
-                <p className="font-semibold text-sm">Description: </p>
-                <p className="text-xs break-words whitespace-pre-wrap ">{theme.description}</p>
+const ThemeDetailsDialog = ({
+  isOpen,
+  onOpenChange,
+  theme,
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  theme: any;
+}) => {
+  if (!theme) return null;
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="w-2/5 px-8 py-11 rounded-2xl border-none overflow-y-auto max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-left">
+            Fiche de présentation du thème
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className=" border border-gray-200 rounded-2xl p-4">
+          <div className="flex justify-between items-start border-b border-gray-200 pb-2">
+            <div>
+              <p className="text-[16px] font-semibold pb-2">
+                {theme.proposed_by?.first_name +
+                  " " +
+                  theme.proposed_by?.last_name}
+              </p>
+              <div className="ml-2 text-[12px]">
+                {theme?.co_supervisors?.length > 0 && (
+                  <div className="grid grid-cols-2">
+                    {theme.co_supervisors.map(
+                      (supervisor: any, index: number) => (
+                        <p key={index} className="truncate">
+                          {supervisor.first_name} {supervisor.last_name}
+                        </p>
+                      )
+                    )}
+                  </div>
+                )}
               </div>
             </div>
-  
-            <div className="mt-8 flex items-start">
+
+            <div className="text-gray-700 font-medium text-sm">
+              <p className="font-semibold pb-2">Année Académique</p>
+              <p className="break-words">{theme?.academic_year}</p>
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-start ">
+            <h3 className="text-sm text-[#46494C] font-semibold pr-4">
+              Résumé
+            </h3>
+            <div className="pl-4 font-medium max-w-[85%] ">
+              <p className="font-semibold text-sm">Titre complet: </p>
+              <p className="text-xs break-words whitespace-pre-wrap ">
+                {theme.title}
+              </p>
+              <br />
+              <p className="font-semibold text-sm">Description: </p>
+              <p className="text-xs break-words whitespace-pre-wrap ">
+                {theme.description}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 flex items-start border-b border-gray-200 pb-4">
+            <h3 className="text-sm text-[#46494C] font-semibold pr-7.5 ">
+              Outils
+            </h3>
+            <div className="pl-4 font-medium text-xs break-words whitespace-pre-wrap max-w-[85%]">
+              {theme.tools}
+            </div>
+          </div>
+
+          {/* Documents Section */}
+          {theme.documents && theme.documents.length > 0 && (
+            <div className="mt-4 flex items-start">
               <h3 className="text-sm text-[#46494C] font-semibold pr-7.5">
-                Outils
+                Documents
               </h3>
-              <div className="pl-4 font-medium text-xs break-words whitespace-pre-wrap  max-w-[85%] ">
-                {theme.tools}
+              <div className="pl-4 font-medium text-xs break-words max-w-[85%]">
+                <ul className="space-y-2">
+                  {theme.documents.map((doc: any) => (
+                    <li key={doc.id} className="flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-gray-600" />
+                      <a
+                        href={doc.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {doc.title || `Document ${doc.id}`}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </div>
-  
-          <div className="flex justify-end space-x-4 pt-6">
-            <Button variant="outline" className="flex items-center">
-              <span className="mr-2">📤</span> Partager
-            </Button>
-            <Button variant="default" className="flex items-center">
-              <span className="mr-2">📥</span> Télécharger
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  };
-  
-  
+          )}
+        </div>
+        {/* <div className="flex justify-end space-x-4 pt-6">
+          <Button variant="outline" className="flex items-center">
+            <span className="mr-2">📤</span> Partager
+          </Button>
+          <Button
+            variant="default"
+            className="flex items-center"
+            onClick={}
+            disabled={!theme.documents || theme.documents.length === 0}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Télécharger
+          </Button>
+        </div> */}
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const Themes = () => {
+  const searchResults = useSelector((state: RootState) => state.SearchResult);
   const [fetchMoreThemes, setFetchMoreThemes] = useState(false);
-  const [nextUrl, setNextUrl] = useState<string>("");
+  const [nextUrl, setNextUrl] = useState("");
   const [themes, setThemes] = useState({});
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [teamId, setTeamId] = useState();
   const isMounted = useRef(true);
+  const joinMutation = useSupervisorRequest();
+  const [demanderror, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const profile = useSelector((state: RootState) => state.auth.profile);
+  const { data: teamsData } = useTeams({
+    is_member: true,
+    is_owner: true,
+    match_student_profile: true,
+  });
+
+  useEffect(() => {
+    if (teamsData?.results?.length > 0) {
+      setTeamId(teamsData.results[0].id);
+    }
+  }, [teamsData]);
 
   useEffect(() => {
     return () => {
@@ -93,16 +176,21 @@ const Themes = () => {
   }, []);
 
   const { data, isLoading, error, isFetching } = useThemes({
-    next_url: fetchMoreThemes && nextUrl ? themes.next : themes.next,
+    next_url: fetchMoreThemes && nextUrl ? themes?.next : themes?.next,
     ordering: "created_at",
   });
 
   useEffect(() => {
-    if (data && !fetchMoreThemes) {
-      setThemes(data);
-      setNextUrl(data.next);
+    if ((searchResults.searchResult || data) && !fetchMoreThemes) {
+      if (searchResults.searchTerm !== "") {
+        setThemes(searchResults.searchResult);
+        setNextUrl(searchResults.searchResult?.next || "");
+      } else {
+        setThemes(data);
+        setNextUrl(data?.next || "");
+      }
     }
-  }, [data]);
+  }, [searchResults.searchResult, data]);
 
   useEffect(() => {
     if (nextUrl && fetchMoreThemes) {
@@ -132,6 +220,29 @@ const Themes = () => {
     setIsDialogOpen(true);
   };
 
+  const handleJoinRequest = (
+    teamId: string,
+    message: string,
+    themeId: string
+  ) => {
+    joinMutation.mutate(
+      { teamId, message, themeId },
+      {
+        onSuccess: () => {
+          setError("");
+          setSuccess("Supervisor request sent successfully");
+        },
+        onError: (error) => {
+          setError(error?.error);
+        },
+      }
+    );
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
+
   return (
     <div className="h-screen py-10 pl-8 w-fit">
       {/* Static Header Section */}
@@ -156,9 +267,24 @@ const Themes = () => {
         </div>
       </div>
 
+      {success && (
+        <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+          <p> {success}</p>
+        </div>
+      )}
+
+      {demanderror && (
+        <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          <p>{demanderror}</p>
+        </div>
+      )}
+
       {/* Dynamic Themes Section */}
       <div className="flex flex-col min-h-[calc(100vh-250px)]">
-        {isLoading && !fetchMoreThemes ? (
+        {isLoading ||
+        ((searchResults.searchResultLoading ||
+          searchResults.searchResultIsFetching) &&
+          !fetchMoreThemes) ? (
           <div className="grid grid-cols-3 gap-4 p-1 mt-4 w-full">
             {[...Array(9)].map((_, i) => (
               <div
@@ -190,24 +316,75 @@ const Themes = () => {
                     </p>
                   </div>
                   <h3 className="text-[14px] font-inter font-bold my-2">
-                    {theme.description.substring(0, 20) + "..."}
+                    {theme.title}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Encadrant: {theme?.proposed_by}
+                    Encadrant: {theme?.proposed_by?.first_name}
                   </p>
 
                   <div className="flex items-center justify-between mt-3 text-[#5A5A5A] text-xs">
                     <div className="flex items-center">
-                      {/* Optional: Add document count or other info */}
+                      {theme.documents && theme.documents.length > 0 && (
+                        <div className="flex items-center text-gray-500">
+                          <FileText className="h-4 w-4 mr-1" />
+                          <span>{theme.documents.length}</span>
+                        </div>
+                      )}
                     </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
-                      onClick={() => handleOpenDialog(theme)}
-                    >
-                      Voir plus
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
+                        onClick={() => handleOpenDialog(theme)}
+                      >
+                        Voir plus
+                      </Button>
+                      {teamId && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button
+                              className={`w-fit font-semibold text-xs bg-secondary text-white rounded-[3px] font-instrument px-3 py-1.5 hover:bg-secondary/80`}
+                            >
+                              Demander
+                            </button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Demander ce encadrant ?{" "}
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Une fois inscrit, vous devrez demander à
+                                l'administration pour changer de groupe.
+                                <label className="font-medium block mt-2 mb-2">
+                                  Ajouter un message a l'encadrant
+                                </label>
+                                <input
+                                  type="text"
+                                  value={message}
+                                  onChange={handleChange}
+                                  className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  placeholder={`message`}
+                                />
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="hover:bg-secondary hover:text-white">
+                                Annuler
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => {
+                                  handleJoinRequest(teamId, message, theme.id);
+                                }}
+                              >
+                                Demander
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

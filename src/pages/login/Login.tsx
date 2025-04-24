@@ -26,9 +26,7 @@ const Login: React.FC = () => {
       return login(values);
     },
     onError: (error: any) => {
-      if (
-        error == "No active account found with the given credentials"
-      ) {
+      if (error == "No active account found with the given credentials") {
         setError(t("invalidCredentials"));
       } else {
         setError(error);
@@ -70,28 +68,31 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex flex-row w-full h-[100vh] overflow-hidden">
-      <div className="relative w-[56%] bg-linear-to-b from-accent to-secondary flex flex-col items-start justify-center pl-[10%] text-white">
-        <h1 className="text-5xl font-extrabold mb-4 ">
-          Bienvenue sur ProjecTrack
-        </h1>
-        <p className="text-4xl font-medium md:pr-90">
-          Collaborez, innovez , Gérez votre projet en un clic !
-        </p>
-        <button className="w-[25%] h-10 px-4 mt-5 text-white font-normal text-[18px] bg-accent rounded-lg hover:opacity-80">
-          un œil sur les projets
-        </button>
-        <img
+      <div className="relative w-[56%] bg-secondary flex flex-col items-start justify-center pl-[10%] text-white font-poppins">
+      <img
           src={image}
           alt="icon"
-          className="absolute top-4 left-4 w-16 h-14"
+          className="top-4 left-4 w-14 h-12"
         />
+        <h1 className="text-[40px] font-poppins font-extrabold mb-2 ">
+          Bienvenue sur ProjecTrack
+        </h1>
+        <button className="w-[40%] h-9 px-4 text-white font-normal text-sm bg-[#7495C9] rounded-sm hover:opacity-80">
+          Collaborez, innovez , Gérez
+        </button>
+        <p className="text-2xl font-normal md:pr-54  mt-4 text-white opacity-70">
+          une plateforme intuitive et efficace conçue pour simplifier la gestion
+          de vos projets académiques.
+        </p>
+
+        
       </div>
       <div className="w-[44%] mx-auto px-20 ">
         <div className="h-full w-[90%] flex flex-col justify-center mx-auto">
-          <h2 className="text-3xl font-extrabold text-primaryTitle mb-1.5">
+          <h2 className="text-[26px] font-extrabold text-primaryTitle mb-1.5">
             Bienvenue !
           </h2>
-          <p className="text-[20px] font-medium mb-6 text-secondary">
+          <p className="text-[18px] font-medium mb-6 text-secondary">
             Connectez-vous avec votre adresse e-mail et
             <br /> mot de passe attribué par l'école .
           </p>
@@ -139,7 +140,7 @@ const Login: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-[60%] h-16 px-4 py-2 mt-7 text-white font-medium text-[20px] bg-secondary rounded-lg hover:opacity-90"
+                  className="w-[60%] h-15 px-4 py-2 mt-7 text-white font-medium text-[20px] bg-secondary rounded-lg hover:opacity-90"
                 >
                   {isSubmitting ? "Connexion..." : "Se connecter"}
                 </button>
@@ -148,7 +149,7 @@ const Login: React.FC = () => {
           </Formik>
           {error && <p className="text-red-600 text-[18px] mt-3">{error}</p>}
 
-          <p className="mt-4 font-medium text-[16px] text-secondary">
+          <p className="mt-2 font-medium text-[12px] text-secondary">
             Pour toute assistance, contactez l'administrateur.
           </p>
         </div>

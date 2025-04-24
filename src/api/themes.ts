@@ -15,6 +15,9 @@ export const fetchThemes = async ({
   proposed_by,
   next_url,
   page_size,
+  co_supervised_by,
+  is_verified,
+  is_member,
 }: {
   search?: string;
   ordering?: string;
@@ -25,6 +28,10 @@ export const fetchThemes = async ({
   proposed_by?: number;
   next_url?: string;
   page_size?: number;
+  co_supervised_by?:number;
+  is_verified?: boolean;
+  is_member?:boolean;
+
 }) => {
   const token = localStorage.getItem("access_token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -45,6 +52,9 @@ export const fetchThemes = async ({
   if (specialty) params.append("specialty", specialty);
   if (proposed_by) params.append("proposed_by", proposed_by.toString());
   if (page_size) params.append("page_size", page_size.toString());
+  if (co_supervised_by) params.append("co_supervised_by", co_supervised_by.toString());
+  if (is_verified !== undefined) params.append("is_verified", String(is_verified));
+  if (is_member !== undefined) params.append("is_member", String(is_member));
 
   const response = await client.get(`themes/?${params.toString()}`, {
     headers,

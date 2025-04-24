@@ -16,7 +16,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
 
       {/* Content */}
 
-      <h3 className="text-[18px] font-semibold text-[#141B34]">{question}</h3>
+      <h3 className="text-[16px] font-semibold text-[#141B34]">{question}</h3>
       <p className="text-[#141B34] text-sm font-normal">{answer}</p>
     </div>
   );
@@ -57,13 +57,13 @@ const faqData = [
 
 const FAQSection: React.FC = () => {
   return (
-    <div className="bg-[#97B2DF]/10 py-12 text-center mx-[2%] h-52 font-inter mt-14 ">
+    <div className="bg-[#97B2DF]/10 py-10 text-center mx-[2%] h-48 font-inter mt-4 ">
       <div className="max-w-3xl mx-auto px-4">
         <p className="text-[#092147] text-sm font-semibold">FAQs</p>
         <h2 className="text-4xl font-semibold text-secondary mt-2">
           Foire Aux Questions (FAQ)
         </h2>
-        <p className="text-[#141B34] mt-4 font-normal">
+        <p className="text-[#141B34] mt-4 font-normal text-[15px]">
           Retrouvez ici les réponses aux questions les plus fréquentes sur notre
           plateforme.
         </p>
@@ -74,7 +74,7 @@ const FAQSection: React.FC = () => {
 
 const FAQContact: React.FC = () => {
   return (
-    <div className="bg-[#97B2DF]/10 p-6 h-28 mx-[2%] rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 mt-10">
+    <div className="bg-[#97B2DF]/10 p-6 h-28 mx-[2%] rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 mt-2 mb-6">
       <div>
         <h3 className="text-lg font-semibold text-secondary">
           Vous avez encore des questions ?
@@ -93,13 +93,12 @@ const FAQContact: React.FC = () => {
 
 const Help = () => {
   return (
-    <div className="flex justify-start items-start">
+    <div className="flex justify-start items-start ">
       <Sidebar />
-
       <div className="ml-[17%]  w-full">
         <Header />
         <FAQSection />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-20 gap-y-10 px-28 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-15 gap-y-8 px-28 py-6">
           {faqData.map((faq, index) => (
             <FAQItem key={index} question={faq.question} answer={faq.answer} />
           ))}

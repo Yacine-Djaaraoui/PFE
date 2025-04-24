@@ -54,22 +54,22 @@ export const fetchThemes = async ({
 
 export const createTheme = async ({
   title,
-  co_supervisors,
+  co_supervisor_ids,
   specialty,
   description,
   tools,
   academic_year,
   academic_program,
-  documents = [],
+  document_ids = [],
 }: {
   title: string;
-  co_supervisors?: number[];
+  co_supervisor_ids?: number[];
   specialty: string;
   description: string;
   tools: string;
   academic_year: number;
   academic_program: string;
-  documents?: number[];
+  document_ids?: number[];
 }) => {
   const token = localStorage.getItem("access_token");
   const headers = token
@@ -80,13 +80,13 @@ export const createTheme = async ({
 
   const payload = {
     title,
-    ...(co_supervisors && co_supervisors.length > 0 && { co_supervisors }),
+    ...(co_supervisor_ids && co_supervisor_ids.length > 0 && { co_supervisor_ids }),
     specialty,
     description,
     tools,
     academic_year,
     academic_program,
-    ...(documents && documents.length > 0 && { documents }),
+    ...(document_ids && document_ids.length > 0 && { document_ids }),
   };
 
   const response = await client.post("themes/", payload, { headers });
@@ -107,22 +107,22 @@ export const updateTheme = async (
   id: number,
   {
     title,
-    co_supervisors,
+    co_supervisor_ids,
     specialty,
     description,
     tools,
     academic_year,
     academic_program,
-    documents = [],
+    document_ids = [],
   }: {
     title: string;
-    co_supervisors?: number[];
+    co_supervisor_ids?: number[];
     specialty: string;
     description: string;
     tools: string;
     academic_year: number;
     academic_program: string;
-    documents?: number[];
+    document_ids?: number[];
   }
 ) => {
   const token = localStorage.getItem("access_token");
@@ -135,13 +135,13 @@ export const updateTheme = async (
 
   const payload = {
     title,
-    ...(co_supervisors && co_supervisors.length > 0 && { co_supervisors }),
+    ...(co_supervisor_ids && { co_supervisor_ids}),
     specialty,
     description,
     tools,
     academic_year,
     academic_program,
-    ...(documents && documents.length > 0 && { documents }),
+    ...(document_ids  && { document_ids }),
   };
 
   const response = await client.patch(`themes/${id}/`, payload, { headers });

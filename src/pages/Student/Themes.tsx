@@ -152,8 +152,6 @@ const Themes = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [teamId, setTeamId] = useState();
-  const [message, setMessage] = useState("");
-  const [teamId, setTeamId] = useState();
   const isMounted = useRef(true);
   const joinMutation = useSupervisorRequest();
   const [demanderror, setError] = useState("");

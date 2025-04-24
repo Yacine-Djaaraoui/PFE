@@ -43,3 +43,25 @@ export const actionToInvitation = async ({
   );
   return response.data;
 };
+export const actionToSupervisionRequest = async ({
+  id,
+  action,
+  message,
+}: {
+  id: string;
+  action: string;
+  message?: string;
+}) => {
+  const token = localStorage.getItem("access_token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const response = await client.put(
+    `supervision-requests/${id}/`,
+    {
+      response: action,
+      message: message,
+    },
+    { headers }
+  );
+  return response.data;
+};

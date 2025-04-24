@@ -55,3 +55,10 @@ export const fetchTeams = async ({
   const response = await client.get(`teams/?${params.toString()}`, { headers });
   return response;
 };
+export const fetchTeam = async (id: string) => {
+  const token = localStorage.getItem("access_token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const response = await client.get(`teams/${id}/`, { headers });
+  return response;
+};

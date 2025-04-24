@@ -1,5 +1,9 @@
-import { fetchTeams } from "@/api/fetchTeams";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { fetchTeam, fetchTeams } from "@/api/fetchTeams";
+import {
+  useQuery,
+  UseQueryOptions,
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 export const useTeams = (
   {
@@ -56,6 +60,18 @@ export const useTeams = (
         page_size,
         next_url,
       }),
+    refetchOnWindowFocus: false,
+    retry: false,
+    ...options, // Spread additional options like `enabled`
+  });
+};
+export const useTeam = (
+  id: string,
+  options?: UseQueryOptions // Accept query options (e.g., enabled)
+): UseQueryResult<{ results: any[]; next: string | null }> => {
+  return useQuery({
+    queryKey: ["teams"],
+    queryFn: () => fetchTeam(id),
     refetchOnWindowFocus: false,
     retry: false,
     ...options, // Spread additional options like `enabled`

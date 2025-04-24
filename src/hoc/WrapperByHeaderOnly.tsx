@@ -3,7 +3,7 @@ import RightSidebar from "@/pages/home/rightSideBar/RightSidebar";
 import Sidebar from "@/pages/home/sidebar";
 import React, { useEffect } from "react";
 
-const Wrapper = <P extends object>(
+const WrapperByHeaderOnly = <P extends object>(
   WrappedComponent: React.ComponentType<P>
 ) => {
   // Return a functional component instead of a callback
@@ -17,13 +17,12 @@ const Wrapper = <P extends object>(
       <div className="flex justify-start items-start ">
         <Sidebar />
 
-        <div className="ml-[17%] w-[63%]">
+        <div className="ml-[17%] w-[83%]">
           <div className="mb-20 mt-0 ">
             <Header />
           </div>
           <WrappedComponent {...props} />
         </div>
-        <RightSidebar />
       </div>
     );
   };
@@ -31,4 +30,4 @@ const Wrapper = <P extends object>(
   return WrappedWithLayout;
 };
 
-export default Wrapper;
+export default WrapperByHeaderOnly;

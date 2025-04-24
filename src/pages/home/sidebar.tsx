@@ -8,12 +8,12 @@ const Sidebar = () => {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
     dispatch(logoutR());
-    window.location.href = '/login';
+    window.location.href = "/login";
   };
-  
+
   return (
     <div className="bg-white w-[17%] flex py-5 shadow-lg flex-col items-center gap-4 h-screen fixed">
       <img src={logo} alt="#" className="w-[200px]" />
@@ -59,16 +59,13 @@ const Sidebar = () => {
             <path d="M15.0864 15.7628H2.92562C1.58522 15.7628 0.494423 14.6516 0.494423 13.2872V6.21079C0.486023 6.17119 0.482422 6.13038 0.482422 6.08838V2.82559C0.482422 1.39759 1.60802 0.237183 2.99282 0.237183H5.94122C6.66962 0.237183 7.36202 0.563606 7.83842 1.13121L8.35442 1.73838C8.94722 2.43438 9.81482 2.8364 10.7292 2.8364H15.0864C16.4268 2.8364 17.5176 3.94759 17.5176 5.31199V13.2884C17.5176 14.6528 16.4268 15.7628 15.0864 15.7628ZM1.68242 5.18838C1.69082 5.22798 1.69442 5.26879 1.69442 5.31079V13.2872C1.69442 13.9904 2.24642 14.5628 2.92562 14.5628H15.0864C15.7656 14.5628 16.3176 13.9904 16.3176 13.2872V5.31079C16.3176 4.60759 15.7656 4.0352 15.0864 4.0352H10.7304C9.46442 4.0352 8.26202 3.47958 7.44122 2.51478L6.92162 1.9052C6.67082 1.6064 6.31442 1.43598 5.94002 1.43598H2.99162C2.26922 1.43598 1.68122 2.05879 1.68122 2.82439V5.18838H1.68242Z" />
             <path d="M14.0242 8.69597H10.5814C10.2502 8.69597 9.98145 8.42717 9.98145 8.09597C9.98145 7.76477 10.2502 7.49597 10.5814 7.49597H14.0242C14.3554 7.49597 14.6242 7.76477 14.6242 8.09597C14.6242 8.42717 14.3554 8.69597 14.0242 8.69597Z" />
           </svg>
-          Projet
+          Teams
         </NavLink>
-
-        {/* Messagerie */}
         <NavLink
-          to="/messaging"
+          to="/mon-projet/themes"
           className={({ isActive }: { isActive: boolean }) =>
-            `group flex items-center gap-2 py-3 pl-3 w-[200px] rounded-lg cursor-pointer font-medium ${
-              isActive ? " bg-accent/15" : "  hover:bg-[#97B2DF]/15"
-            }`
+            `group flex items-center gap-2 py-3 pl-3 w-[200px] rounded-lg cursor-pointer font-medium 
+     ${isActive ? " bg-accent/15" : "  hover:bg-accent/15"}`
           }
         >
           <svg
@@ -82,13 +79,62 @@ const Sidebar = () => {
             <path d="M10.4548 10.1531H7.16201C6.83081 10.1531 6.56201 9.88432 6.56201 9.55312C6.56201 9.22192 6.83081 8.95312 7.16201 8.95312H10.4548C10.786 8.95312 11.0548 9.22192 11.0548 9.55312C11.0548 9.88432 10.786 10.1531 10.4548 10.1531Z" />
             <path d="M13.8698 15.0083H7.16055C6.82935 15.0083 6.56055 14.7395 6.56055 14.4083C6.56055 14.0771 6.82935 13.8083 7.16055 13.8083H13.8698C14.201 13.8083 14.4698 14.0771 14.4698 14.4083C14.4698 14.7395 14.201 15.0083 13.8698 15.0083Z" />
           </svg>
+          Themes
+        </NavLink>
 
-          <span>Messages</span>
+        {/* Messagerie */}
+        <NavLink
+          to="/travail"
+          className={({ isActive }: { isActive: boolean }) =>
+            `group flex items-center gap-2 py-3 pl-3 w-[200px] rounded-lg cursor-pointer font-medium ${
+              isActive ? " bg-accent/15" : "  hover:bg-[#97B2DF]/15"
+            }`
+          }
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 22 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g opacity="0.6">
+              <path
+                d="M16 17L9 17"
+                stroke="#141B34"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M16 13L13 13"
+                stroke="#141B34"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M20.5 14C20.5 17.7712 20.5 19.6569 19.2552 20.8284C18.0104 22 16.0069 22 12 22H11.2273C7.96607 22 6.33546 22 5.20307 21.2022C4.87862 20.9736 4.59058 20.7025 4.3477 20.3971C3.5 19.3313 3.5 17.7966 3.5 14.7273V12.1818C3.5 9.21865 3.5 7.73706 3.96894 6.55375C4.72281 4.65142 6.31714 3.15088 8.33836 2.44135C9.59563 2 11.1698 2 14.3182 2C16.1173 2 17.0168 2 17.7352 2.2522C18.8902 2.65765 19.8012 3.5151 20.232 4.60214C20.5 5.27832 20.5 6.12494 20.5 7.81818V14Z"
+                stroke="#141B34"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M3.5 12C3.5 10.1591 4.99238 8.66667 6.83333 8.66667C7.49912 8.66667 8.28404 8.78333 8.93137 8.60988C9.50652 8.45576 9.95576 8.00652 10.1099 7.43136C10.2833 6.78404 10.1667 5.99912 10.1667 5.33333C10.1667 3.49238 11.6591 2 13.5 2"
+                stroke="#141B34"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </g>
+          </svg>
+
+          <span>Travail</span>
         </NavLink>
 
         {/* Profile */}
         <NavLink
-          to="/profile"
+          to="/settings"
           className={({ isActive }: { isActive: boolean }) =>
             `group flex items-center gap-2 py-3 pl-3 w-[200px] rounded-lg cursor-pointer font-medium 
      ${isActive ? " bg-accent/15" : "  hover:bg-accent/15"}`
@@ -116,8 +162,57 @@ const Sidebar = () => {
           Paramétres
         </NavLink>
       </nav>
-      <div onClick={handleLogout}
-        className={` hover:bg-accent/15 group flex items-center gap-2 py-3 pl-3 mb-2 mt-auto w-[200px] rounded-lg cursor-pointer font-medium 
+      <NavLink
+        to="/help"
+        className={({ isActive }: { isActive: boolean }) =>
+          `group flex mb-0 mt-auto  items-center gap-2 py-3 pl-3 w-[200px] rounded-lg cursor-pointer font-medium ${
+            isActive ? " bg-accent/15" : "  hover:bg-[#97B2DF]/15"
+          }`
+        }
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 22 22"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g opacity="0.6">
+            <path
+              d="M16 17L9 17"
+              stroke="#141B34"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M16 13L13 13"
+              stroke="#141B34"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M20.5 14C20.5 17.7712 20.5 19.6569 19.2552 20.8284C18.0104 22 16.0069 22 12 22H11.2273C7.96607 22 6.33546 22 5.20307 21.2022C4.87862 20.9736 4.59058 20.7025 4.3477 20.3971C3.5 19.3313 3.5 17.7966 3.5 14.7273V12.1818C3.5 9.21865 3.5 7.73706 3.96894 6.55375C4.72281 4.65142 6.31714 3.15088 8.33836 2.44135C9.59563 2 11.1698 2 14.3182 2C16.1173 2 17.0168 2 17.7352 2.2522C18.8902 2.65765 19.8012 3.5151 20.232 4.60214C20.5 5.27832 20.5 6.12494 20.5 7.81818V14Z"
+              stroke="#141B34"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M3.5 12C3.5 10.1591 4.99238 8.66667 6.83333 8.66667C7.49912 8.66667 8.28404 8.78333 8.93137 8.60988C9.50652 8.45576 9.95576 8.00652 10.1099 7.43136C10.2833 6.78404 10.1667 5.99912 10.1667 5.33333C10.1667 3.49238 11.6591 2 13.5 2"
+              stroke="#141B34"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </g>
+        </svg>
+
+        <span>Help</span>
+      </NavLink>
+      <div
+        onClick={handleLogout}
+        className={` hover:bg-accent/15 group flex items-center gap-2 py-3 pl-3 mb-2 mt-0 w-[200px] rounded-lg cursor-pointer font-medium 
    `}
       >
         <svg

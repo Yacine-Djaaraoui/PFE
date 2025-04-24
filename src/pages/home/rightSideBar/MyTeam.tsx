@@ -38,6 +38,7 @@ const MyTeam = () => {
   const deleteTeamMutation = useDeleteTeam();
   const handleDelete = (id: string) => {
     deleteTeamMutation.mutate({ id });
+    setOpenGroupe(false);
   };
   const navigate = useNavigate();
 

@@ -3,11 +3,12 @@ import Dashboard from "@/pages/dashbord/Dashboard";
 import Help from "@/pages/help/Help";
 import Home from "@/pages/home/Home";
 import Login from "@/pages/login/Login";
-import Messagerie from "@/pages/Messagerie/Messagerie";
+import Messagerie from "@/pages/Travail/Travail";
 import MonProjet from "@/pages/Mon-projet/MonProjet";
 import Profile from "@/pages/Profile/Profile";
 import Settings from "@/pages/settings/Settings";
 import StudentsList from "@/pages/Student/StudentsList";
+import Travail from "@/pages/Travail/Travail";
 
 interface RouteConfig {
   path: string;
@@ -21,9 +22,9 @@ export const pferoutes: RouteConfig[] = [
   { path: "/profile", element: <Profile /> },
   { path: "/dashboard", element: <Dashboard /> },
   { path: "/colleagues", element: <Colleuges /> },
-  { path: "/messaging", element: <Messagerie /> },
+  { path: "/travail", element: <Travail /> },
   { path: "/mon-projet/:idof", element: <MonProjet /> },
-  { path: "/help" , element:<Help/> },
-  { path: "/settings" , element:<Settings/> },
-  { path: "/students" , element:<StudentsList/> },
+  { path: "/help", element: <Help /> },
+  { path: "/settings", element: <Settings /> },
+  { path: "/students", element: <StudentsList /> },
 ];

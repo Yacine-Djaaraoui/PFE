@@ -174,16 +174,7 @@ const Teams = () => {
                 <AlertDialogDescription>
                   {/* Une fois inscrit, vous devrez demander à l’administration pour
                 changer de groupe. */}
-                  <label className="font-medium block mt-2 mb-2">
-                    Ajouter un nom a l'equipe
-                  </label>
-                  <input
-                    type="text"
-                    value={groupeName}
-                    onChange={(e) => setGroupeName(e.target.value)}
-                    className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder={`name of the team`}
-                  />
+
                   <label className="font-medium block mt-2 mb-2">
                     Ajouter une description a l'equipe
                   </label>
@@ -302,7 +293,7 @@ const Teams = () => {
                         onClick={() => setTeamIdForGetMembers(group.id)}
                         className={`w-fit font-semibold text-xs bg-secondary text-white rounded-[3px] font-instrument px-3 py-2 hover:bg-secondary/80`}
                       >
-                        Voir Membres
+                        Membres
                       </button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>

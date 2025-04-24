@@ -17,6 +17,7 @@ import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { useWebSocket } from "@/hooks/useWebsocket";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { useGetMembers } from "@/hooks/useGetMembers";
 
 const Teams = () => {
   const searchResults = useSelector((state: RootState) => state.SearchResult);
@@ -32,6 +33,11 @@ const Teams = () => {
   const [fetchMoreTeams, setFetchMoreTeams] = useState(false);
   const [teams, setTeams] = useState({});
   const isMounted = useRef(true);
+  const profile = useSelector((state: RootState) => state.auth.profile);
+  const [teamIdForgetMembers, setTeamIdForGetMembers] = useState<number | null>(
+    null
+  );
+
   useEffect(() => {
     return () => {
       // Set to false when component unmounts
@@ -113,7 +119,10 @@ const Teams = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
-
+  const { data: membersData } = useGetMembers(
+    { id: teamIdForgetMembers! },
+    { enabled: !!teamIdForgetMembers }
+  );
   return (
     <div className=" h-screen py-10 pl-8 w-full  ">
       <h2 className="text-primaryTitle font-bold text-[20px] font-inter">
@@ -152,55 +161,56 @@ const Teams = () => {
         <h2 className="font-semibold text-primaryTitle inline">
           Les groupes existants{" "}
         </h2>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <button className="inline cursor-pointer mr-0 text-right right-0 absolute bg-secondary text-white rounded-[3px] font-instrument px-3 py-1 hover:bg-secondary/80">
-              Créer un groupe
-            </button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle> Créer un groupe</AlertDialogTitle>
-              <AlertDialogDescription>
-                {/* Une fois inscrit, vous devrez demander à l’administration pour
+        {profile?.user_type === "student" && Myteam?.results?.length === 0 && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="inline cursor-pointer mr-0 text-right right-0 absolute bg-secondary text-white rounded-[3px] font-instrument px-3 py-1 hover:bg-secondary/80">
+                Créer un groupe
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle> Créer un groupe</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {/* Une fois inscrit, vous devrez demander à l’administration pour
                 changer de groupe. */}
-                <label className="font-medium block mt-2 mb-2">
-                  Ajouter un nom a l'equipe
-                </label>
-                <input
-                  type="text"
-                  value={groupeName}
-                  onChange={(e) => setGroupeName(e.target.value)}
-                  className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={`name of the team`}
-                />
-                <label className="font-medium block mt-2 mb-2">
-                  Ajouter une description a l'equipe
-                </label>
-                <input
-                  type="text"
-                  value={groupeDescription}
-                  onChange={(e) => setGroupeDescription(e.target.value)}
-                  className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={`description`}
-                />
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="hover:bg-secondary cursor-pointer hover:text-white">
-                Annuler
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => {
-                  handleCreateGroupe(groupeName, groupeDescription);
-                }}
-              >
-                Créer le groupe
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
+                  <label className="font-medium block mt-2 mb-2">
+                    Ajouter un nom a l'equipe
+                  </label>
+                  <input
+                    type="text"
+                    value={groupeName}
+                    onChange={(e) => setGroupeName(e.target.value)}
+                    className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder={`name of the team`}
+                  />
+                  <label className="font-medium block mt-2 mb-2">
+                    Ajouter une description a l'equipe
+                  </label>
+                  <input
+                    type="text"
+                    value={groupeDescription}
+                    onChange={(e) => setGroupeDescription(e.target.value)}
+                    className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder={`description`}
+                  />
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="hover:bg-secondary cursor-pointer hover:text-white">
+                  Annuler
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    handleCreateGroupe(groupeName, groupeDescription);
+                  }}
+                >
+                  Créer le groupe
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
         {searchResults.searchResultLoading ||
         searchResults.searchResultIsFetching ? (
           <div className="flex justify-center items-center w-full mt-16">
@@ -232,7 +242,9 @@ const Teams = () => {
                   {group.description}
                 </h3>
                 <div className="flex items-center justify-between mt-3 text-[#5A5A5A] text-xs">
-                  {group.has_capacity && Myteam?.results?.length === 0 ? (
+                  {group.has_capacity &&
+                  Myteam?.results?.length === 0 &&
+                  profile?.user_type === "student" ? (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <button
@@ -276,13 +288,111 @@ const Teams = () => {
                       </AlertDialogContent>
                     </AlertDialog>
                   ) : (
-                    <button
-                      className={`w-fit font-semibold text-xs bg-accent text-white rounded-[3px] font-instrument px-3 py-2`}
-                    >
-                      Rejoindre
-                    </button>
+                    profile?.user_type === "student" && (
+                      <button
+                        className={`w-fit font-semibold text-xs bg-accent text-white rounded-[3px] font-instrument px-3 py-2`}
+                      >
+                        Rejoindre
+                      </button>
+                    )
                   )}
-                  <p>{group.member_count} membre</p>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        onClick={() => setTeamIdForGetMembers(group.id)}
+                        className={`w-fit font-semibold text-xs bg-secondary text-white rounded-[3px] font-instrument px-3 py-2 hover:bg-secondary/80`}
+                      >
+                        Voir Membres
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Les Membres de groupe
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          <div className="bg-white shadow-md rounded-xl p-4 w-[90%] mx-auto border border-[#E6E4F0] text-center">
+                            {/* Date */}
+                            <div className="text-gray-500 text-sm flex items-center gap-2">
+                              <svg
+                                className="w-5 h-5 text-gray-400"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                              >
+                                <path
+                                  d="M7 11H17M7 15H13M8 3V5M16 3V5M4 7H20M5 21H19C20.1 21 21 20.1 21 19V7C21 5.9 20.1 5 19 5H5C3.9 5 3 5.9 3 7V19C3 20.1 3.9 21 5 21Z"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                              <span> {group?.created_at.split("T")[0]}</span>
+                            </div>
+
+                            {/* Group Title */}
+                            <h3 className="font-bold text-md mt-2">
+                              Groupe N°{group?.id}
+                            </h3>
+
+                            {/* Created By */}
+                            <div className="flex items-center mt-2 gap-2 ">
+                              <p className="text-gray-600 text-sm">
+                                Créer par{" "}
+                              </p>
+
+                              <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0]">
+                                {
+                                  membersData.results?.filter(
+                                    (member) => member.role === "owner"
+                                  )[0].user?.display_name
+                                }
+                              </span>
+                            </div>
+                            <div className="flex items-start gap-2 mt-2">
+                              <p className="text-gray-600 text-sm ">Membres </p>
+                              <div className="flex flex-wrap gap-2 ">
+                                {membersData.results?.map((member, index) => (
+                                  <span
+                                    key={index}
+                                    className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0]"
+                                  >
+                                    {/* <img
+                                           src={member.avatar}
+                                           alt={member.name}
+                                           className="w-6 h-6 rounded-full"
+                                           /> */}
+                                    {member.user.display_name}
+                                  </span>
+                                ))}
+                                {/* <button className="w-6 h-6 flex items-center justify-center border rounded-full text-gray-500 hover:bg-gray-200">
+                                       +
+                                       </button> */}
+                              </div>
+                            </div>
+
+                            {/* Status */}
+                            <div className="flex items-center gap-7  mt-3">
+                              <p className="text-gray-600 text-sm">Status </p>
+                              <div className="flex items-center gap-2">
+                                <span className="w-3 h-3 bg-secondary rounded-full"></span>
+                                <span className="text-sm">
+                                  {group?.has_capacity
+                                    ? "incomplet"
+                                    : "complet"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="hover:bg-secondary hover:text-white">
+                          Return
+                        </AlertDialogCancel>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             ))}

@@ -5,7 +5,7 @@ const client = ApiClient({
   withCredentials: false,
 });
 
-export const joinRequest = async ({
+export const supervisorRequest = async ({
   teamId,
   message,
   themeId,

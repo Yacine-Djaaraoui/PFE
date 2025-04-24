@@ -152,6 +152,8 @@ const Themes = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [teamId, setTeamId] = useState();
+  const [message, setMessage] = useState("");
+  const [teamId, setTeamId] = useState();
   const isMounted = useRef(true);
   const joinMutation = useSupervisorRequest();
   const [demanderror, setError] = useState("");
@@ -319,6 +321,7 @@ const Themes = () => {
                     {theme.title}
                   </h3>
                   <p className="text-sm text-gray-600">
+                    Encadrant: {theme?.proposed_by?.first_name}
                     Encadrant: {theme?.proposed_by?.first_name}
                   </p>
 

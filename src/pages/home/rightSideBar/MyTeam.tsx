@@ -1,0 +1,174 @@
+import React, { useEffect, useState } from "react";
+import { FaPen, FaPencilAlt } from "react-icons/fa";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useTeams } from "@/hooks/teams";
+import { useGetMembers } from "@/hooks/useGetMembers";
+import { useNavigate } from "react-router-dom";
+import { useDeleteTeam } from "@/hooks/useDeleteTeam";
+const MyTeam = () => {
+  const profile = useSelector((state: RootState) => state.auth.profile);
+  const [openGroupe, setOpenGroupe] = useState(false);
+  const [teamId, setTeamId] = useState<number | null>(null);
+
+  const { data: teamsData } = useTeams({
+    is_member: true,
+    match_student_profile: true,
+  });
+  useEffect(() => {
+    if (teamsData?.results?.length > 0) {
+      setTeamId(teamsData.results[0].id);
+    }
+  }, [teamsData]);
+  const { data: membersData } = useGetMembers(
+    { id: teamId! },
+    { enabled: !!teamId }
+  );
+  const deleteTeamMutation = useDeleteTeam();
+  const handleDelete = (id: string) => {
+    deleteTeamMutation.mutate({ id });
+  };
+  const navigate = useNavigate();
+
+  return (
+    <>
+      {teamsData?.results?.length > 0 && (
+        <div className="flex cursor-pointer justify-between items-center mb-4">
+          <div
+            onClick={() => setOpenGroupe((prev) => !prev)}
+            className="flex items-center space-x-2"
+          >
+            <FaPencilAlt className="text-gray-600" />
+            <h2 className="text-lg font-bold text-[#0D062D] underline">
+              Mon groupe
+            </h2>
+          </div>
+        </div>
+      )}
+      {openGroupe && (
+        <div className="bg-white shadow-md rounded-xl p-4 w-[90%] mx-auto border border-[#E6E4F0] text-center">
+          {/* Date */}
+          <div className="text-gray-500 text-sm flex items-center gap-2">
+            <svg
+              className="w-5 h-5 text-gray-400"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M7 11H17M7 15H13M8 3V5M16 3V5M4 7H20M5 21H19C20.1 21 21 20.1 21 19V7C21 5.9 20.1 5 19 5H5C3.9 5 3 5.9 3 7V19C3 20.1 3.9 21 5 21Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span> {teamsData.results[0]?.created_at.split("T")[0]}</span>
+          </div>
+
+          {/* Group Title */}
+          <h3 className="font-bold text-md mt-2">
+            Groupe N°{teamsData.results[0]?.id}
+          </h3>
+
+          {/* Created By */}
+          <div className="flex items-center mt-2 gap-2 ">
+            <p className="text-gray-600 text-sm">Créer par </p>
+
+            <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0]">
+              {
+                membersData.results?.filter(
+                  (member) => member.role === "owner"
+                )[0].user?.display_name
+              }
+            </span>
+          </div>
+          <div className="flex items-start gap-2 mt-2">
+            <p className="text-gray-600 text-sm ">Membres </p>
+            <div className="flex flex-wrap gap-2 ">
+              {membersData.results?.map((member, index) => (
+                <span
+                  key={index}
+                  className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0]"
+                >
+                  {/* <img
+                  src={member.avatar}
+                  alt={member.name}
+                  className="w-6 h-6 rounded-full"
+                  /> */}
+                  {member.user.display_name}
+                </span>
+              ))}
+              {/* <button className="w-6 h-6 flex items-center justify-center border rounded-full text-gray-500 hover:bg-gray-200">
+              +
+              </button> */}
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className="flex items-center gap-7  mt-3">
+            <p className="text-gray-600 text-sm">Status </p>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-secondary rounded-full"></span>
+              <span className="text-sm">
+                {teamsData?.results[0]?.has_capacity ? "incomplet" : "complet"}
+              </span>
+            </div>
+          </div>
+          {profile?.id === teamsData?.results[0]?.owner.id && (
+            <div className="flex items-center justify-around gap-1">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button className="bg-secondary hover:bg-secondary/90 text-white text-sm mx-auto rounded mt-4  px-2 w-[40%] py-1 text-center cursor-pointer">
+                    Supprumer
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle> supprumer un groupe</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      êtes-vous sûr de suppremer le groupe ?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="hover:bg-secondary hover:text-white">
+                      Annuler
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDelete(teamsData?.results[0]?.id)}
+                    >
+                      suppremer le groupe
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <button
+                disabled={!teamsData?.results[0]?.has_capacity}
+                onClick={() => navigate("/students")}
+                className={`${
+                  teamsData?.results[0]?.has_capacity
+                    ? "bg-secondary  hover:bg-secondary/90"
+                    : "bg-accent"
+                }  text-white text-sm mx-auto rounded mt-4  px-2 w-[40%] py-1 text-center cursor-pointer`}
+              >
+                Ajouter
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
+};
+
+export default MyTeam;

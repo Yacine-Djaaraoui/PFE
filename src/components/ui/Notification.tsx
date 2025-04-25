@@ -119,7 +119,6 @@ const Notification = () => {
     if (diffInHours < 24) {
       return `${diffInHours}h`;
     }
-
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 30) {
       return `${diffInDays}j`; // "j" for "jours" (days in French)
@@ -151,7 +150,7 @@ const Notification = () => {
                   alt=""
                   className="rounded-full w-9 aspect-square"
                 />
-                <span className="max-w-[80%]">{notification.content}</span>
+                <span className="max-w-[70%]">{notification.content}</span>
                 <span className="">
                   {getTimeDifference(notification.created_at)}
                 </span>
@@ -166,7 +165,7 @@ const Notification = () => {
                               notification.metadata.team_id
                             )
                           }
-                          className={`w-fit font-semibold text-xs bg-secondary text-white rounded-[3px] font-instrument px-3 py-2 hover:bg-secondary/80`}
+                          className={`w-fit ml-12 font-semibold text-xs bg-secondary text-white rounded-[3px] font-instrument px-3 py-2 hover:bg-secondary/80`}
                         >
                           Voir Plus
                         </button>
@@ -174,7 +173,7 @@ const Notification = () => {
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            Les Membres de groupe
+                            Les membres de groupe
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             <div className="bg-white shadow-md rounded-xl p-4 w-[90%] mx-auto border border-[#E6E4F0] text-center">
@@ -254,18 +253,18 @@ const Notification = () => {
                             </div>
                             {notification.type ===
                               "theme_supervision_request" && (
-                              <>
-                                <label className="font-medium block mt-2 mb-2">
+                              <div className="ml-6 mt-2">
+                                <label className="font-medium block mt-4 mb-2">
                                   Ajouter un message a l'equipe
                                 </label>
-                                <input
-                                  type="text"
+                                <textarea
                                   value={message}
                                   onChange={handleChange}
-                                  className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  placeholder={`message`}
+                                  className="border block w-[300px] border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  placeholder="message"
+                                  rows={4}
                                 />
-                              </>
+                              </div>
                             )}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
@@ -371,7 +370,7 @@ const Notification = () => {
                 alt=""
                 className="rounded-full aspect-square w-8"
               />
-              <span className="max-w-[80%] text-sm">
+              <span className="max-w-[70%] text-sm">
                 {notification.content}
               </span>
               <span className="">

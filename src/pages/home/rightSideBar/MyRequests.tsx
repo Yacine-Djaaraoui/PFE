@@ -11,9 +11,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useMyRequests } from "@/hooks/useRequests";
+import editSquare from "@/assets/Edit-Square.svg";
+
 import { useNavigate } from "react-router-dom";
 import { useCancelRequest } from "@/api/myRequests";
-import { FaPen, FaPencilAlt } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaPen, FaPencilAlt } from "react-icons/fa";
+import { ReactSVG } from "react-svg";
 const MyRequests = () => {
   const { data: requests } = useMyRequests();
   const [openrequests, setopenrequests] = useState(false);
@@ -22,15 +25,21 @@ const MyRequests = () => {
   return (
     <>
       {requests?.results?.length > 0 && (
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex cursor-pointer justify-between items-center mb-1">
           <div
+            className="flex items-center space-x-2 cursor-pointer"
             onClick={() => setopenrequests((prev) => !prev)}
-            className=" cursor-pointer flex items-center space-x-2"
           >
-            <FaPencilAlt className="text-gray-600" />
-            <h2 className="text-lg font-bold text-[#0D062D] underline">
-              Mon requets
+            <ReactSVG src={editSquare} className="w-5 h-5" />
+            <h2 className="text-[16px] font-medium text-[#092147] border-b border-black">
+              Mon Requets
             </h2>
+            {openrequests ? (
+              <FaChevronUp className="text-gray-600 text-sm" />
+            ) : (
+              <FaChevronDown className="text-gray-600 text-sm" />
+            )}
+            {/* Chevron icon that rotates based on state */}
           </div>
         </div>
         //     <div
@@ -50,9 +59,8 @@ const MyRequests = () => {
             >
               <p className="text-gray-400 mb-3 ">
                 {" "}
-                vous avez envoyé une demande d'adhésion à l'équipe{" "}
+                vous avez envoyé une demande d'adhésion à{" "}
                 <span className="font-bold">{request.team.name} </span>
-                numéro <span className="font-bold">{request.team.id}</span>
               </p>
 
               <AlertDialog>

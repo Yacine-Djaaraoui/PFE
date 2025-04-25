@@ -2,6 +2,7 @@ import Wrapper from "@/hoc/Wrapper";
 import Sidebar from "../home/sidebar";
 import Header from "@/components/ui/Header";
 import logo from "@/assets/faqIcon.png";
+import WrapperByHeaderOnly from "@/hoc/WrapperByHeaderOnly";
 
 interface FAQItemProps {
   question: string;
@@ -80,8 +81,9 @@ const FAQContact: React.FC = () => {
           Vous avez encore des questions ?
         </h3>
         <p className="text-[#141B34] text-sm">
-          Vous ne trouvez pas la réponse que vous cherchez ? Contactez notre 
-          équipe,<br/>  nous sommes là pour vous aider !
+          Vous ne trouvez pas la réponse que vous cherchez ? Contactez notre
+          équipe,
+          <br /> nous sommes là pour vous aider !
         </p>
       </div>
       <button className="bg-secondary text-white px-4 py-2 rounded-md hover:opacity-80 transition">
@@ -93,20 +95,16 @@ const FAQContact: React.FC = () => {
 
 const Help = () => {
   return (
-    <div className="flex justify-start items-start ">
-      <Sidebar />
-      <div className="ml-[17%]  w-full">
-        <Header />
-        <FAQSection />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-15 gap-y-8 px-28 py-6">
-          {faqData.map((faq, index) => (
-            <FAQItem key={index} question={faq.question} answer={faq.answer} />
-          ))}
-        </div>
-        <FAQContact />
+    <div className="">
+      <FAQSection />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-15 gap-y-8 px-28 py-6">
+        {faqData.map((faq, index) => (
+          <FAQItem key={index} question={faq.question} answer={faq.answer} />
+        ))}
       </div>
+      <FAQContact />
     </div>
   );
 };
 
-export default Help;
+export default WrapperByHeaderOnly(Help);

@@ -10,28 +10,39 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import editSquare from "@/assets/Edit-Square.svg";
+
 import { useMyRequests } from "@/hooks/useRequests";
 import { useNavigate } from "react-router-dom";
 import { useCancelRequest } from "@/api/myRequests";
-import { FaPen } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaPen } from "react-icons/fa";
 import { useCancelSupervisorRequest } from "@/api/supervisorRequest";
 import { useMySupervisorRequests } from "@/hooks/useMySupervisorRequest";
+import { ReactSVG } from "react-svg";
 const MySupervisorRequests = () => {
   const { data: requests } = useMySupervisorRequests();
   const [openrequests, setopenrequests] = useState(false);
-
- 
 
   const cancelRequest = useCancelSupervisorRequest();
   return (
     <>
       {requests?.results?.length > 0 && (
-        <div
-          className="flex items-center gap-2 font-medium text-lg underline cursor-pointer "
-          onClick={() => setopenrequests((prev) => !prev)}
-        >
-          <FaPen className="text-sm" />
-          <h2>Mon encadrement requets</h2>
+        <div className="flex cursor-pointer justify-between items-center mb-1">
+          <div
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => setopenrequests((prev) => !prev)}
+          >
+            <ReactSVG src={editSquare} className="w-5 h-5" />
+            <h2 className="text-[16px] font-medium text-[#092147] border-b border-black">
+              Mon Requets
+            </h2>
+            {openrequests ? (
+              <FaChevronUp className="text-gray-600 text-sm" />
+            ) : (
+              <FaChevronDown className="text-gray-600 text-sm" />
+            )}
+            {/* Chevron icon that rotates based on state */}
+          </div>
         </div>
       )}
       {openrequests && (
@@ -44,8 +55,10 @@ const MySupervisorRequests = () => {
               <p className="text-gray-400 mb-3 ">
                 {" "}
                 vous avez envoyé une demande d'encadrement à l'endcadrant{" "}
-                <span className="font-bold">{request.team.name} </span>
-                numéro <span className="font-bold">{request.team.id}</span>
+                <span className="font-bold">
+                  {request.theme.proposed_by.first_name}{" "}
+                  {request.theme.proposed_by.last_name}
+                </span>
               </p>
 
               <AlertDialog>

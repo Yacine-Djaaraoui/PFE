@@ -7,7 +7,7 @@ const client = ApiClient({
 
 export const createGroupe = async ({
   name,
-  description,
+  description ,
 }: {
   name: string;
   description: string;

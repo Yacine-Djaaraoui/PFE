@@ -193,7 +193,7 @@ const Teams = () => {
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    handleCreateGroupe(groupeName, groupeDescription);
+                    handleCreateGroupe("jdfj", groupeDescription);
                   }}
                 >
                   Créer le groupe
@@ -255,12 +255,13 @@ const Teams = () => {
                             <label className="font-medium block mt-2 mb-2">
                               Ajouter un message a l'equipe
                             </label>
-                            <input
+                            <textarea
                               type="text"
                               value={message}
                               onChange={handleChange}
-                              className="border block border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder={`message`}
+                              className="border block w-[300px] border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder={`message`}
+                                rows={4}
                             />
                           </AlertDialogDescription>
                         </AlertDialogHeader>

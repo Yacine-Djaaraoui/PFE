@@ -169,9 +169,9 @@ const Header = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
 
   return (
-    <header className="flex items-center justify-between h-20 pt-7 mb-4 bg-white fixed w-[83%] pr-9 mt-0">
+    <header className="flex items-center justify-between h-20  bg-white fixed w-[83%] pr-9 mt-0">
       {/* Search Input */}
-      <div className="w-[60%] flex items-center justify-between">
+      <div className="w-[60%] flex items-center h-full justify-between">
         <div className="relative w-[85%] bg-[#DBDBDB] ml-7 h-11 rounded-md flex items-center pl-12">
           <span className="absolute inset-y-0 left-2 flex items-center pointer-events-none">
             <Icon icon={searchIcon} className="text-gray-500 w-8 h-8" />
@@ -227,7 +227,7 @@ const Header = () => {
         </div>
       </div>
       <NavLink to="/profile" className={`w-fit`}>
-        <div className="flex cursor-pointer items-center gap-2 mb-6">
+        <div className="flex cursor-pointer items-center gap-2 ">
           <div className="flex flex-col items-end space-y-0">
             <p className="text-[#0D062D] text-[16px] font-medium">
               {profile?.first_name + " " + profile?.last_name}

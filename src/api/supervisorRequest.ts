@@ -10,7 +10,9 @@ const client = ApiClient({
 export const fetchMySupervisorRequest = async () => {
   const token = localStorage.getItem("access_token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  const response = await client.get("supervision-requests/", { headers });
+  const response = await client.get("supervision-requests/?status=pending/", {
+    headers,
+  });
   return response; // Ensure you're returning the data properly
 };
 

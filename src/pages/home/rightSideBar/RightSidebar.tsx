@@ -29,7 +29,7 @@ const RightSidebar = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
   console.log(profile);
   return (
-    <div className="bg-white w-[20%]  flex py-5 flex-col items-center gap-4 h-screen pt-20 mr-0 ">
+    <div className="bg- w-[20%]  flex py-5 flex-col items-center gap-4 h-screen pt-20 mr-0 fixed right-0  ">
       {/* User Info */}
      
       {/* Themes Section */}

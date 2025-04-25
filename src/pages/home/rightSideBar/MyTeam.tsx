@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaPen, FaPencilAlt } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaPen, FaPencilAlt } from "react-icons/fa";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +17,9 @@ import { useTeams } from "@/hooks/teams";
 import { useGetMembers } from "@/hooks/useGetMembers";
 import { useNavigate } from "react-router-dom";
 import { useDeleteTeam } from "@/hooks/useDeleteTeam";
+import { ReactSVG } from "react-svg";
+import editSquare from "@/assets/Edit-Square.svg";
+
 const MyTeam = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
   const [openGroupe, setOpenGroupe] = useState(false);
@@ -45,15 +48,21 @@ const MyTeam = () => {
   return (
     <>
       {teamsData?.results?.length > 0 && (
-        <div className="flex cursor-pointer justify-between items-center mb-4">
+        <div className="flex cursor-pointer justify-between items-center mb-1">
           <div
+            className="flex items-center space-x-2 cursor-pointer"
             onClick={() => setOpenGroupe((prev) => !prev)}
-            className="flex items-center space-x-2"
           >
-            <FaPencilAlt className="text-gray-600" />
-            <h2 className="text-lg font-bold text-[#0D062D] underline">
+            <ReactSVG src={editSquare} className="w-5 h-5" />
+            <h2 className="text-[16px] font-medium text-[#092147] border-b border-black">
               Mon groupe
             </h2>
+            {openGroupe ? (
+              <FaChevronUp className="text-gray-600 text-sm" />
+            ) : (
+              <FaChevronDown className="text-gray-600 text-sm" />
+            )}
+            {/* Chevron icon that rotates based on state */}
           </div>
         </div>
       )}

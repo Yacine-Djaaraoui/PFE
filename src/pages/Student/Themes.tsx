@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FileText, Download } from "lucide-react";
+import { FileText, Download, Filter, ChevronDown } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,7 @@ import { useTeams } from "@/hooks/teams";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 
-const ThemeDetailsDialog = ({
+export const ThemeDetailsDialog = ({
   isOpen,
   onOpenChange,
   theme,
@@ -98,7 +98,6 @@ const ThemeDetailsDialog = ({
             </div>
           </div>
 
-          {/* Documents Section */}
           {theme.documents && theme.documents.length > 0 && (
             <div className="mt-4 flex items-start">
               <h3 className="text-sm text-[#46494C] font-semibold pr-7.5">
@@ -124,20 +123,6 @@ const ThemeDetailsDialog = ({
             </div>
           )}
         </div>
-        {/* <div className="flex justify-end space-x-4 pt-6">
-          <Button variant="outline" className="flex items-center">
-            <span className="mr-2">📤</span> Partager
-          </Button>
-          <Button
-            variant="default"
-            className="flex items-center"
-            onClick={}
-            disabled={!theme.documents || theme.documents.length === 0}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Télécharger
-          </Button>
-        </div> */}
       </DialogContent>
     </Dialog>
   );
@@ -156,10 +141,25 @@ const Themes = () => {
   const joinMutation = useSupervisorRequest();
   const [demanderror, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const currentUser = useSelector((state: RootState) => state.auth.profile);
   const { data: teamsData } = useTeams({
     is_member: true,
     is_owner: true,
     match_student_profile: true,
+  });
+
+  // Filter states
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [academicYearFilter, setAcademicYearFilter] = useState("");
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  const { data, isLoading, error, isFetching } = useThemes({
+    next_url: fetchMoreThemes && nextUrl ? themes?.next : themes?.next,
+    ordering: "created_at",
+    academic_year: academicYearFilter || undefined,
+    proposed_by: activeFilter === "proposed_by_me" ? currentUser?.id : undefined,
+    co_supervised_by: activeFilter === "co_supervised_by_me" ? currentUser?.id : undefined,
+    is_verified: true,
   });
 
   useEffect(() => {
@@ -173,11 +173,6 @@ const Themes = () => {
       isMounted.current = false;
     };
   }, []);
-
-  const { data, isLoading, error, isFetching } = useThemes({
-    next_url: fetchMoreThemes && nextUrl ? themes?.next : themes?.next,
-    ordering: "created_at",
-  });
 
   useEffect(() => {
     if ((searchResults.searchResult || data) && !fetchMoreThemes) {
@@ -242,9 +237,24 @@ const Themes = () => {
     setMessage(e.target.value);
   };
 
+  const handleFilterChange = (filter: string) => {
+    setActiveFilter(filter);
+    setAcademicYearFilter("");
+    setShowFilterDropdown(false);
+  };
+
+  const handleAcademicYearChange = (year: string) => {
+    setAcademicYearFilter(year);
+    setActiveFilter("all");
+    setShowFilterDropdown(false);
+  };
+
+  const toggleFilterDropdown = () => {
+    setShowFilterDropdown(!showFilterDropdown);
+  };
+
   return (
     <div className="h-screen py-10 pl-8 w-fit">
-      {/* Static Header Section */}
       <div>
         <h2 className="text-primaryTitle font-bold text-[20px] font-inter">
           Bienvenue dans l'espace de choix des thèmes de PFE !
@@ -259,10 +269,111 @@ const Themes = () => {
           plus la modifier sans validation de l'administration.
         </p>
 
-        <div className="mt-5 w-full relative">
-          <h2 className="font-semibold text-primaryTitle inline">
+        <div className="mt-5 w-full relative flex justify-between items-center">
+          <h2 className="font-semibold text-primaryTitle">
             Liste des thèmes disponibles
           </h2>
+          { currentUser?.user_type !== "student" && (
+              <div className="flex items-center gap-4">
+              <div className="relative">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2"
+                  onClick={toggleFilterDropdown}
+                >
+                  <Filter size={16} />
+                  Filtres
+                  <ChevronDown size={16} className={`transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} />
+                </Button>
+                {showFilterDropdown && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                    <div className="p-2">
+                      <h3 className="text-sm font-medium text-gray-700 px-2 py-1 border-b border-gray-200">
+                        Type de thème
+                      </h3>
+                      <div className="space-y-1 mt-2">
+                        <button
+                          onClick={() => handleFilterChange("all")}
+                          className={`block w-full text-left px-3 py-2 text-sm rounded ${
+                            activeFilter === "all" ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          Tous les thèmes
+                        </button>
+                        <button
+                          onClick={() => handleFilterChange("proposed_by_me")}
+                          className={`block w-full text-left px-3 py-2 text-sm rounded ${
+                            activeFilter === "proposed_by_me" ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          Proposés par moi
+                        </button>
+                        <button
+                          onClick={() => handleFilterChange("co_supervised_by_me")}
+                          className={`block w-full text-left px-3 py-2 text-sm rounded ${
+                            activeFilter === "co_supervised_by_me" ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          Co-encadrés par moi
+                        </button>
+                      </div>
+                      
+                      <h3 className="text-sm font-medium text-gray-700 px-2 py-1 mt-3 border-b border-gray-200">
+                        Année académique
+                      </h3>
+                      <div className="grid grid-cols-2 gap-1 mt-2">
+                        {["2", "3", "4isi", "4siw", "4iasd", "5siw", "5isi", "5iasd"].map((year) => (
+                          <button
+                            key={year}
+                            onClick={() => handleAcademicYearChange(year)}
+                            className={`px-2 py-1.5 text-xs rounded ${
+                              academicYearFilter === year ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {year === "2" && "2ème année"}
+                            {year === "3" && "3ème année"}
+                            {year === "4isi" && "4ISI"}
+                            {year === "4siw" && "4SIW"}
+                            {year === "4iasd" && "4IASD"}
+                            {year === "5siw" && "5SIW"}
+                            {year === "5isi" && "5ISI"}
+                            {year === "5iasd" && "5IASD"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+  
+              {(activeFilter !== "all" || academicYearFilter) && (
+                <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-md">
+                  Filtre actif:{" "}
+                  <span className="font-medium">
+                    {activeFilter === "proposed_by_me" && "Proposés par moi"}
+                    {activeFilter === "co_supervised_by_me" && "Co-encadrés par moi"}
+                    {academicYearFilter && (
+                      <>
+                        {activeFilter !== "all" && " + "}
+                        {academicYearFilter === "2" && "2ème année"}
+                        {academicYearFilter === "3" && "3ème année"}
+                        {academicYearFilter === "4isi" && "4ISI"}
+                        {academicYearFilter === "4siw" && "4SIW"}
+                        {academicYearFilter === "4iasd" && "4IASD"}
+                        {academicYearFilter === "5siw" && "5SIW"}
+                        {academicYearFilter === "5isi" && "5ISI"}
+                        {academicYearFilter === "5iasd" && "5IASD"}
+                      </>
+                    )}
+                  </span>
+                </div>
+              )}
+            </div>
+          )
+
+          }
+          
+          
         </div>
       </div>
 
@@ -278,7 +389,6 @@ const Themes = () => {
         </div>
       )}
 
-      {/* Dynamic Themes Section */}
       <div className="flex flex-col min-h-[calc(100vh-250px)]">
         {isLoading ||
         ((searchResults.searchResultLoading ||
@@ -390,7 +500,6 @@ const Themes = () => {
               ))}
             </div>
 
-            {/* Theme Details Dialog */}
             <ThemeDetailsDialog
               isOpen={isDialogOpen}
               onOpenChange={setIsDialogOpen}

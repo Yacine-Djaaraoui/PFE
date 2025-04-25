@@ -25,10 +25,7 @@ import {
 import { useTeachers } from "@/hooks/teachers";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import {
-  useCreateDocument,
-  useDeleteDocument,
-} from "@/hooks/document";
+import { useCreateDocument, useDeleteDocument } from "@/hooks/document";
 
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import editSquare from "@/assets/Edit-Square.svg";
@@ -37,6 +34,7 @@ import deleteIcon from "@/assets/weui_delete-outlined.svg";
 import editIcon from "@/assets/basil_edit-outline.svg";
 
 import { ReactSVG } from "react-svg";
+import { ThemeDetailsDialog } from "@/pages/Student/Themes";
 
 interface Theme {
   id: number;
@@ -59,17 +57,18 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
   const [currentTheme, setCurrentTheme] = useState<Theme | null>(null);
   const [isThemesOpen, setIsThemesOpen] = useState(false);
   const [isThemesNonVerifyOpen, setIsThemesNonVerifyOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: themesDataSuper } = useThemes({
     ordering: "created_at",
     proposed_by: profile?.id,
-    is_verified : true ,
+    is_verified: true,
   });
 
   const { data: themesDataCoSuper } = useThemes({
     ordering: "created_at",
     co_supervised_by: profile?.id,
-    is_verified : true ,
+    is_verified: true,
   });
 
   const themesData: Theme[] = [
@@ -80,7 +79,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
   const { data: themesDataNotVerified } = useThemes({
     ordering: "created_at",
     proposed_by: profile?.id,
-    is_verified : false,
+     is_verified: false,
   });
 
   const queryClient = useQueryClient();
@@ -115,10 +114,12 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
   const handleEditClick = (theme: Theme) => {
     setCurrentTheme(theme);
     setIsEditThemeOpen(true);
+    setIsDialogOpen(false);
   };
 
   const handleDeleteClick = (themeId: number) => {
     setThemeToDelete(themeId);
+    setIsDialogOpen(false);
   };
 
   const handleConfirmDelete = () => {
@@ -161,10 +162,17 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
       return false;
     }
   };
+  const handleThemeClick = (e, theme) => {
+    e.stopPropagation(); // Stop the event from propagating
+    setIsDialogOpen(true);
+    setCurrentTheme(theme);
+  };
+
+
 
   return (
     <>
-      { (
+      {
         <div className="w-full px-4">
           {/* Header Section */}
           <div className="flex justify-between items-center mb-4">
@@ -195,8 +203,9 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
             <div className="space-y-3">
               {themesData?.map((theme) => (
                 <div
+                  onClick={(e) => handleThemeClick(e, theme)}
                   key={theme.id}
-                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
+                  className="flex cursor-pointer justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
                 >
                   <div>
                     <h3 className="font-normal text-[#141B34]">
@@ -212,13 +221,19 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
                     <div className="flex space-x-1">
                       <button
                         className="p-1 rounded-md hover:bg-gray-200"
-                        onClick={() => handleEditClick(theme)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(theme);
+                        }}
                       >
                         <ReactSVG src={editIcon} className="w-5 h-5 mr-0.5" />
                       </button>
                       <button
-                        className="p-1 rounded-md hover:bg-red-100"
-                        onClick={() => handleDeleteClick(theme.id)}
+                        className="p-1 rounded-md hover:bg-red-100 "
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(theme.id);
+                        }}
                         disabled={deleteThemeMutation.isPending}
                       >
                         <ReactSVG src={deleteIcon} className="w-full h-full" />
@@ -229,6 +244,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
               ))}
             </div>
           )}
+          
           {/* Add Theme Dialog */}
           <Dialog open={isAddThemeOpen} onOpenChange={setIsAddThemeOpen}>
             <DialogContent className="max-w-lg bg-white p-6 rounded-lg shadow-lg">
@@ -412,8 +428,8 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
             </AlertDialogContent>
           </AlertDialog>
         </div>
-      )}
-      {(
+      }
+      {
         // {/* Header Section */}
         <div className="w-full px-4">
           <div className="flex justify-between items-center mb-4">
@@ -423,7 +439,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
             >
               <ReactSVG src={editSquare} className="w-5 h-5" />
               <h2 className="text-[16px] font-medium text-[#092147] border-b border-black">
-                Mes thémes (non verifie) 
+                Mes thémes (non verifie)
               </h2>
               {/* Chevron icon that rotates based on state */}
               {isThemesNonVerifyOpen ? (
@@ -434,7 +450,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
             </div>
             <button
               className="rounded-full hover:bg-gray-300 p-1"
-              onClick={() => setIsAddThemeOpen(true) }
+              onClick={() => setIsAddThemeOpen(true)}
             >
               <ReactSVG src={plus} className="w-5 h-5" />
             </button>
@@ -444,8 +460,9 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
             <div className="space-y-3">
               {themesDataNotVerified?.results?.map((theme) => (
                 <div
+                  onClick={(e) => handleThemeClick(e, theme )}
                   key={theme.id}
-                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
+                  className="flex cursor-pointer justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
                 >
                   <div>
                     <h3 className="font-normal text-[#141B34]">
@@ -461,13 +478,19 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
                     <div className="flex space-x-1">
                       <button
                         className="p-1 rounded-md hover:bg-gray-200"
-                        onClick={() => handleEditClick(theme)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(theme);
+                        }}
                       >
                         <ReactSVG src={editIcon} className="w-5 h-5 mr-0.5" />
                       </button>
                       <button
                         className="p-1 rounded-md hover:bg-red-100"
-                        onClick={() => handleDeleteClick(theme.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(theme.id);
+                        }}
                         disabled={deleteThemeMutation.isPending}
                       >
                         <ReactSVG src={deleteIcon} className="w-full h-full" />
@@ -478,8 +501,13 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
               ))}
             </div>
           )}
+          {!isEditThemeOpen && themeToDelete == null &&(<ThemeDetailsDialog
+            isOpen={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            theme={currentTheme}
+          />)}
         </div>
-      )}
+      }
     </>
   );
 };

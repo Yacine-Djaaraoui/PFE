@@ -53,7 +53,7 @@ const ThemeDetailsDialog = ({
               </p>
               <div className="ml-2 text-[12px]">
                 {theme?.co_supervisors?.length > 0 && (
-                  <div className="grid grid-cols-2">
+                  <div className="">
                     {theme.co_supervisors.map(
                       (supervisor: any, index: number) => (
                         <p key={index} className="truncate">
@@ -156,7 +156,6 @@ const Themes = () => {
   const joinMutation = useSupervisorRequest();
   const [demanderror, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const profile = useSelector((state: RootState) => state.auth.profile);
   const { data: teamsData } = useTeams({
     is_member: true,
     is_owner: true,
@@ -319,7 +318,6 @@ const Themes = () => {
                     {theme.title}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Encadrant: {theme?.proposed_by?.first_name}
                     Encadrant: {theme?.proposed_by?.first_name}
                   </p>
 

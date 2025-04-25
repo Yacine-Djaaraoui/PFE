@@ -16,6 +16,9 @@ export const useThemes = (
     proposed_by,
     next_url,
     page_size,
+    co_supervised_by,
+    is_verified,
+    is_member,
   }: {
     search?: string;
     ordering?: string;
@@ -26,6 +29,9 @@ export const useThemes = (
     proposed_by?: number;
     next_url?: string;
     page_size?: number;
+    co_supervised_by?: number;
+    is_verified?: boolean;
+    is_member?:boolean
   } = {},
   options?: UseQueryOptions // Accept query options (e.g., enabled)
 ): UseQueryResult => {
@@ -41,6 +47,9 @@ export const useThemes = (
       proposed_by,
       next_url,
       page_size,
+      co_supervised_by,
+      is_verified,
+      is_member,
     ],
     queryFn: () =>
       fetchThemes({
@@ -53,6 +62,9 @@ export const useThemes = (
         proposed_by,
         next_url,
         page_size,
+        co_supervised_by,
+        is_verified,
+        is_member,
       }),
     refetchOnWindowFocus: false,
     retry: false,

@@ -28,7 +28,6 @@ import { RootState } from "@/redux/store";
 import {
   useCreateDocument,
   useDeleteDocument,
-  useDocuments,
 } from "@/hooks/document";
 
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
@@ -59,11 +58,31 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
   const [themeToDelete, setThemeToDelete] = useState<number | null>(null);
   const [currentTheme, setCurrentTheme] = useState<Theme | null>(null);
   const [isThemesOpen, setIsThemesOpen] = useState(false);
+  const [isThemesNonVerifyOpen, setIsThemesNonVerifyOpen] = useState(false);
 
-  const { data: themesData } = useThemes({
+  const { data: themesDataSuper } = useThemes({
     ordering: "created_at",
     proposed_by: profile?.id,
+    is_verified : true ,
   });
+
+  const { data: themesDataCoSuper } = useThemes({
+    ordering: "created_at",
+    co_supervised_by: profile?.id,
+    is_verified : true ,
+  });
+
+  const themesData: Theme[] = [
+    ...(themesDataSuper?.results || []),
+    ...(themesDataCoSuper?.results || []),
+  ];
+
+  const { data: themesDataNotVerified } = useThemes({
+    ordering: "created_at",
+    proposed_by: profile?.id,
+    is_verified : false,
+  });
+
   const queryClient = useQueryClient();
   const createDocumentMutation = useCreateDocument();
   const deleteDocumentMutation = useDeleteDocument();
@@ -144,251 +163,324 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
   };
 
   return (
-    <div className="w-full px-4">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-4">
-        <div
-          className="flex items-center space-x-2 cursor-pointer"
-          onClick={() => setIsThemesOpen(!isThemesOpen)} // Toggle visibility
-        >
-          <ReactSVG src={editSquare} className="w-5 h-5" />
-          <h2 className="text-[16px] font-medium text-[#092147] border-b border-black">
-            Mes thémes
-          </h2>
-          {/* Chevron icon that rotates based on state */}
-          {isThemesOpen ? (
-            <FaChevronUp className="text-gray-600 text-sm" />
-          ) : (
-            <FaChevronDown className="text-gray-600 text-sm" />
-          )}
-        </div>
-        <button
-          className="rounded-full hover:bg-gray-300 p-1"
-          onClick={() => setIsAddThemeOpen(true)}
-        >
-          <ReactSVG src={plus} className="w-5 h-5" />
-        </button>
-      </div>
-      {/* Themes List */}
-      {isThemesOpen && (
-        <div className="space-y-3">
-          {themesData?.results?.map((theme) => (
+    <>
+      { (
+        <div className="w-full px-4">
+          {/* Header Section */}
+          <div className="flex justify-between items-center mb-4">
             <div
-              key={theme.id}
-              className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => setIsThemesOpen(!isThemesOpen)} // Toggle visibility
             >
-              <div>
-                <h3 className="font-normal text-[#141B34]">
-                  # {theme.id.toString().padStart(2, "0")} {theme.title}
-                </h3>
-                {theme.academic_year && (
-                  <span className="text-xs text-gray-500">
-                    Année Academique: {theme.academic_year}
-                  </span>
-                )}
-              
-              </div>
-              <div className="flex space-x-1">
-                <button
-                  className="p-1 rounded-md hover:bg-gray-200"
-                  onClick={() => handleEditClick(theme)}
+              <ReactSVG src={editSquare} className="w-5 h-5" />
+              <h2 className="text-[16px] font-medium text-[#092147] border-b border-black">
+                Mes thémes
+              </h2>
+              {/* Chevron icon that rotates based on state */}
+              {isThemesOpen ? (
+                <FaChevronUp className="text-gray-600 text-sm" />
+              ) : (
+                <FaChevronDown className="text-gray-600 text-sm" />
+              )}
+            </div>
+            {/* <button
+              className="rounded-full hover:bg-gray-300 p-1"
+              onClick={() => setIsAddThemeOpen(true)}
+            >
+              <ReactSVG src={plus} className="w-5 h-5" />
+            </button> */}
+          </div>
+          {/* Themes List */}
+          {isThemesOpen && (
+            <div className="space-y-3">
+              {themesData?.map((theme) => (
+                <div
+                  key={theme.id}
+                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
                 >
-                
-                  <ReactSVG src={editIcon} className="w-5 h-5 mr-0.5" />
-                </button>
-                <button
-                  className="p-1 rounded-md hover:bg-red-100 "
-                  onClick={() => handleDeleteClick(theme.id)}
+                  <div>
+                    <h3 className="font-normal text-[#141B34]">
+                      # {theme.id.toString().padStart(2, "0")} {theme.title}
+                    </h3>
+                    {theme.academic_year && (
+                      <span className="text-xs text-gray-500">
+                        Année Academique: {theme.academic_year}
+                      </span>
+                    )}
+                  </div>
+                  {theme?.proposed_by?.id === profile?.id && (
+                    <div className="flex space-x-1">
+                      <button
+                        className="p-1 rounded-md hover:bg-gray-200"
+                        onClick={() => handleEditClick(theme)}
+                      >
+                        <ReactSVG src={editIcon} className="w-5 h-5 mr-0.5" />
+                      </button>
+                      <button
+                        className="p-1 rounded-md hover:bg-red-100"
+                        onClick={() => handleDeleteClick(theme.id)}
+                        disabled={deleteThemeMutation.isPending}
+                      >
+                        <ReactSVG src={deleteIcon} className="w-full h-full" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {/* Add Theme Dialog */}
+          <Dialog open={isAddThemeOpen} onOpenChange={setIsAddThemeOpen}>
+            <DialogContent className="max-w-lg bg-white p-6 rounded-lg shadow-lg">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-secondary">
+                  Ajouter un thème
+                </DialogTitle>
+              </DialogHeader>
+              <ThemeForm
+                initialValues={{
+                  title: "",
+                  co_supervisor_ids: [],
+                  academic_year: "",
+                  specialties: [],
+                  description: "",
+                  tools: "",
+                  documents: [],
+                }}
+                onSubmit={async (values, files) => {
+                  const formValues = { ...values };
+                  delete formValues.specialties;
+
+                  // First upload documents if any
+                  const documentIds =
+                    files && files.length > 0
+                      ? await handleDocumentUpload(files)
+                      : [];
+
+                  // For years 2 and 3
+                  if (
+                    values.academic_year === "2" ||
+                    values.academic_year === "3"
+                  ) {
+                    const requestData = {
+                      ...formValues,
+                      academic_year: values.academic_year === "2" ? "2" : "3",
+                      document_ids: documentIds,
+                      documents: documentIds,
+                    };
+                    createThemeMutation.mutate(requestData);
+                  }
+                  // For years 4 and 5
+                  else if (
+                    (values.academic_year === "4" ||
+                      values.academic_year === "5") &&
+                    values.specialties.length > 0
+                  ) {
+                    values.specialties.forEach((specialty: string) => {
+                      const requestData = {
+                        ...formValues,
+                        academic_year: `${
+                          values.academic_year
+                        }${specialty.toLowerCase()}`,
+                        document_ids: documentIds,
+                      };
+                      console.log(requestData);
+                      createThemeMutation.mutate(requestData);
+                    });
+                  }
+                }}
+                onCancel={() => setIsAddThemeOpen(false)}
+                isSubmitting={
+                  createThemeMutation.isPending ||
+                  createDocumentMutation.isPending
+                }
+                submitText="Enregistrer"
+              />
+            </DialogContent>
+          </Dialog>
+          {/* Edit Theme Dialog */}
+          <Dialog open={isEditThemeOpen} onOpenChange={setIsEditThemeOpen}>
+            <DialogContent className="max-w-lg bg-white p-6 rounded-lg shadow-lg">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold text-[#0D062D]">
+                  Modifier le thème
+                </DialogTitle>
+              </DialogHeader>
+              {currentTheme && (
+                <ThemeForm
+                  initialValues={{
+                    title: currentTheme.title || "",
+                    co_supervisor_ids:
+                      currentTheme.co_supervisors?.map((supervisor: any) =>
+                        typeof supervisor === "object"
+                          ? supervisor.id
+                          : supervisor
+                      ) || [],
+                    academic_year: parseAcademicLevel(
+                      currentTheme.academic_year
+                    ).year,
+                    specialties: parseAcademicLevel(currentTheme.academic_year)
+                      .specialties,
+                    description: currentTheme.description || "",
+                    tools: currentTheme.tools || "",
+                    documents: currentTheme.documents || [],
+                  }}
+                  onSubmit={async (values, files) => {
+                    // First, gather existing document IDs that weren't deleted
+
+                    let documentIds =
+                      values.documents?.map((doc) => doc.id) || [];
+
+                    // Then upload new documents if any
+                    if (files && files.length > 0) {
+                      const newDocumentIds = await handleDocumentUpload(files);
+                      // Combine with existing document IDs
+                      documentIds = [...documentIds, ...newDocumentIds];
+                    }
+
+                    // Prepare the data object
+                    const data: any = {
+                      title: values.title,
+                      description: values.description,
+                      tools: values.tools,
+                      document_ids: documentIds, // Use document_ids which is what the backend expects
+                    };
+
+                    // Add co-supervisors if any
+                    if (values.co_supervisor_ids) {
+                      data.co_supervisor_ids = values.co_supervisor_ids;
+                    }
+
+                    // Handle academic level
+                    if (
+                      values.academic_year === "2" ||
+                      values.academic_year === "3"
+                    ) {
+                      data.academic_year = values.academic_year;
+                    } else if (
+                      (values.academic_year === "4" ||
+                        values.academic_year === "5") &&
+                      values.specialties.length > 0
+                    ) {
+                      data.academic_year = `${
+                        values.academic_year
+                      }${values.specialties[0].toLowerCase()}`;
+                    }
+                    console.log(data);
+                    updateThemeMutation.mutate({
+                      id: currentTheme.id,
+                      data: data,
+                    });
+                  }}
+                  onCancel={() => setIsEditThemeOpen(false)}
+                  isSubmitting={
+                    updateThemeMutation.isPending ||
+                    createDocumentMutation.isPending
+                  }
+                  submitText="Mettre à jour"
+                  isEditMode={true}
+                  onDeleteDocument={handleDocumentDelete}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
+          {/* Delete Confirmation Dialog */}
+          <AlertDialog
+            open={themeToDelete !== null}
+            onOpenChange={(open) => !open && setThemeToDelete(null)}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Supprimer le thème</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Êtes-vous sûr de vouloir supprimer ce thème? Cette action est
+                  irréversible.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleConfirmDelete}
+                  className="bg-red-500 hover:bg-red-600"
                   disabled={deleteThemeMutation.isPending}
                 >
-                  <ReactSVG src={deleteIcon} className="w-full h-full " />
-                </button>
-              </div>
-            </div>
-          ))}
+                  {deleteThemeMutation.isPending
+                    ? "Suppression..."
+                    : "Supprimer"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       )}
-      {/* Add Theme Dialog */}
-      <Dialog open={isAddThemeOpen} onOpenChange={setIsAddThemeOpen}>
-        <DialogContent className="max-w-lg bg-white p-6 rounded-lg shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-secondary">
-              Ajouter un thème
-            </DialogTitle>
-          </DialogHeader>
-          <ThemeForm
-            initialValues={{
-              title: "",
-              co_supervisor_ids: [],
-              academic_year: "",
-              specialties: [],
-              description: "",
-              tools: "",
-              documents: [],
-            }}
-            onSubmit={async (values, files) => {
-              const formValues = { ...values };
-              delete formValues.specialties;
-
-              // First upload documents if any
-              const documentIds =
-                files && files.length > 0
-                  ? await handleDocumentUpload(files)
-                  : [];
-
-              // For years 2 and 3
-              if (
-                values.academic_year === "2" ||
-                values.academic_year === "3"
-              ) {
-                const requestData = {
-                  ...formValues,
-                  academic_year: values.academic_year === "2" ? "2" : "3",
-                  document_ids: documentIds,
-                  documents: documentIds,
-                };
-                createThemeMutation.mutate(requestData);
-              }
-              // For years 4 and 5
-              else if (
-                (values.academic_year === "4" ||
-                  values.academic_year === "5") &&
-                values.specialties.length > 0
-              ) {
-                values.specialties.forEach((specialty: string) => {
-                  const requestData = {
-                    ...formValues,
-                    academic_year: `${
-                      values.academic_year
-                    }${specialty.toLowerCase()}`,
-                    document_ids: documentIds,
-                  };
-                  console.log(requestData);
-                  createThemeMutation.mutate(requestData);
-                });
-              }
-            }}
-            onCancel={() => setIsAddThemeOpen(false)}
-            isSubmitting={
-              createThemeMutation.isPending || createDocumentMutation.isPending
-            }
-            submitText="Enregistrer"
-          />
-        </DialogContent>
-      </Dialog>
-      {/* Edit Theme Dialog */}
-      <Dialog open={isEditThemeOpen} onOpenChange={setIsEditThemeOpen}>
-        <DialogContent className="max-w-lg bg-white p-6 rounded-lg shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold text-[#0D062D]">
-              Modifier le thème
-            </DialogTitle>
-          </DialogHeader>
-          {currentTheme && (
-            <ThemeForm
-              initialValues={{
-                title: currentTheme.title || "",
-                co_supervisor_ids:
-                  currentTheme.co_supervisors?.map((supervisor: any) =>
-                    typeof supervisor === "object" ? supervisor.id : supervisor
-                  ) || [],
-                academic_year: parseAcademicLevel(currentTheme.academic_year)
-                  .year,
-                specialties: parseAcademicLevel(currentTheme.academic_year)
-                  .specialties,
-                description: currentTheme.description || "",
-                tools: currentTheme.tools || "",
-                documents: currentTheme.documents || [],
-              }}
-              onSubmit={async (values, files) => {
-                // First, gather existing document IDs that weren't deleted
-              
-                let documentIds = values.documents?.map((doc) => doc.id) || [];
-               
-
-                // Then upload new documents if any
-                if (files && files.length > 0) {
-                  const newDocumentIds = await handleDocumentUpload(files);
-                  // Combine with existing document IDs
-                  documentIds = [...documentIds, ...newDocumentIds];
-                }
-
-                
-
-                // Prepare the data object
-                const data: any = {
-                  title: values.title,
-                  description: values.description,
-                  tools: values.tools,
-                  document_ids: documentIds, // Use document_ids which is what the backend expects
-                };
-
-                // Add co-supervisors if any
-                if (
-                  values.co_supervisor_ids
-                ) {
-                  data.co_supervisor_ids = values.co_supervisor_ids;
-                }
-
-                // Handle academic level
-                if (
-                  values.academic_year === "2" ||
-                  values.academic_year === "3"
-                ) {
-                  data.academic_year = values.academic_year;
-                } else if (
-                  (values.academic_year === "4" ||
-                    values.academic_year === "5") &&
-                  values.specialties.length > 0
-                ) {
-                  data.academic_year = `${
-                    values.academic_year
-                  }${values.specialties[0].toLowerCase()}`;
-                }
-                console.log(data);
-                updateThemeMutation.mutate({
-                  id: currentTheme.id,
-                  data: data,
-                });
-              }}
-              onCancel={() => setIsEditThemeOpen(false)}
-              isSubmitting={
-                updateThemeMutation.isPending ||
-                createDocumentMutation.isPending
-              }
-              submitText="Mettre à jour"
-              isEditMode={true}
-              onDeleteDocument={handleDocumentDelete}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={themeToDelete !== null}
-        onOpenChange={(open) => !open && setThemeToDelete(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer le thème</AlertDialogTitle>
-            <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer ce thème? Cette action est
-              irréversible.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDelete}
-              className="bg-red-500 hover:bg-red-600"
-              disabled={deleteThemeMutation.isPending}
+      {(
+        // {/* Header Section */}
+        <div className="w-full px-4">
+          <div className="flex justify-between items-center mb-4">
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => setIsThemesNonVerifyOpen(!isThemesNonVerifyOpen)} // Toggle visibility
             >
-              {deleteThemeMutation.isPending ? "Suppression..." : "Supprimer"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+              <ReactSVG src={editSquare} className="w-5 h-5" />
+              <h2 className="text-[16px] font-medium text-[#092147] border-b border-black">
+                Mes thémes (non verifie) 
+              </h2>
+              {/* Chevron icon that rotates based on state */}
+              {isThemesNonVerifyOpen ? (
+                <FaChevronUp className="text-gray-600 text-sm" />
+              ) : (
+                <FaChevronDown className="text-gray-600 text-sm" />
+              )}
+            </div>
+            <button
+              className="rounded-full hover:bg-gray-300 p-1"
+              onClick={() => setIsAddThemeOpen(true) }
+            >
+              <ReactSVG src={plus} className="w-5 h-5" />
+            </button>
+          </div>
+          {/* Themes List */}
+          {isThemesNonVerifyOpen && (
+            <div className="space-y-3">
+              {themesDataNotVerified?.results?.map((theme) => (
+                <div
+                  key={theme.id}
+                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
+                >
+                  <div>
+                    <h3 className="font-normal text-[#141B34]">
+                      # {theme.id.toString().padStart(2, "0")} {theme.title}
+                    </h3>
+                    {theme.academic_year && (
+                      <span className="text-xs text-gray-500">
+                        Année Academique: {theme.academic_year}
+                      </span>
+                    )}
+                  </div>
+                  {theme?.proposed_by?.id === profile?.id && (
+                    <div className="flex space-x-1">
+                      <button
+                        className="p-1 rounded-md hover:bg-gray-200"
+                        onClick={() => handleEditClick(theme)}
+                      >
+                        <ReactSVG src={editIcon} className="w-5 h-5 mr-0.5" />
+                      </button>
+                      <button
+                        className="p-1 rounded-md hover:bg-red-100"
+                        onClick={() => handleDeleteClick(theme.id)}
+                        disabled={deleteThemeMutation.isPending}
+                      >
+                        <ReactSVG src={deleteIcon} className="w-full h-full" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 };
 

@@ -92,10 +92,12 @@ const StudentsList = () => {
   const [totalPages, setTotalPages] = useState<number>(1); // Sorting state
   const [data, setData] = useState(searchResults.searchResult); // Sorting state
   const [message, setMessage] = useState("");
+   const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
   const CreateInvitaion = useInvitations();
   const {
     data: studentsdata,
-    error,
+    error : studenterror,
     isLoading,
     isFetching,
     isError,
@@ -139,10 +141,12 @@ const StudentsList = () => {
       { teamId, username },
       {
         onSuccess: () => {
-          //   setError(""); // Clear any previous errors
-          //   setSuccess(`Join request sent successfully for Team ${teamId}!`);
+           setError(""); // Clear any previous errors
+           setSuccess(`sending invitaion successfully`);
         },
         onError: (error) => {
+         setError(error.name[0]);
+
           //   setError(error?.non_field_errors);
         },
       }
@@ -157,7 +161,18 @@ const StudentsList = () => {
         Retrouvez tous les étudiants inscrits sur la plateforme, explorez leurs
         profils et découvrez leurs compétences.
       </p>
+      {success && (
+        <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+          <p> {success}</p>
+        </div>
+      )}
 
+      {/* Display errors from the join request */}
+      {error && (
+        <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          <p>{error}</p>
+        </div>
+      )}
       <div className="p-6 border border-[#EAECF0] mt-8 bg-white rounded-lg shadow-md relative">
         <div className="flex items-center">
           <h1 className="text-xl font-bold    inline  mr-2">
@@ -282,8 +297,7 @@ const StudentsList = () => {
                             );
                           }}
                         >
-                          
-                          Inviter 
+                          Inviter
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

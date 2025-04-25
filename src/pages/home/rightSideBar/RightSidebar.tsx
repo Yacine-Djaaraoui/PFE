@@ -24,14 +24,15 @@ import {
 import MyTeam from "./MyTeam";
 import MyRequests from "./MyRequests";
 import MySupervisorRequests from "./MySupervisorRequest";
+import Mytheme from "./Mytheme";
 
 const RightSidebar = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
   console.log(profile);
   return (
-    <div className="bg- w-[20%]  flex py-5 flex-col items-center gap-4 h-screen pt-20 mr-0 fixed right-0  ">
+    <div className="bg- w-[20%]  flex py-5 flex-col items-center gap-4 h-screen mt-20 mr-0 fixed right-0 ">
       {/* User Info */}
-     
+
       {/* Themes Section */}
       {(profile?.user_type === "teacher" ||
         profile?.user_type === "external") && (
@@ -39,6 +40,7 @@ const RightSidebar = () => {
       )}
 
       {profile?.user_type === "student" && <MyTeam />}
+      {profile?.user_type === "student" && <Mytheme />}
       {profile?.user_type === "student" && <MyRequests />}
       {profile?.user_type === "student" && <MySupervisorRequests />}
     </div>

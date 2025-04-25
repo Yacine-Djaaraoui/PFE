@@ -59,6 +59,7 @@ const Header = () => {
   const {
     data: teamsData,
     error: teamsError,
+
     isLoading: teamsLoading,
     isError: teamsIsError,
     isFetching: teamsIsFetching,
@@ -67,7 +68,7 @@ const Header = () => {
       () => ({
         search: DebouncerSearchTerm,
         match_student_profile: true,
-        is_member: false,
+        is_member: true,
         ordering: "-last_name",
       }),
       [DebouncerSearchTerm]
@@ -107,6 +108,7 @@ const Header = () => {
       () => ({
         search: DebouncerSearchTerm,
         ordering: "-created_at",
+        is_verified: true,
         page_size: 10,
       }),
       [DebouncerSearchTerm]

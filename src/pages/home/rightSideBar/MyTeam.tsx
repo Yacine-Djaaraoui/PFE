@@ -48,7 +48,7 @@ const MyTeam = () => {
   return (
     <>
       {teamsData?.results?.length > 0 && (
-        <div className="flex cursor-pointer justify-between items-center mb-1">
+        <div className="flex cursor-pointer justify-between items-start w-full px-4 mb-1">
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => setOpenGroupe((prev) => !prev)}

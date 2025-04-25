@@ -74,13 +74,13 @@ const Login: React.FC = () => {
           alt="icon"
           className="top-4 left-4 w-14 h-12"
         />
-        <h1 className="text-[40px] font-poppins font-extrabold mb-2 ">
+        <h1 className="text-[40px] font-poppins mb-2 ">
           Bienvenue sur ProjecTrack
         </h1>
         <button className="w-[40%] h-9 px-4 text-white font-normal text-sm bg-[#7495C9] rounded-sm hover:opacity-80">
           Collaborez, innovez , Gérez
         </button>
-        <p className="text-2xl font-normal md:pr-54  mt-4 text-white opacity-70">
+        <p className="text-2xl font-light md:pr-54  mt-4 text-white opacity-70">
           une plateforme intuitive et efficace conçue pour simplifier la gestion
           de vos projets académiques.
         </p>

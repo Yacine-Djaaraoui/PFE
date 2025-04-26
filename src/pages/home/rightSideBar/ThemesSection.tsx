@@ -79,7 +79,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
   const { data: themesDataNotVerified } = useThemes({
     ordering: "created_at",
     proposed_by: profile?.id,
-     is_verified: false,
+    is_verified: false,
   });
 
   const queryClient = useQueryClient();
@@ -168,8 +168,6 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
     setCurrentTheme(theme);
   };
 
-
-
   return (
     <>
       {
@@ -244,7 +242,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
               ))}
             </div>
           )}
-          
+
           {/* Add Theme Dialog */}
           <Dialog open={isAddThemeOpen} onOpenChange={setIsAddThemeOpen}>
             <DialogContent className="max-w-lg bg-white p-6 rounded-lg shadow-lg">
@@ -460,7 +458,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
             <div className="space-y-3">
               {themesDataNotVerified?.results?.map((theme) => (
                 <div
-                  onClick={(e) => handleThemeClick(e, theme )}
+                  onClick={(e) => handleThemeClick(e, theme)}
                   key={theme.id}
                   className="flex cursor-pointer justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
                 >
@@ -501,11 +499,13 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
               ))}
             </div>
           )}
-          {!isEditThemeOpen && themeToDelete == null &&(<ThemeDetailsDialog
-            isOpen={isDialogOpen}
-            onOpenChange={setIsDialogOpen}
-            theme={currentTheme}
-          />)}
+          {!isEditThemeOpen && themeToDelete == null && (
+            <ThemeDetailsDialog
+              isOpen={isDialogOpen}
+              onOpenChange={setIsDialogOpen}
+              theme={currentTheme}
+            />
+          )}
         </div>
       }
     </>

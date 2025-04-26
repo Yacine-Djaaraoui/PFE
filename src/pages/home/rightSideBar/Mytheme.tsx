@@ -4,14 +4,23 @@ import { ReactSVG } from "react-svg";
 import editIcon from "@/assets/basil_edit-outline.svg";
 import editSquare from "@/assets/Edit-Square.svg";
 import { useThemes } from "@/hooks/themes";
+import { ThemeDetailsDialog } from "@/pages/Student/Themes";
 
 const Mytheme = () => {
   const [isThemesOpen, setIsThemesOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(null);
+
   const { data: themesData } = useThemes({
     ordering: "created_at",
     is_verified: true,
     is_member: true,
   });
+  const handleThemeClick = (e, theme) => {
+    e.stopPropagation(); // Stop the event from propagating
+    setIsDialogOpen(true);
+    setCurrentTheme(theme);
+  };
   return (
     <>
       {themesData?.results?.length > 0 && (
@@ -45,7 +54,8 @@ const Mytheme = () => {
               {themesData?.results?.map((theme) => (
                 <div
                   key={theme.id}
-                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
+                  className="flex cursor-pointer justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
+                  onClick={(e) => handleThemeClick(e, theme)}
                 >
                   <div>
                     <h3 className="font-normal text-[#141B34]">
@@ -69,6 +79,11 @@ const Mytheme = () => {
           )}
         </div>
       )}
+      <ThemeDetailsDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        theme={currentTheme}
+      />
     </>
   );
 };

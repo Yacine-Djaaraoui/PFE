@@ -157,8 +157,10 @@ const Themes = () => {
     next_url: fetchMoreThemes && nextUrl ? themes?.next : themes?.next,
     ordering: "created_at",
     academic_year: academicYearFilter || undefined,
-    proposed_by: activeFilter === "proposed_by_me" ? currentUser?.id : undefined,
-    co_supervised_by: activeFilter === "co_supervised_by_me" ? currentUser?.id : undefined,
+    proposed_by:
+      activeFilter === "proposed_by_me" ? currentUser?.id : undefined,
+    co_supervised_by:
+      activeFilter === "co_supervised_by_me" ? currentUser?.id : undefined,
     is_verified: true,
   });
 
@@ -185,6 +187,7 @@ const Themes = () => {
       }
     }
   }, [searchResults.searchResult, data]);
+  useEffect(() => {}, [searchResults.searchResult, data]);
 
   useEffect(() => {
     if (nextUrl && fetchMoreThemes) {
@@ -273,17 +276,22 @@ const Themes = () => {
           <h2 className="font-semibold text-primaryTitle">
             Liste des thèmes disponibles
           </h2>
-          { currentUser?.user_type !== "student" && (
-              <div className="flex items-center gap-4">
+          {currentUser?.user_type !== "student" && (
+            <div className="flex items-center gap-4">
               <div className="relative">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="flex items-center gap-2"
                   onClick={toggleFilterDropdown}
                 >
                   <Filter size={16} />
                   Filtres
-                  <ChevronDown size={16} className={`transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform ${
+                      showFilterDropdown ? "rotate-180" : ""
+                    }`}
+                  />
                 </Button>
                 {showFilterDropdown && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-gray-200">
@@ -295,7 +303,9 @@ const Themes = () => {
                         <button
                           onClick={() => handleFilterChange("all")}
                           className={`block w-full text-left px-3 py-2 text-sm rounded ${
-                            activeFilter === "all" ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
+                            activeFilter === "all"
+                              ? "bg-blue-50 text-blue-600 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
                           }`}
                         >
                           Tous les thèmes
@@ -303,31 +313,48 @@ const Themes = () => {
                         <button
                           onClick={() => handleFilterChange("proposed_by_me")}
                           className={`block w-full text-left px-3 py-2 text-sm rounded ${
-                            activeFilter === "proposed_by_me" ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
+                            activeFilter === "proposed_by_me"
+                              ? "bg-blue-50 text-blue-600 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
                           }`}
                         >
                           Proposés par moi
                         </button>
                         <button
-                          onClick={() => handleFilterChange("co_supervised_by_me")}
+                          onClick={() =>
+                            handleFilterChange("co_supervised_by_me")
+                          }
                           className={`block w-full text-left px-3 py-2 text-sm rounded ${
-                            activeFilter === "co_supervised_by_me" ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
+                            activeFilter === "co_supervised_by_me"
+                              ? "bg-blue-50 text-blue-600 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
                           }`}
                         >
                           Co-encadrés par moi
                         </button>
                       </div>
-                      
+
                       <h3 className="text-sm font-medium text-gray-700 px-2 py-1 mt-3 border-b border-gray-200">
                         Année académique
                       </h3>
                       <div className="grid grid-cols-2 gap-1 mt-2">
-                        {["2", "3", "4isi", "4siw", "4iasd", "5siw", "5isi", "5iasd"].map((year) => (
+                        {[
+                          "2",
+                          "3",
+                          "4isi",
+                          "4siw",
+                          "4iasd",
+                          "5siw",
+                          "5isi",
+                          "5iasd",
+                        ].map((year) => (
                           <button
                             key={year}
                             onClick={() => handleAcademicYearChange(year)}
                             className={`px-2 py-1.5 text-xs rounded ${
-                              academicYearFilter === year ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50"
+                              academicYearFilter === year
+                                ? "bg-blue-50 text-blue-600 font-medium"
+                                : "text-gray-700 hover:bg-gray-50"
                             }`}
                           >
                             {year === "2" && "2ème année"}
@@ -345,13 +372,14 @@ const Themes = () => {
                   </div>
                 )}
               </div>
-  
+
               {(activeFilter !== "all" || academicYearFilter) && (
                 <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-md">
                   Filtre actif:{" "}
                   <span className="font-medium">
                     {activeFilter === "proposed_by_me" && "Proposés par moi"}
-                    {activeFilter === "co_supervised_by_me" && "Co-encadrés par moi"}
+                    {activeFilter === "co_supervised_by_me" &&
+                      "Co-encadrés par moi"}
                     {academicYearFilter && (
                       <>
                         {activeFilter !== "all" && " + "}
@@ -369,11 +397,7 @@ const Themes = () => {
                 </div>
               )}
             </div>
-          )
-
-          }
-          
-          
+          )}
         </div>
       </div>
 
@@ -414,90 +438,100 @@ const Themes = () => {
         ) : (
           <>
             <div className="grid grid-cols-3 gap-4 p-1 mt-4 w-full">
-              {themes?.results?.map((theme) => (
-                <div
-                  key={theme?.id}
-                  className="bg-accent/10 font-inter p-4 rounded-lg relative w-full shadow-md"
-                >
-                  <div className="flex justify-start items-center">
-                    <p className="text-[14px] bg-white rounded-xl py-1 px-2 -ml-1">
-                      Théme n°{theme?.id}
-                    </p>
-                  </div>
-                  <h3 className="text-[14px] font-inter font-bold my-2">
-                    {theme.title}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Encadrant: {theme?.proposed_by?.first_name}
-                  </p>
-
-                  <div className="flex items-center justify-between mt-3 text-[#5A5A5A] text-xs">
-                    <div className="flex items-center">
-                      {theme.documents && theme.documents.length > 0 && (
-                        <div className="flex items-center text-gray-500">
-                          <FileText className="h-4 w-4 mr-1" />
-                          <span>{theme.documents.length}</span>
-                        </div>
-                      )}
+              {themes?.results
+                ?.filter((theme1) =>
+                  data?.results?.some((theme2) => theme2.id === theme1.id)
+                )
+                .map((theme) => (
+                  <div
+                    key={theme?.id}
+                    className="bg-accent/10 font-inter p-4 rounded-lg relative w-full shadow-md"
+                  >
+                    <div className="flex justify-start items-center">
+                      <p className="text-[14px] bg-white rounded-xl py-1 px-2 -ml-1">
+                        Théme n°{theme?.id}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
-                        onClick={() => handleOpenDialog(theme)}
-                      >
-                        Voir plus
-                      </Button>
-                      {teamId && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <button
-                              className={`w-fit font-semibold text-xs bg-secondary text-white rounded-[3px] font-instrument px-3 py-1.5 hover:bg-secondary/80`}
-                            >
-                              Demander
-                            </button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Demander ce encadrant ?{" "}
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Une fois inscrit, vous devrez demander à
-                                l'administration pour changer de groupe.
-                                <label className="font-medium block mt-2 mb-2">
-                                  Ajouter un message a l'encadrant
-                                </label>
-                                <textarea
-                                  type="text"
-                                  value={message}
-                                  onChange={handleChange}
-                                  className="border block w-[300px] border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  placeholder={`message`}
-                                  rows={4}
-                                />
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="hover:bg-secondary hover:text-white">
-                                Annuler
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => {
-                                  handleJoinRequest(teamId, message, theme.id);
-                                }}
+                    <h3 className="text-[14px] font-inter font-bold my-2">
+                      {theme.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Encadrant: {theme?.proposed_by?.first_name}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-3 text-[#5A5A5A] text-xs">
+                      <div className="flex items-center">
+                        {theme.documents && theme.documents.length > 0 && (
+                          <div className="flex items-center text-gray-500">
+                            <FileText className="h-4 w-4 mr-1" />
+                            <span>{theme.documents.length}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
+                          onClick={() => handleOpenDialog(theme)}
+                        >
+                          Voir plus
+                        </Button>
+                        {teamId && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
                               >
                                 Demander
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Demander ce encadrant ?{" "}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Une fois inscrit, vous devrez demander à
+                                  l'administration pour changer de groupe.
+                                  <label className="font-medium block mt-2 mb-2">
+                                    Ajouter un message a l'encadrant
+                                  </label>
+                                  <textarea
+                                    type="text"
+                                    value={message}
+                                    onChange={handleChange}
+                                    className="border block w-[300px] border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder={`message`}
+                                    rows={4}
+                                  />
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="hover:bg-secondary hover:text-white">
+                                  Annuler
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => {
+                                    handleJoinRequest(
+                                      teamId,
+                                      message,
+                                      theme.id
+                                    );
+                                  }}
+                                >
+                                  Demander
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
 
             <ThemeDetailsDialog

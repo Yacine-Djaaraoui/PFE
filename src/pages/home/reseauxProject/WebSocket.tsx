@@ -4,10 +4,22 @@ import React, { useState, useEffect, useRef } from "react";
 const WebSocketChat = () => {
   const [wsUrl, setWsUrl] = useState("");
   const [message, setMessage] = useState("");
+//   const [messageToShow, setMessageToShow] = useState();
   const [isConnected, setIsConnected] = useState(false);
-  const { messages, sendMessage, markAsRead } = useWebSocket(wsUrl);
-  const messagesEndRef = useRef(null);
+  const { messages, sendMessage, markAsRead } = useWebSocket();
 
+  const messageToShow = messages
+    .map((msg: string) => {
+      try {
+        return JSON.parse(msg);
+      } catch (err) {
+        console.error("Invalid message format", err);
+        return null;
+      }
+    })
+    .filter((msg): msg is Message => msg !== null); //
+  const messagesEndRef = useRef(null);
+  useWebSocket(wsUrl);
   const handleConnect = () => {
     if (!wsUrl) return;
     // Assuming useWebSocket has a connect method or handles this through state
@@ -19,10 +31,10 @@ const WebSocketChat = () => {
     e.preventDefault();
     if (!message.trim() || !isConnected) return;
 
-    sendMessage(message);
+    sendMessage(`{"message": "${message}"}`);
+    // fetchMessage();
     setMessage("");
   };
-
   // Auto-scroll to the latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -60,7 +72,7 @@ const WebSocketChat = () => {
       <div className="flex-1 mb-4 overflow-y-auto border border-gray-200 rounded-lg bg-white p-4">
         <div className="space-y-3">
           {messages && messages.length > 0 ? (
-            messages.map((msg, index) => (
+            messageToShow?.map((msg, index) => (
               <div
                 key={index}
                 className={`p-3 rounded-lg max-w-xs lg:max-w-md ${
@@ -69,10 +81,10 @@ const WebSocketChat = () => {
                     : "bg-gray-100 text-gray-900"
                 }`}
               >
-                <p className="text-sm">{msg.text}</p>
-                <p className="text-xs text-gray-500 text-right mt-1">
+                <p className="text-sm p-5">{msg.message}</p>
+                {/* <p className="text-xs text-gray-500 text-right mt-1">
                   {new Date(msg.timestamp).toLocaleTimeString()}
-                </p>
+                </p> */}
               </div>
             ))
           ) : (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import notificationSound from "@/assets/notification-sound.mp3";
 
-export const useWebSocket = (url: string) => {
+export const useWebSocket = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
 
@@ -9,18 +9,18 @@ export const useWebSocket = (url: string) => {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    const socket = new WebSocket(url);
+    const socket = new WebSocket("ws://192.168.15.180:8000/ws/chat/yacine/");
 
     setWs(socket);
-
-    socket.onmessage = (event) => {
+    //192.168.5.95:8000/chat/yacine/
+    ws: socket.onmessage = (event) => {
       try {
         const cleanedData = event.data.trim();
         const parsedData = JSON.parse(cleanedData);
-        if (parsedData.type === "notification") {
-          audio.play();
-        }
-        setMessages((prevMessages) => [...prevMessages, parsedData]);
+
+        audio.play();
+
+        setMessages((prevMessages) => [...prevMessages, cleanedData]);
       } catch (error) {
         console.error("JSON parsing error:", error, "Raw data:", event.data);
       }

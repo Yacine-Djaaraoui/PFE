@@ -1,12 +1,33 @@
 import { useWebSocket } from "@/hooks/useWebsocket2";
 import React, { useState, useEffect, useRef } from "react";
 
+interface Message {
+  message: string;
+  sent?: boolean;
+  // Add any other properties your message might have
+}
+
 const WebSocketChat = () => {
   const [wsUrl, setWsUrl] = useState("");
   const [message, setMessage] = useState("");
-//   const [messageToShow, setMessageToShow] = useState();
   const [isConnected, setIsConnected] = useState(false);
-  const { messages, sendMessage, markAsRead } = useWebSocket();
+  const { messages, sendMessage, connectWebSocket, connectionStatus } =
+    useWebSocket();
+  const messagesEndRef = useRef(null);
+
+  const handleConnect = () => {
+    if (!wsUrl) return;
+    connectWebSocket(wsUrl);
+    setIsConnected(true);
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!message.trim() || !connectionStatus) return;
+
+    sendMessage(`{"message": "${message}"}`);
+    setMessage("");
+  };
 
   const messageToShow = messages
     .map((msg: string) => {
@@ -17,28 +38,17 @@ const WebSocketChat = () => {
         return null;
       }
     })
-    .filter((msg): msg is Message => msg !== null); //
-  const messagesEndRef = useRef(null);
-  useWebSocket(wsUrl);
-  const handleConnect = () => {
-    if (!wsUrl) return;
-    // Assuming useWebSocket has a connect method or handles this through state
-    // This is a placeholder - adjust to your actual hook implementation
-    setIsConnected(true);
-  };
+    .filter((msg): msg is Message => msg !== null);
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!message.trim() || !isConnected) return;
-
-    sendMessage(`{"message": "${message}"}`);
-    // fetchMessage();
-    setMessage("");
-  };
   // Auto-scroll to the latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Update connection status based on the hook's status
+  useEffect(() => {
+    setIsConnected(connectionStatus);
+  }, [connectionStatus]);
 
   return (
     <div className="flex flex-col h-screen max-w-4xl mx-auto p-4 bg-gray-50 rounded-lg shadow-lg">
@@ -53,14 +63,17 @@ const WebSocketChat = () => {
             onChange={(e) => setWsUrl(e.target.value)}
             placeholder="WebSocket URL (ws:// or wss://)"
             className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            disabled={isConnected}
           />
           <button
             onClick={handleConnect}
-            disabled={isConnected}
+            disabled={isConnected || !wsUrl}
             className={`px-4 py-3 rounded-lg font-medium transition-colors ${
               isConnected
                 ? "bg-green-100 text-green-800 cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+                : wsUrl
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
             {isConnected ? "Connected" : "Connect"}
@@ -81,10 +94,7 @@ const WebSocketChat = () => {
                     : "bg-gray-100 text-gray-900"
                 }`}
               >
-                <p className="text-sm p-5">{msg.message}</p>
-                {/* <p className="text-xs text-gray-500 text-right mt-1">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </p> */}
+                <p className="text-sm p-2">{msg.message}</p>
               </div>
             ))
           ) : (

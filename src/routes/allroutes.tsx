@@ -19,7 +19,7 @@ interface RouteConfig {
 export const pferoutes: RouteConfig[] = [
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
-  { path: "/profile", element: <Profile /> },
+  { path: "/profile/:id", element: <Profile /> },
   { path: "/dashboard", element: <Dashboard /> },
   { path: "/colleagues", element: <Colleuges /> },
   { path: "/travail", element: <Travail /> },

@@ -52,9 +52,6 @@ export const useDocument = (id: number): UseQueryResult<DocumentType> => {
 export const useCreateDocument = (): UseMutationResult<DocumentType, Error, FormData> => {
   return useMutation({
     mutationFn: createDocument,
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries({ queryKey: ["documents"] });
-    // },
   });
 };
 
@@ -62,10 +59,6 @@ export const useCreateDocument = (): UseMutationResult<DocumentType, Error, Form
 export const useUpdateDocument = (): UseMutationResult<DocumentType, Error, { id: number, data: FormData }> => {
   return useMutation({
     mutationFn: ({ id, data }) => updateDocument(id, data),
-    // onSuccess: (_, variables) => {
-    //   queryClient.invalidateQueries({ queryKey: ["documents"] });
-    //   queryClient.invalidateQueries({ queryKey: ["document", variables.id] });
-    // },
   });
 };
 
@@ -73,10 +66,6 @@ export const useUpdateDocument = (): UseMutationResult<DocumentType, Error, { id
 export const usePatchDocument = (): UseMutationResult<DocumentType, Error, { id: number, data: FormData }> => {
   return useMutation({
     mutationFn: ({ id, data }) => patchDocument(id, data),
-    // onSuccess: (_, variables) => {
-    //   queryClient.invalidateQueries({ queryKey: ["documents"] });
-    //   queryClient.invalidateQueries({ queryKey: ["document", variables.id] });
-    // },
   });
 };
 
@@ -84,8 +73,5 @@ export const usePatchDocument = (): UseMutationResult<DocumentType, Error, { id:
 export const useDeleteDocument = (): UseMutationResult<void, Error, number> => {
   return useMutation({
     mutationFn: deleteDocument,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["documents"] });
-  //   },
   });
 };

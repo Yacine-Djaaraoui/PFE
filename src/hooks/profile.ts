@@ -1,4 +1,4 @@
-import { fetchProfile , updateProfile} from "@/api/profile";
+import { fetchProfile , fetchProfileById, updateProfile} from "@/api/profile";
 import { RootState } from "@/redux/store";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
@@ -26,3 +26,13 @@ export const useUpdateProfile = (profile : any) => {
 };
 
 
+export const useProfileById = (id: number): UseQueryResult<any> => {
+  const token = useSelector((state: RootState) => state.auth.token);
+  return useQuery({
+    queryKey: ["profile", id, token],
+    queryFn: () => fetchProfileById(id),
+    refetchOnWindowFocus: false,
+    retry: false,
+    enabled: !!token && !!id, // Only fetch if we have both token and id
+  });
+};

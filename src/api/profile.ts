@@ -34,3 +34,12 @@ export const updateProfile = async (data: {
   });
   return response;
 };
+
+export const fetchProfileById = async (id: number) => {
+  const token = localStorage.getItem("access_token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await client.get(`profiles/${id}/`, {
+    headers,
+  });
+  return response;
+};

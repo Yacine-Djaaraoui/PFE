@@ -1,35 +1,68 @@
 import { RootState } from "@/redux/store";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ApiClient } from "@/utils/httpClient";
+import { updateProfile } from "@/api/profile";
+import { useMyProfile } from "@/hooks/profile";
+import { useCreateDocument } from "@/hooks/document";
+import getAcademicYearLabel from "@/hoc/GlobalFunctions";
 
 const ProfileCard: React.FC = () => {
-  const profile = useSelector((state: RootState) => state.auth.profile);
-  console.log(profile);
+  const { data: profile } = useMyProfile();
   const queryClient = useQueryClient();
-  
+  const createDocumentMutation = useCreateDocument();
+
   // State for editable fields
   const [editing, setEditing] = useState<string | null>(null);
   const [editValues, setEditValues] = useState({
-    username: profile?.username || '',
-    phone_number: profile?.phone_number || '',
-    resume: profile?.resume || ''
+    username: "",
+    phone_number: "",
+    resume: "",
+    first_name: "",
+    last_name: "",
+    country: "",
+    state: "",
+    postal_code: "",
+    year_of_birth: "",
+    profile_picture_url: "",
+    email: "",
+    skills: [] as Array<{ name: string; proficiency_level: string }>,
+    current_year: "",
   });
 
-  // Directly use useMutation for profile updates
-  const { mutate: updateProfile } = useMutation({
-    mutationFn: async (data: any) => {
-      const token = localStorage.getItem("access_token");
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const response = await ApiClient().patch(`auth/users/me/`, data, {
-        headers,
+  // Initialize editValues when profile loads
+  useEffect(() => {
+    if (profile) {
+      setEditValues({
+        username: profile.username || "",
+        phone_number: profile.phone_number || "",
+        resume: profile.resume || "",
+        first_name: profile.first_name || "",
+        last_name: profile.last_name || "",
+        country: profile.country || "",
+        state: profile.state || "",
+        postal_code: profile.postal_code || "",
+        year_of_birth: profile.year_of_birth?.toString() || "",
+        profile_picture_url: profile.profile_picture_url || "",
+        email: profile.email || "",
+        skills: profile.profile?.skills || [],
+        current_year: profile.profile?.current_year || "",
       });
-      return response.data;
+    }
+  }, [profile]);
+
+  // Mutation for updating profile
+  const profileMutation = useMutation({
+    mutationFn: (data: Partial<typeof editValues>) => {
+      return updateProfile(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["myProfile"] });
-    }
+      setEditing(null);
+    },
+    onError: (error: any) => {
+      console.error("Profile update failed:", error);
+    },
   });
 
   const handleEdit = (field: string) => {
@@ -37,109 +70,521 @@ const ProfileCard: React.FC = () => {
   };
 
   const handleSave = (field: string) => {
-    updateProfile({ [field]: editValues[field as keyof typeof editValues] });
-    setEditing(null);
+    profileMutation.mutate({
+      [field]: editValues[field as keyof typeof editValues],
+    });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
-    setEditValues(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+    field: string
+  ) => {
+    setEditValues((prev) => ({
       ...prev,
-      [field]: e.target.value
+      [field]: e.target.value,
     }));
   };
 
+  const handleSkillChange = (
+    index: number,
+    field: "name" | "proficiency_level",
+    value: string
+  ) => {
+    const newSkills = [...editValues.skills];
+    newSkills[index] = {
+      ...newSkills[index],
+      [field]: value,
+    };
+    setEditValues((prev) => ({
+      ...prev,
+      skills: newSkills,
+    }));
+  };
+
+  const handleAddSkill = () => {
+    setEditValues((prev) => ({
+      ...prev,
+      skills: [...prev.skills, { name: "", proficiency_level: "beginner" }],
+    }));
+  };
+
+  const handleRemoveSkill = (index: number) => {
+    const newSkills = [...editValues.skills];
+    newSkills.splice(index, 1);
+    setEditValues((prev) => ({
+      ...prev,
+      skills: newSkills,
+    }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("title", `Profile Picture - ${profile?.username}`);
+      formData.append("document_type", "profile_picture");
+
+      try {
+        const response = await createDocumentMutation.mutateAsync(formData);
+        if (response.file) {
+          profileMutation.mutate({ profile_picture_url: response.file });
+        }
+      } catch (error) {
+        console.error("Failed to upload profile picture:", error);
+      }
+    }
+  };
+
+  const proficiencyLevels = [
+    {
+      value: "beginner",
+      label: "Beginner",
+      percentage: 25,
+    },
+    {
+      value: "intermediate",
+      label: "Intermediate",
+      percentage: 50,
+    },
+    {
+      value: "advanced",
+      label: "Advanced",
+      percentage: 75,
+    },
+    { value: "expert", label: "Expert", percentage: 90 },
+  ];
+
   const profileDetails = [
-    { 
-      label: "Full Name", 
-      value: `${profile?.first_name || ''} ${profile?.last_name || ''}`,
-      editable: false
-    },
-    { 
-      label: "Username", 
-      value: profile?.username || '',
+    {
+      label: "Profile Picture",
+      type: "image",
+      value: profile?.profile_picture_url,
       editable: true,
-      field: 'username'
+      field: "profile_picture_url",
     },
-    { 
-      label: "Phone Number", 
-      value: profile?.phone_number || '/',
+    {
+      label: "Email",
+      value: profile?.email,
+      editable: false,
+      icon: "📧",
+    },
+    {
+      label: "Matricule",
+      value: profile?.profile?.matricule,
+      editable: false,
+      icon: "🆔",
+    },
+    {
+      label: "Full Name",
+      value: `${profile?.first_name || ""} ${profile?.last_name || ""}`,
+      editable: false,
+      icon: "👤",
+    },
+    {
+      label: "Username",
+      value: profile?.username,
       editable: true,
-      field: 'phone_number'
+      field: "username",
+      icon: "🏷️",
     },
-    { 
-      label: "Date of Birth", 
-      value: profile?.year_of_birth || '/',
-      editable: false
-    },
-    { 
-      label: "Location", 
-      value: `${profile?.country || ''}${profile?.state ? `, ${profile.state}` : ''}${profile?.postal_code ? `, ${profile.postal_code}` : ''}`,
-      editable: false
-    },
-    { 
-      label: "About", 
-      value: profile?.resume || 'No description yet',
+   
+    {
+      label: "Phone Number",
+      value: profile?.phone_number || "Not provided",
       editable: true,
-      field: 'resume',
-      isTextArea: true
+      field: "phone_number",
+      icon: "📱",
+    },
+    {
+      label: "Year of Birth",
+      value: profile?.year_of_birth || "Not provided",
+      editable: false,
+      field: "year_of_birth",
+      icon: "🎂",
+    },
+    {
+      label: "Location",
+      value: `${profile?.country || ""}${
+        profile?.state ? `, ${profile.state}` : ""
+      }`,
+      editable: false,
+      field: "state",
+      icon: "📍",
+    },
+    {
+      label: "Skills",
+      type: "skills",
+      value: profile?.profile?.skills,
+      editable: true,
+      field: "skills",
+      icon: "🛠️",
+    },
+    {
+      label: "Resume",
+      value: profile?.resume || "No resume yet",
+      editable: true,
+      field: "resume",
+      isTextArea: true,
+      icon: "📝",
     },
   ];
 
   return (
-    <div className="mt-12 ml-7 h-[86vh] bg-white text-gray-800 w-1/3 font-inter p-4">
+    <div className="mt-4 ml-7 h-[86vh] bg-white shadow-lg rounded-xl text-gray-800 w-1/2 font-inter p-8 overflow-y-auto">
       <div className="flex flex-col items-start h-full">
-        <img
-          src={profile?.profile_picture_url}
-          alt="Profile"
-          className="w-36 h-36 rounded-md object-cover border border-gray-300"
-        />
-        
-        <div className="mt-4 w-full">
-          {profileDetails.map((detail, index) => (
-            <div key={index} className="py-2 border-b border-gray-100">
-              <p className="font-medium text-sm text-gray-500">{detail.label}</p>
-              
-              {detail.editable && editing === detail.field ? (
-                <div className="flex items-center mt-1">
-                  {detail.isTextArea ? (
-                    <textarea
-                      value={editValues[detail.field as keyof typeof editValues]}
-                      onChange={(e) => handleChange(e, detail.field!)}
-                      className="flex-1 border rounded p-1"
-                      rows={3}
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={editValues[detail.field as keyof typeof editValues]}
-                      onChange={(e) => handleChange(e, detail.field!)}
-                      className="flex-1 border rounded p-1"
-                    />
-                  )}
-                  <button 
-                    onClick={() => handleSave(detail.field!)}
-                    className="ml-2 text-blue-500"
+        {/* Header Section */}
+        <div className="w-full flex justify-between items-start mb-8 border-b border-gray-200 pb-6">
+          <div className="flex items-center space-x-6">
+            {/* Profile Picture */}
+            <div className="relative h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-lg group">
+              <img
+                src={editValues.profile_picture_url}
+                alt="Profile"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() =>
+                      document.getElementById("profile-picture-upload")?.click()
+                    }
+                    className="bg-white bg-opacity-80 text-gray-800 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                    title="Edit"
                   >
-                    Save
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.open(editValues.profile_picture_url, "_blank")
+                    }
+                    className="bg-white bg-opacity-80 text-gray-800 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                    title="View"
+                    disabled={!editValues.profile_picture_url}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
                   </button>
                 </div>
-              ) : (
-                <div className="flex justify-between items-center mt-1">
-                  <p className="font-semibold text-[16px]">
-                    {detail.value || '/'}
+              </div>
+            </div>
+            <input
+              type="file"
+              id="profile-picture-upload"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+
+            {/* Basic Information */}
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {profile?.first_name || ""} {profile?.last_name || ""}
+              </h1>
+              <p className="text-gray-500 mt-1">{profile?.email || ""}</p>
+              {profile?.user_type == "student" && (<div className="flex mt-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-secondary">
+                  {getAcademicYearLabel(profile?.profile?.current_year) || "Student"}
+                </span>
+                {profile?.profile?.matricule && (
+                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    {profile.profile.matricule}
+                  </span>
+                )}
+              </div> )}
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          {profileDetails.slice(1).map((detail, index) => {
+            if (
+              detail.label === "Profile Picture" ||
+              detail.label === "Full Name" ||
+              detail.label === "Email" ||
+              detail.label === "Matricule" 
+            ) {
+              return null;
+            }
+
+            if (detail.type === "skills"  &&  profile?.user_type == "student") {
+              return ( 
+                <div
+                  key={index}
+                  className="col-span-full py-4 border-t border-gray-100"
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold text-gray-900 flex items-center">
+                      <span className="mr-2">{detail.icon}</span>
+                      {detail.label}
+                    </h3>
+                    {detail.editable && editing !== "skills" && (
+                      <button
+                        onClick={() => handleEdit("skills")}
+                        className="text-secondary text-sm font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                        disabled={profileMutation.isPending}
+                      >
+                        Edit Skills
+                      </button>
+                    )}
+                  </div>
+
+                  {editing === "skills" ? (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      {editValues.skills.map((skill, skillIndex) => (
+                        <div
+                          key={skillIndex}
+                          className="flex items-center mb-3"
+                        >
+                          <input
+                            type="text"
+                            value={skill.name}
+                            onChange={(e) =>
+                              handleSkillChange(
+                                skillIndex,
+                                "name",
+                                e.target.value
+                              )
+                            }
+                            className="border border-gray-300 rounded-lg p-2 mr-2 flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            placeholder="Skill name"
+                          />
+                          <select
+                            value={skill.proficiency_level}
+                            onChange={(e) =>
+                              handleSkillChange(
+                                skillIndex,
+                                "proficiency_level",
+                                e.target.value
+                              )
+                            }
+                            className="border border-gray-300 rounded-lg p-2 mr-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                          >
+                            {proficiencyLevels.map((level) => (
+                              <option key={level.value} value={level.value}>
+                                {level.label}
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            onClick={() => handleRemoveSkill(skillIndex)}
+                            className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-full transition-colors duration-200"
+                            aria-label="Remove skill"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        onClick={handleAddSkill}
+                        className="mt-2 text-secondary hover:text-blue-800 font-medium flex items-center text-sm"
+                      >
+                        <span className="mr-1">+</span> Add New Skill
+                      </button>
+                      <div className="flex justify-end mt-4 space-x-2">
+                        <button
+                          onClick={() => setEditing(null)}
+                          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm transition-colors duration-200"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() =>
+                            profileMutation.mutate({
+                              skills: editValues.skills,
+                            })
+                          }
+                          className="px-4 py-2 bg-secondary text-white rounded-lg hover:opacity-80 font-medium text-sm shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                          disabled={profileMutation.isPending}
+                        >
+                          {profileMutation.isPending
+                            ? "Saving..."
+                            : "Save Skills"}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-2">
+                      {profile?.profile?.skills?.length ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {profile.profile.skills.map((skill, skillIndex) => {
+                            const level = proficiencyLevels.find(
+                              (l) => l.value === skill.proficiency_level
+                            );
+                            return (
+                              <div
+                                key={skillIndex}
+                                className="bg-gray-50 rounded-lg p-3"
+                              >
+                                <div className="flex justify-between items-center text-sm mb-2">
+                                  <span className="font-medium text-gray-900">
+                                    {skill.name}
+                                  </span>
+                                  <span className="text-gray-600 bg-white px-2 py-0.5 rounded-full text-xs">
+                                    {level?.label}
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div
+                                    className={`${
+                                      level?.color || "bg-secondary"
+                                    } h-2 rounded-full transition-all duration-500 ease-out`}
+                                    style={{
+                                      width: `${level?.percentage || 0}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 italic">
+                          No skills added yet
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            if (detail.field === "resume") {
+              return (
+                <div
+                  key={index}
+                  className="col-span-full py-4 border-t border-gray-100"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-semibold text-gray-900 flex items-center">
+                      <span className="mr-2">{detail.icon}</span>
+                      {detail.label}
+                    </h3>
+                    {detail.editable && editing !== detail.field && (
+                      <button
+                        onClick={() => handleEdit(detail.field!)}
+                        className="text-secondary text-sm font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                        disabled={profileMutation.isPending}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+
+                  {editing === detail.field ? (
+                    <div className="mt-2">
+                      <textarea
+                        value={
+                          editValues[
+                            detail.field as keyof typeof editValues
+                          ] as string
+                        }
+                        onChange={(e) => handleChange(e, detail.field!)}
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        rows={5}
+                        placeholder="Write a brief summary about yourself..."
+                      />
+                      <div className="flex justify-end mt-3 space-x-2">
+                        <button
+                          onClick={() => setEditing(null)}
+                          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm transition-colors duration-200"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleSave(detail.field!)}
+                          className="px-4 py-2 bg-secondary text-white rounded-lg hover:opacity-80 font-medium text-sm shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                          disabled={profileMutation.isPending}
+                        >
+                          {profileMutation.isPending ? "Saving..." : "Save"}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 p-4 rounded-lg mt-2">
+                      <p className="text-gray-700 whitespace-pre-wrap">
+                        {detail.value || "No resume added yet"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <div key={index} className="py-3">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-gray-500 mb-1 flex items-center">
+                    {detail.label}
                   </p>
-                  {detail.editable && (
-                    <button 
+                  {detail.editable && editing !== detail.field && (
+                    <button
                       onClick={() => handleEdit(detail.field!)}
-                      className="text-blue-500 text-sm"
+                      className="text-secondary text-xs font-medium hover:text-blue-800 transition-colors duration-200"
+                      disabled={profileMutation.isPending}
                     >
                       Edit
                     </button>
                   )}
                 </div>
-              )}
-            </div>
-          ))}
+
+                {detail.editable && editing === detail.field ? (
+                  <div className="mt-1">
+                    <input
+                      type={
+                        detail.field === "year_of_birth" ? "number" : "text"
+                      }
+                      value={
+                        editValues[
+                          detail.field as keyof typeof editValues
+                        ] as string
+                      }
+                      onChange={(e) => handleChange(e, detail.field!)}
+                      className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    />
+                    <div className="flex justify-end mt-2 space-x-2">
+                      <button
+                        onClick={() => setEditing(null)}
+                        className="px-3 py-1 text-gray-600 text-xs font-medium hover:text-gray-800 transition-colors duration-200"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleSave(detail.field!)}
+                        className="px-3 py-1 bg-secondary text-white rounded-md hover:opacity-80 text-xs font-medium transition-colors duration-200 disabled:opacity-70"
+                        disabled={profileMutation.isPending}
+                      >
+                        {profileMutation.isPending ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="font-medium text-gray-800">
+                    {detail.value || "Not provided"}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

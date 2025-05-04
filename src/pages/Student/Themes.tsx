@@ -156,7 +156,7 @@ const Themes = () => {
   const { data, isLoading, error, isFetching } = useThemes({
     next_url: fetchMoreThemes && nextUrl ? themes?.next : themes?.next,
     ordering: "created_at",
-    academic_year: academicYearFilter || undefined,
+    academic_year: currentUser?.user_type === "student" ? currentUser?.profile?.current_year : academicYearFilter || undefined,
     proposed_by:
       activeFilter === "proposed_by_me" ? currentUser?.id : undefined,
     co_supervised_by:

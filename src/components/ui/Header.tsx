@@ -171,7 +171,7 @@ const Header = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
 
   return (
-    <header className="flex items-center justify-between h-20  bg-white fixed w-[83%] pr-9 mt-0">
+    <header className="flex items-center justify-between h-20  bg-white fixed w-[83%] pr-9 mt-0 z-50">
       {/* Search Input */}
       <div className="w-[60%] flex items-center h-full justify-between">
         <div className="relative w-[85%] bg-[#DBDBDB] ml-7 h-11 rounded-md flex items-center pl-12">

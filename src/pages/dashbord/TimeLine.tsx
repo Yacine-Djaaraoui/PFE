@@ -8,11 +8,13 @@ interface Timeline {
   name: string;
   description: string;
   start_date: string;
+  end_date: string;
   is_current: boolean;
 }
 
 interface CardProps {
-  month: string;
+  startDate: string;
+  endDate :string;
   title: string;
   description: string;
   isOpen: boolean;
@@ -20,7 +22,8 @@ interface CardProps {
 }
 
 const InfoCard: React.FC<CardProps> = ({
-  month,
+  startDate,
+  endDate,
   title,
   description,
   isOpen,
@@ -65,12 +68,13 @@ const InfoCard: React.FC<CardProps> = ({
         onClick={handleClick}
       >
         <div
-          className={`relative w-full h-1.5 mb-7 bg-[#19488E] before:content-[''] before:absolute before:top-0 before:-translate-y-1/2 before:-left-0.5 before:h-8 before:w-8 before:border-[6px] before:border-[#19488E] before:rounded-full ${
+          className={`relative w-full h-1.5 mb-7 bg-[#19488E] before:content-[''] before:absolute before:top-0 before:-translate-y-1/2 before:-left-0.5 before:h-7 before:w-7 before:border-[6px] before:border-[#19488E] before:rounded-full ${
             isOpen ? "before:bg-[#19488E]" : "before:bg-white"
           }`}
         ></div>
         <p className="text-[#19488E] font-bold text-[16px] pb-5 pl-2">
-          {month}
+          {startDate + " ---> " +  endDate}
+          
         </p>
         <p className="font-semibold text-[#092147] text-[18px] pl-2">{title}</p>
         <p className="text-[#092147] text-[15px] pr-[40%] pl-2">
@@ -92,8 +96,15 @@ const TimeLine = () => {
   const { data: timelineData, isLoading, isError, error } = useTimeLine();
 
   const cards = timelineData?.results?.map((timeline: Timeline) => ({
-    month: new Date(timeline.start_date).toLocaleString("default", {
+    startDate: new Date(timeline.start_date).toLocaleString("fr-FR", {
+      day: "2-digit",
       month: "short",
+      year: "numeric",
+    }),
+    endDate: new Date(timeline?.end_date).toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     }),
     title: timeline.name,
     description: timeline.description,
@@ -102,13 +113,13 @@ const TimeLine = () => {
   }));
 
   return (
-    <section className="bg-white py-10 ml-7 mr-7 font-roboto ">
+    <section className="bg-white pb-10 pt-5 ml-7 mr-7 font-roboto ">
       <div className="flex pb-7">
         <div className="text-start w-2/3">
           <p className="text-3xl md:text-[32px] font-semibold text-[#01050B]">
             Suivez l'évolution de votre projet PFE
           </p>
-          <p className="text-[#092147] font-normal text-[17px] pt-3">
+          <p className="text-[#092147] font-normal text-[17px] pt-1">
             Notre plateforme vous permet de structurer votre projet, suivre son
             avancement et collaborer efficacement{" "}
             <br className="hidden md:block" /> avec votre encadrant et votre
@@ -143,7 +154,8 @@ const TimeLine = () => {
           cards?.map((card: CardProps, index: number) => (
             <InfoCard
               key={index}
-              month={card.month}
+              startDate={card.startDate}
+              endDate={card.endDate}
               title={card.title}
               description={card.description}
               isOpen={card.isOpen}

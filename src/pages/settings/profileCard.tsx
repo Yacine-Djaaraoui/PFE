@@ -321,10 +321,14 @@ const ProfileCard: React.FC = () => {
               detail.label === "Profile Picture" ||
               detail.label === "Full Name" ||
               detail.label === "Email" ||
-              detail.label === "Matricule" 
+              detail.label === "Matricule" || (detail.label === "Skills" &&  profile?.user_type != "student")
             ) {
               return null;
             }
+
+
+
+
 
             if (detail.type === "skills"  &&  profile?.user_type == "student") {
               return ( 

@@ -23,12 +23,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useGetMembers } from "@/hooks/useGetMembers";
 import { useTeam } from "@/hooks/teams";
+import { NavLink } from "react-router-dom";
+import { useProfileById } from "@/hooks/profile";
 const Notification = () => {
   const { messages, sendMessage, markAsRead } = useWebSocket();
+  const [userId, setUserId] = useState(null);
   const [teamIdForgetMembers, setTeamIdForGetMembers] = useState<number | null>(
     null
   );
   const [message, setMessage] = useState("");
+
   const { data: membersData } = useGetMembers(
     { id: teamIdForgetMembers! },
     { enabled: !!teamIdForgetMembers }
@@ -37,11 +41,10 @@ const Notification = () => {
     enabled: !!teamIdForgetMembers,
   });
 
-  console.log(messages);
+  // const { data: profile, isLoading, error } = useProfileById(userId || 0);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const queryClient = useQueryClient(); // Get the query client instance
-
   const actionToJoinRequest = useActionToJoinRequest();
   const actionToInvitaion = useActionToInvitaion();
   const actionTosupervision = useActionToSupervisionRequest();
@@ -206,13 +209,22 @@ const Notification = () => {
                                   Créer par{" "}
                                 </p>
 
-                                <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0]">
-                                  {
+                                <NavLink
+                                  to={`/profile/${
                                     membersData.results?.filter(
                                       (member) => member.role === "owner"
-                                    )[0]?.user?.display_name
-                                  }
-                                </span>
+                                    )[0]?.id
+                                  }`}
+                                  className={`w-fit`}
+                                >
+                                  <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0]  hover:bg-secondary hover:text-white">
+                                    {
+                                      membersData.results?.filter(
+                                        (member) => member.role === "owner"
+                                      )[0]?.user?.display_name
+                                    }
+                                  </span>
+                                </NavLink>
                               </div>
                               <div className="flex items-start gap-2 mt-2">
                                 <p className="text-gray-600 text-sm ">
@@ -220,17 +232,22 @@ const Notification = () => {
                                 </p>
                                 <div className="flex flex-wrap gap-2 ">
                                   {membersData.results?.map((member, index) => (
-                                    <span
-                                      key={index}
-                                      className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0]"
+                                    <NavLink
+                                      to={`/profile/${member?.id}`}
+                                      className={`w-fit`}
                                     >
-                                      {/* <img
+                                      <span
+                                        key={index}
+                                        className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0] hover:bg-secondary hover:text-white"
+                                      >
+                                        {/* <img
                                            src={member.avatar}
-                                           alt={member.name}
+                                           alt={member.name}  
                                            className="w-6 h-6 rounded-full"
                                            /> */}
-                                      {member.user.display_name}
-                                    </span>
+                                        {member.user.display_name}
+                                      </span>
+                                    </NavLink>
                                   ))}
                                   {/* <button className="w-6 h-6 flex items-center justify-center border rounded-full text-gray-500 hover:bg-gray-200">
                                        +

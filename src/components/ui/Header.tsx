@@ -228,7 +228,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <NavLink to="/profile" className={`w-fit`}>
+      <NavLink to={`/profile/${profile?.id}`} className={`w-fit`}>
         <div className="flex cursor-pointer items-center gap-2 ">
           <div className="flex flex-col items-end space-y-0">
             <p className="text-[#0D062D] text-[16px] font-medium">

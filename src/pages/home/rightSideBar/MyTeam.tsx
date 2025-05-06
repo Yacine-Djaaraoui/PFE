@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useTeams } from "@/hooks/teams";
 import { useGetMembers } from "@/hooks/useGetMembers";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useDeleteTeam } from "@/hooks/useDeleteTeam";
 import { ReactSVG } from "react-svg";
 import editSquare from "@/assets/Edit-Square.svg";
@@ -86,7 +86,7 @@ const MyTeam = () => {
             </svg>
             <span> {teamsData.results[0]?.created_at.split("T")[0]}</span>
           </div>
-
+          
           {/* Group Title */}
           <h3 className="font-semibold text-left ml-0 mr-auto text-gray-600 text-md mt-2">
             Groupe N°{teamsData.results[0]?.id}
@@ -95,30 +95,40 @@ const MyTeam = () => {
           {/* Created By */}
           <div className="flex items-center mt-2 gap-2 ">
             <p className="text-gray-600 text-sm">Créer par </p>
-
-            <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0]">
-              {
+            <NavLink
+              to={`/profile/${
                 membersData.results?.filter(
                   (member) => member.role === "owner"
-                )[0].user?.display_name
-              }
-            </span>
+                )[0].id
+              }`}
+              className={`w-fit`}
+            >
+              <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0] hover:bg-secondary hover:text-white">
+                {
+                  membersData.results?.filter(
+                    (member) => member.role === "owner"
+                  )[0].user?.display_name
+                }
+              </span>
+            </NavLink>
           </div>
           <div className="flex items-start gap-2 mt-2">
             <p className="text-gray-600 text-sm ">Membres </p>
-            <div className="flex flex-wrap gap-2 ">
+            <div className="flex flex-wrap gap-2 mb-2">
               {membersData.results?.map((member, index) => (
-                <span
-                  key={index}
-                  className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0]"
-                >
-                  {/* <img
+                <NavLink to={`/profile/${member?.id}`} className={`w-fit`}>
+                  <span
+                    key={index}
+                    className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0] hover:bg-secondary hover:text-white"
+                  >
+                    {/* <img
                   src={member.avatar}
                   alt={member.name}
                   className="w-6 h-6 rounded-full"
                   /> */}
-                  {member.user.display_name}
-                </span>
+                    {member.user.display_name}
+                  </span>
+                </NavLink>
               ))}
               {/* <button className="w-6 h-6 flex items-center justify-center border rounded-full text-gray-500 hover:bg-gray-200">
               +

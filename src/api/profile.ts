@@ -13,3 +13,33 @@ export const fetchProfile = async () => {
   });
   return response;
 };
+
+export const updateProfile = async (data: {
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  user_type?: string;
+  profile_picture_url?: string;
+  country?: string;
+  state?: string;
+  phone_number?: string;
+  postal_code?: string;
+  resume?: string;
+  year_of_birth?: number;
+}) => {
+  const token = localStorage.getItem("access_token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await client.patch(`auth/users/me/`, data, {
+    headers,
+  });
+  return response;
+};
+
+export const fetchProfileById = async (id: number) => {
+  const token = localStorage.getItem("access_token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await client.get(`profiles/${id}/`, {
+    headers,
+  });
+  return response;
+};

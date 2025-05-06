@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { set_password } from "@/api/settings/setPassword";
 import { CheckCircle } from "lucide-react"; // Import a check icon from Lucide (or any other icon library)
+import { useMyProfile } from "@/hooks/profile";
 
 const validationSchema = Yup.object().shape({
   currentPassword: Yup.string().required("Le mot de passe actuel est requis"),
@@ -32,6 +33,7 @@ const SettingCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [isSuccess, setIsSuccess] = useState(false); // New state for success message
+  const { data: profile } = useMyProfile();
 
   const setPasswordMutation = useMutation({
     mutationFn: (values: {
@@ -78,7 +80,7 @@ const SettingCard = () => {
   };
 
   return (
-    <div className="w-[62.5%] mt-12 h-[80vh] bg-white p-6 border border-[#E6E6E6] rounded-lg shadow font-inter">
+    <div className="w-[50%] mt-4 h-[80vh] bg-white p-6 border border-[#E6E6E6] rounded-lg shadow font-inter">
       <h2 className="text-sm font-bold mb-4">INFORMATIONS DU COMPTE</h2>
 
       {!emailVerified && (
@@ -105,7 +107,7 @@ const SettingCard = () => {
           </label>
           <input
             type="email"
-            value="hello@esi-sba.dz"
+            value={profile?.email}
             disabled
             className="w-full bg-gray-100 text-gray-700 px-3 py-2 rounded-md border border-gray-300 focus:outline-none"
           />

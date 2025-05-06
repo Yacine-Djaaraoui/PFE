@@ -68,7 +68,6 @@ const Header = () => {
       () => ({
         search: DebouncerSearchTerm,
         match_student_profile: true,
-        is_member: true,
         ordering: "-last_name",
       }),
       [DebouncerSearchTerm]
@@ -171,7 +170,7 @@ const Header = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
 
   return (
-    <header className="flex items-center justify-between h-20  bg-white fixed w-[83%] pr-9 mt-0">
+    <header className="flex items-center justify-between h-20  bg fixed w-[83%] pr-9 mt-0 ">
       {/* Search Input */}
       <div className="w-[60%] flex items-center h-full justify-between">
         <div className="relative w-[85%] bg-[#DBDBDB] ml-7 h-11 rounded-md flex items-center pl-12">
@@ -188,7 +187,7 @@ const Header = () => {
         </div>
 
         {/* Icons and User Info */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between ">
           {/* Icons */}
           <div className="flex  items-center gap-4 text-[#787486] ml-8">
             <button aria-label="Calendar" className="hover:text-gray-700">
@@ -197,13 +196,14 @@ const Header = () => {
             <button aria-label="Help" className="hover:text-gray-700">
               <ReactSVG src={MessageQuestionIcon} className="w-6 h-6" />
             </button>
-            <Sheet>
+            <Sheet >
               <SheetTrigger asChild>
                 <button
                   onClick={toggleNotifications}
                   aria-label="Notifications"
                   className="relative hover:text-gray-700  text-[#787486] "
                 >
+                  
                   <Icon
                     icon="mdi:notifications-none"
                     width="26"

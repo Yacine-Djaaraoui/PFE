@@ -157,7 +157,7 @@ const Themes = () => {
     next_url: fetchMoreThemes && nextUrl ? themes?.next : themes?.next,
     ordering: "created_at",
     academic_year: academicYearFilter || undefined,
-    proposed_by:
+     proposed_by:
       activeFilter === "proposed_by_me" ? currentUser?.id : undefined,
     co_supervised_by:
       activeFilter === "co_supervised_by_me" ? currentUser?.id : undefined,

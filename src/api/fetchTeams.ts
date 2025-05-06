@@ -15,6 +15,7 @@ export const fetchTeams = async ({
   description,
   search,
   page_size,
+  academic_year,
   next_url, // Add this new optional parameter
 }: {
   is_member?: boolean;
@@ -23,6 +24,7 @@ export const fetchTeams = async ({
   match_student_profile?: boolean;
   ordering?: string;
   name?: string;
+  academic_year?: string;
   description?: string;
   search?: string;
   page_size?: string;
@@ -47,6 +49,7 @@ export const fetchTeams = async ({
     params.append("match_student_profile", String(match_student_profile));
   if (ordering !== undefined) params.append("ordering", String(ordering));
   if (name !== undefined) params.append("name", String(name));
+  if (academic_year !== undefined) params.append("academic_year", String(academic_year));
   if (description !== undefined)
     params.append("description", String(description)); // Fixed: was using ordering instead of description
   if (search !== undefined) params.append("search", String(search));

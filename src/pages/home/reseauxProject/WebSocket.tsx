@@ -52,7 +52,10 @@ const WebSocketChat = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-4xl mx-auto p-4 bg-gray-50 rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">WebSocket Chat</h1>
+      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+        {" "}
+        MiniLab WebSocket{" "}
+      </h1>
 
       {/* WebSocket URL Connection */}
       <div className="mb-6">

@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useDeleteTeam } from "@/hooks/useDeleteTeam";
 import { ReactSVG } from "react-svg";
 import editSquare from "@/assets/Edit-Square.svg";
+import { Button } from "@/components/ui/button";
 
 const MyTeam = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
@@ -87,7 +88,7 @@ const MyTeam = () => {
           </div>
 
           {/* Group Title */}
-          <h3 className="font-bold text-md mt-2">
+          <h3 className="font-semibold text-left ml-0 mr-auto text-gray-600 text-md mt-2">
             Groupe N°{teamsData.results[0]?.id}
           </h3>
 
@@ -126,7 +127,7 @@ const MyTeam = () => {
           </div>
 
           {/* Status */}
-          <div className="flex items-center gap-7  mt-3">
+          <div className="flex items-center gap-8  mt-1">
             <p className="text-gray-600 text-sm">Status </p>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 bg-secondary rounded-full"></span>
@@ -135,13 +136,19 @@ const MyTeam = () => {
               </span>
             </div>
           </div>
+          <div className="flex items-center gap-12  mt-3">
+            <p className="text-gray-600 text-sm">Year </p>
+            <span className="text-sm">
+              {teamsData?.results[0]?.academic_year}
+            </span>
+          </div>
           {profile?.id === teamsData?.results[0]?.owner.id && (
-            <div className="flex items-center justify-around gap-1">
+            <div className="flex items-center justify-start gap-16  mt-3">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <button className="bg-secondary hover:bg-secondary/90 text-white text-sm mx-auto rounded mt-4  px-2 w-[40%] py-1 text-center cursor-pointer">
-                    Supprumer
-                  </button>
+                  <Button className="bg- w-[35%] text-white bg-secondary px-4 py-1.5 rounded-sm text-xs">
+                    Supprimer
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
@@ -162,17 +169,17 @@ const MyTeam = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <button
+              <Button
                 disabled={!teamsData?.results[0]?.has_capacity}
                 onClick={() => navigate("/students")}
                 className={`${
                   teamsData?.results[0]?.has_capacity
                     ? "bg-secondary  hover:bg-secondary/90"
                     : "bg-accent"
-                }  text-white text-sm mx-auto rounded mt-4  px-2 w-[40%] py-1 text-center cursor-pointer`}
+                }  bg-secondary w-[35%] text-white px-4 py-1.5 rounded-sm text-xs`}
               >
                 Ajouter
-              </button>
+              </Button>
             </div>
           )}
         </div>

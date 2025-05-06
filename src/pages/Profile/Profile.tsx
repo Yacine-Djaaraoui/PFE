@@ -102,9 +102,9 @@ const UserProfilePage: React.FC = () => {
                     <h1 className="text-2xl font-bold text-gray-900">
                       {profile.first_name} {profile.last_name}
                     </h1>
-                    <p className="text-secondary text-extrabold">
+                    {profile?.user_type == "student" && (<p className="text-secondary text-extrabold">
                       {getAcademicYearLabel(profile.profile?.current_year) || "Student"}
-                    </p>
+                    </p>)}
                     <p className="text-gray-500 text-sm mt-1">
                       {location || "Location not specified"}
                     </p>
@@ -337,7 +337,7 @@ const UserProfilePage: React.FC = () => {
             </div>
 
             {/* Skills Section */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            {profile?.user_type == "student" && (<div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Skills
               </h2>
@@ -392,7 +392,7 @@ const UserProfilePage: React.FC = () => {
               ) : (
                 <p className="text-sm text-gray-500 italic">No skills listed</p>
               )}
-            </div>
+            </div>)}
           </div>
         </div>
       </div>

@@ -17,11 +17,13 @@ export const useTeams = (
     search,
     page_size,
     next_url,
+    academic_year,
   }: {
     is_member?: boolean;
     has_capacity?: boolean;
     is_owner?: boolean;
     match_student_profile?: boolean;
+    academic_year?: string;
     ordering?: string;
     name?: string;
     description?: string;
@@ -45,6 +47,7 @@ export const useTeams = (
         search,
         page_size,
         next_url,
+        academic_year,
       },
     ],
     queryFn: () =>
@@ -58,6 +61,7 @@ export const useTeams = (
         description,
         search,
         page_size,
+        academic_year,
         next_url,
       }),
     refetchOnWindowFocus: false,

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useInvitations } from "@/hooks/useInvitaions";
 import { useTeams } from "@/hooks/teams";
+import { NavLink } from "react-router-dom";
 interface Student {
   id: string;
   email: string;
@@ -92,12 +93,12 @@ const StudentsList = () => {
   const [totalPages, setTotalPages] = useState<number>(1); // Sorting state
   const [data, setData] = useState(searchResults.searchResult); // Sorting state
   const [message, setMessage] = useState("");
-   const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const CreateInvitaion = useInvitations();
   const {
     data: studentsdata,
-    error : studenterror,
+    error: studenterror,
     isLoading,
     isFetching,
     isError,
@@ -108,7 +109,7 @@ const StudentsList = () => {
       page_size: 10,
       page: currentPage,
       search: searchResults.searchTerm,
-      has_team : false,
+      has_team: false,
     },
     {
       enabled: true,
@@ -141,11 +142,11 @@ const StudentsList = () => {
       { teamId, username },
       {
         onSuccess: () => {
-           setError(""); // Clear any previous errors
-           setSuccess(`sending invitaion successfully`);
+          setError(""); // Clear any previous errors
+          setSuccess(`sending invitaion successfully`);
         },
         onError: (error) => {
-         setError(error.name[0]);
+          setError(error.name[0]);
 
           //   setError(error?.non_field_errors);
         },
@@ -218,25 +219,27 @@ const StudentsList = () => {
               {data?.results?.map((student) => (
                 <tr key={student.id} className="relative">
                   <td className="px-2 pr-8  py-4 whitespace-nowrap w-fit">
-                    <div className="flex gap-2 h-10 w-10">
-                      <img
-                        className="h-10 w-10 rounded-xl"
-                        src={student.profile_picture_url}
-                        alt={`${student.first_name} ${student.last_name}`}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            "https://via.placeholder.com/150";
-                        }}
-                      />
-                      <div className="flex flex-col ">
-                        <td className=" text-sm text-black">
-                          {`${student.first_name} ${student.last_name}`}
-                        </td>
-                        <td className=" text-sm text-gray-500">
-                          @{student.username}
-                        </td>{" "}
+                    <NavLink to={`/profile/${student?.id}`} className={`w-fit`}>
+                      <div className="flex gap-2 h-10 w-10">
+                        <img
+                          className="h-10 w-10 rounded-xl"
+                          src={student.profile_picture_url}
+                          alt={`${student.first_name} ${student.last_name}`}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "https://via.placeholder.com/150";
+                          }}
+                        />
+                        <div className="flex flex-col ">
+                          <td className=" text-sm text-black">
+                            {`${student.first_name} ${student.last_name}`}
+                          </td>
+                          <td className=" text-sm text-gray-500">
+                            @{student.username}
+                          </td>{" "}
+                        </div>
                       </div>
-                    </div>
+                    </NavLink>
                   </td>
 
                   {/* <td className="px-2 py-4 w-fit whitespace-nowrap text-sm text-gray-500">

@@ -7,7 +7,7 @@ import { useThemes } from "@/hooks/themes";
 import { ThemeDetailsDialog } from "@/pages/Student/Themes";
 
 const Mytheme = () => {
-  const [isThemesOpen, setIsThemesOpen] = useState(false);
+  const [isThemesOpen, setIsThemesOpen] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(null);
 

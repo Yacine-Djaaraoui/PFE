@@ -11,6 +11,8 @@ import { RootState } from "@/redux/store";
 import { useWebSocket } from "@/hooks/useWebsocket";
 import Notification from "./Notification";
 import { Button } from "@/components/ui/button";
+import { IoMdNotificationsOutline } from "react-icons/io";
+
 import {
   Sheet,
   SheetClose,
@@ -54,7 +56,6 @@ const Header = () => {
     }),
     [location.pathname]
   );
-
   // Teams query - only runs when on teams page with proper params
   const {
     data: teamsData,
@@ -68,7 +69,6 @@ const Header = () => {
       () => ({
         search: DebouncerSearchTerm,
         match_student_profile: true,
-        is_member: true,
         ordering: "-last_name",
       }),
       [DebouncerSearchTerm]
@@ -171,7 +171,7 @@ const Header = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
 
   return (
-    <header className="flex items-center justify-between h-20  bg-white fixed w-[83%] pr-9 mt-0 z-50">
+    <header className="flex items-center justify-between h-20  bg fixed w-[83%] pr-9 mt-0 ">
       {/* Search Input */}
       <div className="w-[60%] flex items-center h-full justify-between">
         <div className="relative w-[85%] bg-[#DBDBDB] ml-7 h-11 rounded-md flex items-center pl-12">
@@ -188,7 +188,7 @@ const Header = () => {
         </div>
 
         {/* Icons and User Info */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between ">
           {/* Icons */}
           <div className="flex  items-center gap-4 text-[#787486] ml-8">
             <button aria-label="Calendar" className="hover:text-gray-700">
@@ -204,12 +204,8 @@ const Header = () => {
                   aria-label="Notifications"
                   className="relative hover:text-gray-700  text-[#787486] "
                 >
-                  <Icon
-                    icon="mdi:notifications-none"
-                    width="26"
-                    height="26"
-                    className=" text-[#787486] hover:text-gray-700 cursor-pointer"
-                  />
+                  <IoMdNotificationsOutline className=" text-3xl hover:text-gray-700 cursor-pointer   text-[#787486] " />
+
                   {messages?.filter((msg) => msg.type === "notification")
                     .length > 0 &&
                     !isOpen && (
@@ -228,7 +224,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <NavLink to="/profile" className={`w-fit`}>
+      <NavLink to={`/profile/${profile?.id}`} className={`w-fit`}>
         <div className="flex cursor-pointer items-center gap-2 ">
           <div className="flex flex-col items-end space-y-0">
             <p className="text-[#0D062D] text-[16px] font-medium">

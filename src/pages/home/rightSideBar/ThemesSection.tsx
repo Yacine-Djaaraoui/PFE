@@ -55,7 +55,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
   const [isEditThemeOpen, setIsEditThemeOpen] = useState(false);
   const [themeToDelete, setThemeToDelete] = useState<number | null>(null);
   const [currentTheme, setCurrentTheme] = useState<Theme | null>(null);
-  const [isThemesOpen, setIsThemesOpen] = useState(false);
+  const [isThemesOpen, setIsThemesOpen] = useState(true);
   const [isThemesNonVerifyOpen, setIsThemesNonVerifyOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 

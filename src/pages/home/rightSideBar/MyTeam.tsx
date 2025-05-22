@@ -15,10 +15,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useTeams } from "@/hooks/teams";
 import { useGetMembers } from "@/hooks/useGetMembers";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useDeleteTeam } from "@/hooks/useDeleteTeam";
 import { ReactSVG } from "react-svg";
 import editSquare from "@/assets/Edit-Square.svg";
+import { Button } from "@/components/ui/button";
 
 const MyTeam = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
@@ -85,39 +86,49 @@ const MyTeam = () => {
             </svg>
             <span> {teamsData.results[0]?.created_at.split("T")[0]}</span>
           </div>
-
+          
           {/* Group Title */}
-          <h3 className="font-bold text-md mt-2">
+          <h3 className="font-semibold text-left ml-0 mr-auto text-gray-600 text-md mt-2">
             Groupe N°{teamsData.results[0]?.id}
           </h3>
 
           {/* Created By */}
           <div className="flex items-center mt-2 gap-2 ">
             <p className="text-gray-600 text-sm">Créer par </p>
-
-            <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0]">
-              {
+            <NavLink
+              to={`/profile/${
                 membersData.results?.filter(
                   (member) => member.role === "owner"
-                )[0].user?.display_name
-              }
-            </span>
+                )[0].id
+              }`}
+              className={`w-fit`}
+            >
+              <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0] hover:bg-secondary hover:text-white">
+                {
+                  membersData.results?.filter(
+                    (member) => member.role === "owner"
+                  )[0].user?.display_name
+                }
+              </span>
+            </NavLink>
           </div>
           <div className="flex items-start gap-2 mt-2">
             <p className="text-gray-600 text-sm ">Membres </p>
-            <div className="flex flex-wrap gap-2 ">
+            <div className="flex flex-wrap gap-2 mb-2">
               {membersData.results?.map((member, index) => (
-                <span
-                  key={index}
-                  className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0]"
-                >
-                  {/* <img
+                <NavLink to={`/profile/${member?.id}`} className={`w-fit`}>
+                  <span
+                    key={index}
+                    className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0] hover:bg-secondary hover:text-white"
+                  >
+                    {/* <img
                   src={member.avatar}
                   alt={member.name}
                   className="w-6 h-6 rounded-full"
                   /> */}
-                  {member.user.display_name}
-                </span>
+                    {member.user.display_name}
+                  </span>
+                </NavLink>
               ))}
               {/* <button className="w-6 h-6 flex items-center justify-center border rounded-full text-gray-500 hover:bg-gray-200">
               +
@@ -126,7 +137,7 @@ const MyTeam = () => {
           </div>
 
           {/* Status */}
-          <div className="flex items-center gap-7  mt-3">
+          <div className="flex items-center gap-8  mt-1">
             <p className="text-gray-600 text-sm">Status </p>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 bg-secondary rounded-full"></span>
@@ -135,13 +146,19 @@ const MyTeam = () => {
               </span>
             </div>
           </div>
+          <div className="flex items-center gap-12  mt-3">
+            <p className="text-gray-600 text-sm">Year </p>
+            <span className="text-sm">
+              {teamsData?.results[0]?.academic_year}
+            </span>
+          </div>
           {profile?.id === teamsData?.results[0]?.owner.id && (
-            <div className="flex items-center justify-around gap-1">
+            <div className="flex items-center justify-start gap-16  mt-3">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <button className="bg-secondary hover:bg-secondary/90 text-white text-sm mx-auto rounded mt-4  px-2 w-[40%] py-1 text-center cursor-pointer">
-                    Supprumer
-                  </button>
+                  <Button className="bg- w-[35%] text-white bg-secondary px-4 py-1.5 rounded-sm text-xs">
+                    Supprimer
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
@@ -162,17 +179,17 @@ const MyTeam = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <button
+              <Button
                 disabled={!teamsData?.results[0]?.has_capacity}
                 onClick={() => navigate("/students")}
                 className={`${
                   teamsData?.results[0]?.has_capacity
                     ? "bg-secondary  hover:bg-secondary/90"
                     : "bg-accent"
-                }  text-white text-sm mx-auto rounded mt-4  px-2 w-[40%] py-1 text-center cursor-pointer`}
+                }  bg-secondary w-[35%] text-white px-4 py-1.5 rounded-sm text-xs`}
               >
                 Ajouter
-              </button>
+              </Button>
             </div>
           )}
         </div>

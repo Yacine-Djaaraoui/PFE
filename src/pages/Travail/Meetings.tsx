@@ -193,6 +193,20 @@ const Meetings = () => {
             )}
           </div>
         )}
+      {Meetings?.results?.filter(
+        (meeting: any) => meeting.status === "scheduled"
+      ).length === 0 &&
+        profile?.user_type === "teacher" && (
+          <div className="flex items-center gap-2 text-gray-700">
+            <span> Ajouter un réunion</span>
+            <button
+              className=" hover:bg-gray-300  right-5 top-5"
+              onClick={() => setIsAddThemeOpen(true)}
+            >
+              <ReactSVG src={plus} className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       <Dialog open={isAddThemeOpen} onOpenChange={setIsAddThemeOpen}>
         <DialogContent className="max-w-lg bg-white p-6 rounded-lg shadow-lg">
           <DialogHeader>

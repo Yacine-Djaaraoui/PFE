@@ -11,6 +11,8 @@ import { RootState } from "@/redux/store";
 import { useWebSocket } from "@/hooks/useWebsocket";
 import Notification from "./Notification";
 import { Button } from "@/components/ui/button";
+import { IoMdNotificationsOutline } from "react-icons/io";
+
 import {
   Sheet,
   SheetClose,
@@ -54,7 +56,6 @@ const Header = () => {
     }),
     [location.pathname]
   );
-
   // Teams query - only runs when on teams page with proper params
   const {
     data: teamsData,
@@ -196,20 +197,15 @@ const Header = () => {
             <button aria-label="Help" className="hover:text-gray-700">
               <ReactSVG src={MessageQuestionIcon} className="w-6 h-6" />
             </button>
-            <Sheet >
+            <Sheet>
               <SheetTrigger asChild>
                 <button
                   onClick={toggleNotifications}
                   aria-label="Notifications"
                   className="relative hover:text-gray-700  text-[#787486] "
                 >
-                  
-                  <Icon
-                    icon="mdi:notifications-none"
-                    width="26"
-                    height="26"
-                    className=" text-[#787486] hover:text-gray-700 cursor-pointer"
-                  />
+                  <IoMdNotificationsOutline className=" text-3xl hover:text-gray-700 cursor-pointer   text-[#787486] " />
+
                   {messages?.filter((msg) => msg.type === "notification")
                     .length > 0 &&
                     !isOpen && (

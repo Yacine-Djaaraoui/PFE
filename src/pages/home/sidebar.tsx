@@ -16,7 +16,9 @@ const Sidebar = () => {
 
   return (
     <div className="bg-white w-[17%] flex py-5 shadow-lg flex-col items-center gap-4 h-screen fixed">
-      <img src={logo} alt="#" className="w-[200px]" />
+      <a href="/dashboard">
+        <img src={logo} alt="#" className="w-[200px]" />
+      </a>
       <nav className="flex flex-col gap-1 items-start text-[16px] mt-8">
         {/* Tableau de bord */}
         <NavLink

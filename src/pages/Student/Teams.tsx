@@ -20,6 +20,7 @@ import { RootState } from "@/redux/store";
 import { useGetMembers } from "@/hooks/useGetMembers";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Filter } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const Teams = () => {
   const searchResults = useSelector((state: RootState) => state.SearchResult);
@@ -458,38 +459,52 @@ const Teams = () => {
                                   Créer par{" "}
                                 </p>
 
-                                <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0]">
-                                  {
+                                <NavLink
+                                  to={`/profile/${
                                     membersData.results?.filter(
                                       (member) => member.role === "owner"
-                                    )[0].user?.display_name
-                                  }
-                                </span>
+                                    )[0]?.id
+                                  }`}
+                                  className={`w-fit`}
+                                >
+                                  <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0]  hover:bg-secondary hover:text-white">
+                                    {
+                                      membersData.results?.filter(
+                                        (member) => member.role === "owner"
+                                      )[0]?.user?.display_name
+                                    }
+                                  </span>
+                                </NavLink>
                               </div>
-                              <div className="flex items-start gap-2 mt-2">
+                              <div className="flex items-start gap-2 mt-4">
                                 <p className="text-gray-600 text-sm ">
                                   Membres{" "}
                                 </p>
                                 <div className="flex flex-wrap gap-2 ">
                                   {membersData.results?.map((member, index) => (
-                                    <span
-                                      key={index}
-                                      className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0]"
+                                    <NavLink
+                                      to={`/profile/${member?.id}`}
+                                      className={`w-fit`}
                                     >
-                                      {/* <img
+                                      <span
+                                        key={index}
+                                        className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0] hover:bg-secondary hover:text-white"
+                                      >
+                                        {/* <img
                                            src={member.avatar}
-                                           alt={member.name}
+                                           alt={member.name}  
                                            className="w-6 h-6 rounded-full"
                                            /> */}
-                                      {member.user.display_name}
-                                    </span>
+                                        {member.user.display_name}
+                                      </span>
+                                    </NavLink>
                                   ))}
                                   {/* <button className="w-6 h-6 flex items-center justify-center border rounded-full text-gray-500 hover:bg-gray-200">
                                        +
                                        </button> */}
                                 </div>
                               </div>
-                              <div className="flex items-center gap-12 mt-1">
+                              <div className="flex items-center gap-12 mt-4">
                                 <p className="text-gray-600 text-sm">Year </p>
                                 <span className="text-sm">
                                   {group?.academic_year}

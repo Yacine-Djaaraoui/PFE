@@ -1,6 +1,4 @@
-import { RootState } from "@/redux/store";
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProfile } from "@/api/profile";
 import { useMyProfile } from "@/hooks/profile";
@@ -51,6 +49,25 @@ const ProfileCard: React.FC = () => {
     }
   }, [profile]);
 
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Check if it starts with 05, 06, or 07 and has exactly 10 digits
+    return /^(05|06|07)\d{8}$/.test(phone);
+  };
+
+  const formatPhoneForDisplay = (phone: string | undefined): string => {
+    if (!phone || phone === "Not provided") return "";
+
+    // If it's already in local format (05/06/07), return as is
+    if (/^(05|06|07)\d{8}$/.test(phone)) return phone;
+
+    // If it's in international format (+213...), convert to local format
+    if (phone.startsWith("+213")) {
+      return `0${phone.substring(4)}`;
+    }
+
+    return phone; // fallback for any other format
+  };
+
   // Mutation for updating profile
   const profileMutation = useMutation({
     mutationFn: (data: Partial<typeof editValues>) => {
@@ -70,8 +87,21 @@ const ProfileCard: React.FC = () => {
   };
 
   const handleSave = (field: string) => {
+    let valueToSend = editValues[field as keyof typeof editValues];
+
+    // Format phone number before sending
+    if (field === "phone_number") {
+      const phone = valueToSend as string;
+      if (!validatePhoneNumber(phone)) {
+        alert("Phone number must start with 05, 06, or 07 and have 10 digits");
+        return;
+      }
+      // Convert to international format (+213...)
+      valueToSend = `+213${phone.substring(1)}`;
+    }
+
     profileMutation.mutate({
-      [field]: editValues[field as keyof typeof editValues],
+      [field]: valueToSend,
     });
   };
 
@@ -81,9 +111,22 @@ const ProfileCard: React.FC = () => {
     >,
     field: string
   ) => {
+    const value = e.target.value;
+
+    // Special handling for phone number
+    if (field === "phone_number") {
+      // Only allow numbers and limit to 10 digits
+      const numericValue = value.replace(/\D/g, "").slice(0, 10);
+      setEditValues((prev) => ({
+        ...prev,
+        [field]: numericValue,
+      }));
+      return;
+    }
+
     setEditValues((prev) => ({
       ...prev,
-      [field]: e.target.value,
+      [field]: value,
     }));
   };
 
@@ -190,10 +233,10 @@ const ProfileCard: React.FC = () => {
       field: "username",
       icon: "🏷️",
     },
-   
+
     {
       label: "Phone Number",
-      value: profile?.phone_number || "Not provided",
+      value: formatPhoneForDisplay(profile?.phone_number),
       editable: true,
       field: "phone_number",
       icon: "📱",
@@ -301,16 +344,19 @@ const ProfileCard: React.FC = () => {
                 {profile?.first_name || ""} {profile?.last_name || ""}
               </h1>
               <p className="text-gray-500 mt-1">{profile?.email || ""}</p>
-              {profile?.user_type == "student" && (<div className="flex mt-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-secondary">
-                  {getAcademicYearLabel(profile?.profile?.current_year) || "Student"}
-                </span>
-                {profile?.profile?.matricule && (
-                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    {profile.profile.matricule}
+              {profile?.user_type == "student" && (
+                <div className="flex mt-2">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-secondary">
+                    {getAcademicYearLabel(profile?.profile?.current_year) ||
+                      "Student"}
                   </span>
-                )}
-              </div> )}
+                  {profile?.profile?.matricule && (
+                    <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      {profile.profile.matricule}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -321,17 +367,14 @@ const ProfileCard: React.FC = () => {
               detail.label === "Profile Picture" ||
               detail.label === "Full Name" ||
               detail.label === "Email" ||
-              detail.label === "Matricule" || (detail.label === "Skills" &&  profile?.user_type != "student")
+              detail.label === "Matricule" ||
+              (detail.label === "Skills" && profile?.user_type != "student")
             ) {
               return null;
             }
 
-
-
-
-
-            if (detail.type === "skills"  &&  profile?.user_type == "student") {
-              return ( 
+            if (detail.type === "skills" && profile?.user_type == "student") {
+              return (
                 <div
                   key={index}
                   className="col-span-full py-4 border-t border-gray-100"
@@ -553,18 +596,30 @@ const ProfileCard: React.FC = () => {
 
                 {detail.editable && editing === detail.field ? (
                   <div className="mt-1">
-                    <input
-                      type={
-                        detail.field === "year_of_birth" ? "number" : "text"
-                      }
-                      value={
-                        editValues[
-                          detail.field as keyof typeof editValues
-                        ] as string
-                      }
-                      onChange={(e) => handleChange(e, detail.field!)}
-                      className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    />
+                    {detail.field === "phone_number" ? (
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={formatPhoneForDisplay(editValues.phone_number)}
+                        onChange={(e) => handleChange(e, "phone_number")}
+                        className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        maxLength={10}
+                      />
+                    ) : (
+                      <input
+                        type={
+                          detail.field === "year_of_birth" ? "number" : "text"
+                        }
+                        value={
+                          editValues[
+                            detail.field as keyof typeof editValues
+                          ] as string
+                        }
+                        onChange={(e) => handleChange(e, detail.field!)}
+                        className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      />
+                    )}
                     <div className="flex justify-end mt-2 space-x-2">
                       <button
                         onClick={() => setEditing(null)}
@@ -583,7 +638,10 @@ const ProfileCard: React.FC = () => {
                   </div>
                 ) : (
                   <p className="font-medium text-gray-800">
-                    {detail.value || "Not provided"}
+                    {detail.label === "Phone Number"
+                      ? formatPhoneForDisplay(detail.value as string) ||
+                        "Not provided"
+                      : detail.value || "Not provided"}
                   </p>
                 )}
               </div>

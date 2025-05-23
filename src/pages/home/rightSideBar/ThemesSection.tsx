@@ -803,23 +803,36 @@ const ThemeForm = ({
                 Année académique<span className="text-red-500">*</span>
               </label>
               <div className="w-full">
-                <Field
-                  as="select"
-                  name="academic_year"
-                  className="w-full text-sm p-2 border-2 rounded-md bg-white border-secondary focus:border-black focus:outline-none"
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                    const year = e.target.value;
-                    setFieldValue("academic_year", year);
-                    setFieldValue("specialties", []);
-                  }}
-                >
-                  <option value="">Sélectionner une année</option>
-                  {years.map((year) => (
-                    <option key={year.value} value={year.value}>
-                      {year.label}
-                    </option>
-                  ))}
-                </Field>
+                {isEditMode ? (
+                  <div className="w-full text-sm p-2 border-2 rounded-md bg-gray-100 border-gray-300 text-gray-700">
+                    {(() => {
+                      const year = values.academic_year;
+                      if (year === "2") return "2ème Année";
+                      if (year === "3") return "3ème Année";
+                      if (year === "4") return "4ème Année";
+                      if (year === "5") return "5ème Année";
+                      return year;
+                    })()}
+                  </div>
+                ) : (
+                  <Field
+                    as="select"
+                    name="academic_year"
+                    className="w-full text-sm p-2 border-2 rounded-md bg-white border-secondary focus:border-black focus:outline-none"
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      const year = e.target.value;
+                      setFieldValue("academic_year", year);
+                      setFieldValue("specialties", []);
+                    }}
+                  >
+                    <option value="">Sélectionner une année</option>
+                    {years.map((year) => (
+                      <option key={year.value} value={year.value}>
+                        {year.label}
+                      </option>
+                    ))}
+                  </Field>
+                )}
                 <ErrorMessage
                   name="academic_year"
                   component="div"
@@ -836,29 +849,42 @@ const ThemeForm = ({
                   Spécialités<span className="text-red-500">*</span>
                 </label>
                 <div className="w-full">
-                  <div className="flex flex-wrap gap-2">
-                    {specialties.map((specialty) => (
-                      <label
-                        key={specialty.value}
-                        className={`flex items-center space-x-2 p-2 border rounded-md hover:bg-gray-50 cursor-pointer ${
-                          values.specialties?.includes(specialty.value)
-                            ? "bg-gray-100 border-secondary"
-                            : ""
-                        }`}
-                      >
-                        <Field
-                          type="checkbox"
-                          name="specialties"
-                          value={specialty.value}
-                          checked={values.specialties?.includes(
-                            specialty.value
-                          )}
-                          className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
-                        />
-                        <span className="text-sm">{specialty.label}</span>
-                      </label>
-                    ))}
-                  </div>
+                  {isEditMode ? (
+                    <div className="flex flex-wrap gap-2">
+                      {values.specialties?.map((specialty: string) => (
+                        <div
+                          key={specialty}
+                          className="p-1.5 border text-sm rounded-md bg-gray-100 border-gray-300 text-gray-700"
+                        >
+                          {specialty}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {specialties.map((specialty) => (
+                        <label
+                          key={specialty.value}
+                          className={`flex items-center space-x-2 p-2 border rounded-md hover:bg-gray-50 cursor-pointer ${
+                            values.specialties?.includes(specialty.value)
+                              ? "bg-gray-100 border-secondary"
+                              : ""
+                          }`}
+                        >
+                          <Field
+                            type="checkbox"
+                            name="specialties"
+                            value={specialty.value}
+                            checked={values.specialties?.includes(
+                              specialty.value
+                            )}
+                            className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
+                          />
+                          <span className="text-sm">{specialty.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                   <ErrorMessage
                     name="specialties"
                     component="div"

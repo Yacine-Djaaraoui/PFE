@@ -18,6 +18,7 @@ export const useTeams = (
     page_size,
     next_url,
     academic_year,
+    is_supervisor,
   }: {
     is_member?: boolean;
     has_capacity?: boolean;
@@ -30,6 +31,7 @@ export const useTeams = (
     search?: string;
     page_size?: string;
     next_url?: string;
+    is_supervisor?: boolean;
   } = {},
   options?: UseQueryOptions // Accept query options (e.g., enabled)
 ): UseQueryResult<{ results: any[]; next: string | null }> => {
@@ -48,6 +50,7 @@ export const useTeams = (
         page_size,
         next_url,
         academic_year,
+        is_supervisor,
       },
     ],
     queryFn: () =>
@@ -62,6 +65,7 @@ export const useTeams = (
         search,
         page_size,
         academic_year,
+        is_supervisor,
         next_url,
       }),
     refetchOnWindowFocus: false,

@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useProfileById } from "@/hooks/profile";
 import WrapperByHeaderOnly from "@/hoc/WrapperByHeaderOnly";
 import getAcademicYearLabel from "@/hoc/GlobalFunctions";
+import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
+
 
 const UserProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -72,6 +74,52 @@ const UserProfilePage: React.FC = () => {
       default:
         return "50%";
     }
+  };
+
+  const formatSocialUrl = (url: string | null) => {
+    if (!url) return null;
+    try {
+      const parsedUrl = new URL(url);
+      return parsedUrl.hostname.replace('www.', '');
+    } catch {
+      return url;
+    }
+  };
+
+  const SocialMediaLinks = ({ profile }: { profile: any }) => {
+    const socialLinks = [
+      { name: 'Facebook', url: profile.facebook, icon: <FaFacebook className="text-blue-600" /> },
+      { name: 'GitHub', url: profile.github, icon: <FaGithub className="text-gray-800" /> },
+      { name: 'Instagram', url: profile.instagram, icon: <FaInstagram className="text-pink-600" /> },
+      { name: 'LinkedIn', url: profile.linkedin, icon: <FaLinkedin className="text-blue-500" /> },
+      { name: 'Twitter', url: profile.twitter, icon: <FaTwitter className="text-blue-400" /> },
+    ].filter(link => link.url);
+  
+    if (socialLinks.length === 0) return null;
+  
+    return (
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Social Media
+        </h2>
+        <div className="flex flex-wrap gap-4">
+          {socialLinks.map((link, index) => (
+            <a
+              key={index}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              {link.icon}
+              <span className="text-sm font-medium text-gray-700">
+                {formatSocialUrl(link.url) || link.name}
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -281,6 +329,8 @@ const UserProfilePage: React.FC = () => {
               </div>
             </div>
 
+            <SocialMediaLinks profile={profile} />
+
             {/* <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Skills
@@ -335,6 +385,8 @@ const UserProfilePage: React.FC = () => {
                 )}
               </div>
             </div>
+
+           
 
             {/* Skills Section */}
             {profile?.user_type == "student" && (<div className="bg-white rounded-xl shadow-sm p-6">

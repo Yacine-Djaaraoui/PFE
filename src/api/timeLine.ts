@@ -13,3 +13,14 @@ export const fetchTimeLine = async () => {
   });
   return response;
 };
+
+export const fetchTimeLines = async (academic_year : string) => {
+  const token = localStorage.getItem("access_token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const params = new URLSearchParams();
+  if (academic_year) params.append("academic_year", academic_year);
+  const response = await client.get(`timelines/?${params.toString()}`, {
+    headers,
+  });
+  return response;
+};

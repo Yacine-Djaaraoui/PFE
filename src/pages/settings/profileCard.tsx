@@ -4,6 +4,12 @@ import { updateProfile } from "@/api/profile";
 import { useMyProfile } from "@/hooks/profile";
 import { useCreateDocument } from "@/hooks/document";
 import getAcademicYearLabel from "@/hoc/GlobalFunctions";
+import {
+  createStudentSkill,
+  deleteStudentSkill,
+  StudentSkill,
+  updateStudentSkill,
+} from "@/api/skills";
 
 const ProfileCard: React.FC = () => {
   const { data: profile } = useMyProfile();
@@ -26,6 +32,11 @@ const ProfileCard: React.FC = () => {
     email: "",
     skills: [] as Array<{ name: string; proficiency_level: string }>,
     current_year: "",
+    facebook: "",
+    github: "",
+    instagram: "",
+    linkedin: "",
+    twitter: "",
   });
 
   // Initialize editValues when profile loads
@@ -45,6 +56,11 @@ const ProfileCard: React.FC = () => {
         email: profile.email || "",
         skills: profile.profile?.skills || [],
         current_year: profile.profile?.current_year || "",
+        facebook: profile.facebook || "",
+        github: profile.github || "",
+        instagram: profile.instagram || "",
+        linkedin: profile.linkedin || "",
+        twitter: profile.twitter || "",
       });
     }
   }, [profile]);
@@ -128,6 +144,61 @@ const ProfileCard: React.FC = () => {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleSaveSkills = async () => {
+    if (!profile?.id) return;
+
+    try {
+      // First, get current skills from the server to compare
+      const currentSkills = profile.profile?.skills || [];
+
+      // Process additions and updates
+      for (const skill of editValues.skills) {
+        if (!skill.id) {
+          // New skill - create it
+          await createStudentSkill(profile.id.toString(), {
+            name: skill.name,
+            proficiency_level:
+              skill.proficiency_level as StudentSkill["proficiency_level"],
+          });
+        } else {
+          // Existing skill - check if it needs update
+          const originalSkill = currentSkills.find((s) => s.id === skill.id);
+          if (
+            !originalSkill ||
+            originalSkill.name !== skill.name ||
+            originalSkill.proficiency_level !== skill.proficiency_level
+          ) {
+            await updateStudentSkill(
+              profile?.id.toString(),
+              skill?.id.toString(),
+              {
+                name: skill.name,
+                proficiency_level:
+                  skill.proficiency_level as StudentSkill["proficiency_level"],
+              }
+            );
+          }
+        }
+      }
+
+      // Process deletions
+      for (const currentSkill of currentSkills) {
+        if (!editValues.skills.some((s) => s.id === currentSkill.id)) {
+          await deleteStudentSkill(
+            profile.id.toString(),
+            currentSkill.id.toString()
+          );
+        }
+      }
+
+      // Refresh profile data
+      queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+      setEditing(null);
+    } catch (error) {
+      console.error("Error updating skills:", error);
+    }
   };
 
   const handleSkillChange = (
@@ -258,6 +329,46 @@ const ProfileCard: React.FC = () => {
       icon: "📍",
     },
     {
+      label: "Facebook",
+      value: profile?.facebook || "Not provided",
+      editable: true,
+      field: "facebook",
+      icon: "👍",
+      type: "social",
+    },
+    {
+      label: "GitHub",
+      value: profile?.github || "Not provided",
+      editable: true,
+      field: "github",
+      icon: "💻",
+      type: "social",
+    },
+    {
+      label: "Instagram",
+      value: profile?.instagram || "Not provided",
+      editable: true,
+      field: "instagram",
+      icon: "📷",
+      type: "social",
+    },
+    {
+      label: "LinkedIn",
+      value: profile?.linkedin || "Not provided",
+      editable: true,
+      field: "linkedin",
+      icon: "🔗",
+      type: "social",
+    },
+    {
+      label: "Twitter",
+      value: profile?.twitter || "Not provided",
+      editable: true,
+      field: "twitter",
+      icon: "🐦",
+      type: "social",
+    },
+    {
       label: "Skills",
       type: "skills",
       value: profile?.profile?.skills,
@@ -273,6 +384,7 @@ const ProfileCard: React.FC = () => {
       isTextArea: true,
       icon: "📝",
     },
+    
   ];
 
   return (
@@ -363,6 +475,8 @@ const ProfileCard: React.FC = () => {
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           {profileDetails.slice(1).map((detail, index) => {
+
+            
             if (
               detail.label === "Profile Picture" ||
               detail.label === "Full Name" ||
@@ -373,6 +487,7 @@ const ProfileCard: React.FC = () => {
               return null;
             }
 
+          
             if (detail.type === "skills" && profile?.user_type == "student") {
               return (
                 <div
@@ -455,11 +570,7 @@ const ProfileCard: React.FC = () => {
                           Cancel
                         </button>
                         <button
-                          onClick={() =>
-                            profileMutation.mutate({
-                              skills: editValues.skills,
-                            })
-                          }
+                          onClick={handleSaveSkills}
                           className="px-4 py-2 bg-secondary text-white rounded-lg hover:opacity-80 font-medium text-sm shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
                           disabled={profileMutation.isPending}
                         >
@@ -578,7 +689,7 @@ const ProfileCard: React.FC = () => {
             }
 
             return (
-              <div key={index} className="py-3">
+              <div key={index} className=" py-3 overflow-hidden">
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-gray-500 mb-1 flex items-center">
                     {detail.label}
@@ -595,7 +706,7 @@ const ProfileCard: React.FC = () => {
                 </div>
 
                 {detail.editable && editing === detail.field ? (
-                  <div className="mt-1">
+                  <div className="mt-1 mx-1">
                     {detail.field === "phone_number" ? (
                       <input
                         type="text"

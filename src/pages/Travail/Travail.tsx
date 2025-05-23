@@ -1,6 +1,7 @@
 import Wrapper from "@/hoc/Wrapper";
 import React from "react";
 import Meetings from "./Meetings";
+import Livrables from "./Livrables";
 
 const Travail = () => {
   return (
@@ -18,6 +19,7 @@ const Travail = () => {
         validation de l’administration.
       </p>
       <Meetings />
+      <Livrables />
     </div>
   );
 };

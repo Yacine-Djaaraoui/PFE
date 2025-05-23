@@ -121,7 +121,7 @@ const MeetingsDashboard = () => {
                   </div>
                   {/* Checkbox/Completed status */}
                   {profile?.user_type === "teacher" && (
-                    <AlertDialog>
+                    <AlertDialog>{}
                       <AlertDialogTrigger asChild>
                         <button className="  cursor-pointer   bg-secondary text-white rounded-[3px] font-instrument px-2 py-1 hover:bg-secondary/80">
                           Cancel

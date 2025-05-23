@@ -221,7 +221,12 @@ const Notification = () => {
                                     {
                                       membersData.results?.filter(
                                         (member) => member.role === "owner"
-                                      )[0]?.user?.display_name
+                                      )[0]?.user?.first_name
+                                    }{" "}
+                                    {
+                                      membersData.results?.filter(
+                                        (member) => member.role === "owner"
+                                      )[0]?.user?.last_name
                                     }
                                   </span>
                                 </NavLink>
@@ -245,7 +250,7 @@ const Notification = () => {
                                            alt={member.name}  
                                            className="w-6 h-6 rounded-full"
                                            /> */}
-                                        {member.user.display_name}
+                                        {member.user.first_name}{" "}{member.user.last_name}
                                       </span>
                                     </NavLink>
                                   ))}

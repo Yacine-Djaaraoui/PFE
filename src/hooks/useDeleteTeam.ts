@@ -9,6 +9,7 @@ export const useDeleteTeam = () => {
     onSuccess: () => {
       // Invalidate and refetch the teams list after deletion
       queryClient.invalidateQueries({ queryKey: ["teams"] });
+      queryClient.invalidateQueries({ queryKey: ["themes"] });
     },
     onError: (error) => {
       console.error("Error deleting team:", error);

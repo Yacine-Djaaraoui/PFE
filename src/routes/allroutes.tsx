@@ -10,6 +10,8 @@ import Settings from "@/pages/settings/Settings";
 import StudentsList from "@/pages/Student/StudentsList";
 import Travail from "@/pages/Travail/Travail";
 import WebSocket from "@/pages/home/reseauxProject/WebSocket";
+import Soutenance from "@/pages/soutenance/Soutenance";
+import Projects from "@/pages/Projects/Projects";
 
 interface RouteConfig {
   path: string;
@@ -29,4 +31,6 @@ export const pferoutes: RouteConfig[] = [
   { path: "/settings", element: <Settings /> },
   { path: "/students", element: <StudentsList /> },
   { path: "/websocket", element: <WebSocket /> },
+  { path: "/soutenance", element: <Soutenance /> },
+  { path: "/projects", element: <Projects /> },
 ];

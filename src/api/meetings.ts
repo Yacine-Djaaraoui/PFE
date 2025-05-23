@@ -33,6 +33,33 @@ export const getMeetings = async ({
   });
   return response;
 };
+export const getSoutenance = async ({
+  ordering,
+  page,
+  search,
+  page_size,
+  next_url, // Add this new optional parameter
+}: {
+  ordering?: string;
+  search?: string;
+  page_size?: string;
+  page?: string;
+  next_url?: string; // Add type definition
+}) => {
+  const token = localStorage.getItem("access_token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const params = new URLSearchParams();
+
+  if (ordering !== undefined) params.append("ordering", String(ordering));
+  if (page !== undefined) params.append("page", String(page));
+
+  if (search !== undefined) params.append("search", String(search));
+  if (page_size !== undefined) params.append("page_size", String(page_size));
+const response = await client.get(`defenses/?${params.toString()}`, {
+    headers,
+  });
+  return response;
+};
 
 export const createMeeting = async ({
   title,

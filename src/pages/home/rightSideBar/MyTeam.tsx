@@ -86,7 +86,7 @@ const MyTeam = () => {
             </svg>
             <span> {teamsData.results[0]?.created_at.split("T")[0]}</span>
           </div>
-          
+
           {/* Group Title */}
           <h3 className="font-semibold text-left ml-0 mr-auto text-gray-600 text-md mt-2">
             Groupe N°{teamsData.results[0]?.id}
@@ -107,7 +107,13 @@ const MyTeam = () => {
                 {
                   membersData.results?.filter(
                     (member) => member.role === "owner"
-                  )[0].user?.display_name
+                  )[0].user?.first_name
+                }
+                {" "}
+                {
+                  membersData.results?.filter(
+                    (member) => member.role === "owner"
+                  )[0].user?.last_name
                 }
               </span>
             </NavLink>
@@ -126,7 +132,7 @@ const MyTeam = () => {
                   alt={member.name}
                   className="w-6 h-6 rounded-full"
                   /> */}
-                    {member.user.display_name}
+                    {member.user.first_name} {member.user.last_name}
                   </span>
                 </NavLink>
               ))}

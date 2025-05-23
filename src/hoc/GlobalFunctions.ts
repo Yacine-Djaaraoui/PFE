@@ -13,4 +13,20 @@ const getAcademicYearLabel = (code: string) => {
   return yearMappings[code] || `Unknown code: ${code}`;
 };
 
+export const getAcademicYearLabelShort = (code: string) => {
+  const yearMappings: Record<string, string> = {
+    "2": "2ème année CP",
+    "3": "1ère année CS",
+    "4isi": "2ème année CS ISI",
+    "4iasd": "2ème année CS IASD",
+    "4siw": "2ème année CS SIW",
+    "5isi": "3ème année CS ISI",
+    "5iasd": "3ème année CS IASD",
+    "5siw": "3ème année CS SIW",
+  };
+
+  return yearMappings[code] || `Unknown code: ${code}`;
+};
+
 export default getAcademicYearLabel;
+

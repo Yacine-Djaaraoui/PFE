@@ -1,11 +1,15 @@
-import { RootState } from "@/redux/store";
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProfile } from "@/api/profile";
 import { useMyProfile } from "@/hooks/profile";
 import { useCreateDocument } from "@/hooks/document";
 import getAcademicYearLabel from "@/hoc/GlobalFunctions";
+import {
+  createStudentSkill,
+  deleteStudentSkill,
+  StudentSkill,
+  updateStudentSkill,
+} from "@/api/skills";
 
 const ProfileCard: React.FC = () => {
   const { data: profile } = useMyProfile();
@@ -28,6 +32,11 @@ const ProfileCard: React.FC = () => {
     email: "",
     skills: [] as Array<{ name: string; proficiency_level: string }>,
     current_year: "",
+    facebook: "",
+    github: "",
+    instagram: "",
+    linkedin: "",
+    twitter: "",
   });
 
   // Initialize editValues when profile loads
@@ -47,9 +56,33 @@ const ProfileCard: React.FC = () => {
         email: profile.email || "",
         skills: profile.profile?.skills || [],
         current_year: profile.profile?.current_year || "",
+        facebook: profile.facebook || "",
+        github: profile.github || "",
+        instagram: profile.instagram || "",
+        linkedin: profile.linkedin || "",
+        twitter: profile.twitter || "",
       });
     }
   }, [profile]);
+
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Check if it starts with 05, 06, or 07 and has exactly 10 digits
+    return /^(05|06|07)\d{8}$/.test(phone);
+  };
+
+  const formatPhoneForDisplay = (phone: string | undefined): string => {
+    if (!phone || phone === "Not provided") return "";
+
+    // If it's already in local format (05/06/07), return as is
+    if (/^(05|06|07)\d{8}$/.test(phone)) return phone;
+
+    // If it's in international format (+213...), convert to local format
+    if (phone.startsWith("+213")) {
+      return `0${phone.substring(4)}`;
+    }
+
+    return phone; // fallback for any other format
+  };
 
   // Mutation for updating profile
   const profileMutation = useMutation({
@@ -70,8 +103,21 @@ const ProfileCard: React.FC = () => {
   };
 
   const handleSave = (field: string) => {
+    let valueToSend = editValues[field as keyof typeof editValues];
+
+    // Format phone number before sending
+    if (field === "phone_number") {
+      const phone = valueToSend as string;
+      if (!validatePhoneNumber(phone)) {
+        alert("Phone number must start with 05, 06, or 07 and have 10 digits");
+        return;
+      }
+      // Convert to international format (+213...)
+      valueToSend = `+213${phone.substring(1)}`;
+    }
+
     profileMutation.mutate({
-      [field]: editValues[field as keyof typeof editValues],
+      [field]: valueToSend,
     });
   };
 
@@ -81,10 +127,78 @@ const ProfileCard: React.FC = () => {
     >,
     field: string
   ) => {
+    const value = e.target.value;
+
+    // Special handling for phone number
+    if (field === "phone_number") {
+      // Only allow numbers and limit to 10 digits
+      const numericValue = value.replace(/\D/g, "").slice(0, 10);
+      setEditValues((prev) => ({
+        ...prev,
+        [field]: numericValue,
+      }));
+      return;
+    }
+
     setEditValues((prev) => ({
       ...prev,
-      [field]: e.target.value,
+      [field]: value,
     }));
+  };
+
+  const handleSaveSkills = async () => {
+    if (!profile?.id) return;
+
+    try {
+      // First, get current skills from the server to compare
+      const currentSkills = profile.profile?.skills || [];
+
+      // Process additions and updates
+      for (const skill of editValues.skills) {
+        if (!skill.id) {
+          // New skill - create it
+          await createStudentSkill(profile.id.toString(), {
+            name: skill.name,
+            proficiency_level:
+              skill.proficiency_level as StudentSkill["proficiency_level"],
+          });
+        } else {
+          // Existing skill - check if it needs update
+          const originalSkill = currentSkills.find((s) => s.id === skill.id);
+          if (
+            !originalSkill ||
+            originalSkill.name !== skill.name ||
+            originalSkill.proficiency_level !== skill.proficiency_level
+          ) {
+            await updateStudentSkill(
+              profile?.id.toString(),
+              skill?.id.toString(),
+              {
+                name: skill.name,
+                proficiency_level:
+                  skill.proficiency_level as StudentSkill["proficiency_level"],
+              }
+            );
+          }
+        }
+      }
+
+      // Process deletions
+      for (const currentSkill of currentSkills) {
+        if (!editValues.skills.some((s) => s.id === currentSkill.id)) {
+          await deleteStudentSkill(
+            profile.id.toString(),
+            currentSkill.id.toString()
+          );
+        }
+      }
+
+      // Refresh profile data
+      queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+      setEditing(null);
+    } catch (error) {
+      console.error("Error updating skills:", error);
+    }
   };
 
   const handleSkillChange = (
@@ -190,10 +304,10 @@ const ProfileCard: React.FC = () => {
       field: "username",
       icon: "🏷️",
     },
-   
+
     {
       label: "Phone Number",
-      value: profile?.phone_number || "Not provided",
+      value: formatPhoneForDisplay(profile?.phone_number),
       editable: true,
       field: "phone_number",
       icon: "📱",
@@ -215,6 +329,46 @@ const ProfileCard: React.FC = () => {
       icon: "📍",
     },
     {
+      label: "Facebook",
+      value: profile?.facebook || "Not provided",
+      editable: true,
+      field: "facebook",
+      icon: "👍",
+      type: "social",
+    },
+    {
+      label: "GitHub",
+      value: profile?.github || "Not provided",
+      editable: true,
+      field: "github",
+      icon: "💻",
+      type: "social",
+    },
+    {
+      label: "Instagram",
+      value: profile?.instagram || "Not provided",
+      editable: true,
+      field: "instagram",
+      icon: "📷",
+      type: "social",
+    },
+    {
+      label: "LinkedIn",
+      value: profile?.linkedin || "Not provided",
+      editable: true,
+      field: "linkedin",
+      icon: "🔗",
+      type: "social",
+    },
+    {
+      label: "Twitter",
+      value: profile?.twitter || "Not provided",
+      editable: true,
+      field: "twitter",
+      icon: "🐦",
+      type: "social",
+    },
+    {
       label: "Skills",
       type: "skills",
       value: profile?.profile?.skills,
@@ -230,6 +384,7 @@ const ProfileCard: React.FC = () => {
       isTextArea: true,
       icon: "📝",
     },
+    
   ];
 
   return (
@@ -301,37 +456,40 @@ const ProfileCard: React.FC = () => {
                 {profile?.first_name || ""} {profile?.last_name || ""}
               </h1>
               <p className="text-gray-500 mt-1">{profile?.email || ""}</p>
-              {profile?.user_type == "student" && (<div className="flex mt-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-secondary">
-                  {getAcademicYearLabel(profile?.profile?.current_year) || "Student"}
-                </span>
-                {profile?.profile?.matricule && (
-                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    {profile.profile.matricule}
+              {profile?.user_type == "student" && (
+                <div className="flex mt-2">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-secondary">
+                    {getAcademicYearLabel(profile?.profile?.current_year) ||
+                      "Student"}
                   </span>
-                )}
-              </div> )}
+                  {profile?.profile?.matricule && (
+                    <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      {profile.profile.matricule}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           {profileDetails.slice(1).map((detail, index) => {
+
+            
             if (
               detail.label === "Profile Picture" ||
               detail.label === "Full Name" ||
               detail.label === "Email" ||
-              detail.label === "Matricule" || (detail.label === "Skills" &&  profile?.user_type != "student")
+              detail.label === "Matricule" ||
+              (detail.label === "Skills" && profile?.user_type != "student")
             ) {
               return null;
             }
 
-
-
-
-
-            if (detail.type === "skills"  &&  profile?.user_type == "student") {
-              return ( 
+          
+            if (detail.type === "skills" && profile?.user_type == "student") {
+              return (
                 <div
                   key={index}
                   className="col-span-full py-4 border-t border-gray-100"
@@ -412,11 +570,7 @@ const ProfileCard: React.FC = () => {
                           Cancel
                         </button>
                         <button
-                          onClick={() =>
-                            profileMutation.mutate({
-                              skills: editValues.skills,
-                            })
-                          }
+                          onClick={handleSaveSkills}
                           className="px-4 py-2 bg-secondary text-white rounded-lg hover:opacity-80 font-medium text-sm shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
                           disabled={profileMutation.isPending}
                         >
@@ -535,7 +689,7 @@ const ProfileCard: React.FC = () => {
             }
 
             return (
-              <div key={index} className="py-3">
+              <div key={index} className=" py-3 overflow-hidden">
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-gray-500 mb-1 flex items-center">
                     {detail.label}
@@ -552,19 +706,31 @@ const ProfileCard: React.FC = () => {
                 </div>
 
                 {detail.editable && editing === detail.field ? (
-                  <div className="mt-1">
-                    <input
-                      type={
-                        detail.field === "year_of_birth" ? "number" : "text"
-                      }
-                      value={
-                        editValues[
-                          detail.field as keyof typeof editValues
-                        ] as string
-                      }
-                      onChange={(e) => handleChange(e, detail.field!)}
-                      className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    />
+                  <div className="mt-1 mx-1">
+                    {detail.field === "phone_number" ? (
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={formatPhoneForDisplay(editValues.phone_number)}
+                        onChange={(e) => handleChange(e, "phone_number")}
+                        className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        maxLength={10}
+                      />
+                    ) : (
+                      <input
+                        type={
+                          detail.field === "year_of_birth" ? "number" : "text"
+                        }
+                        value={
+                          editValues[
+                            detail.field as keyof typeof editValues
+                          ] as string
+                        }
+                        onChange={(e) => handleChange(e, detail.field!)}
+                        className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      />
+                    )}
                     <div className="flex justify-end mt-2 space-x-2">
                       <button
                         onClick={() => setEditing(null)}
@@ -583,7 +749,10 @@ const ProfileCard: React.FC = () => {
                   </div>
                 ) : (
                   <p className="font-medium text-gray-800">
-                    {detail.value || "Not provided"}
+                    {detail.label === "Phone Number"
+                      ? formatPhoneForDisplay(detail.value as string) ||
+                        "Not provided"
+                      : detail.value || "Not provided"}
                   </p>
                 )}
               </div>

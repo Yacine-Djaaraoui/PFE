@@ -25,10 +25,10 @@ import MyTeam from "./MyTeam";
 import MyRequests from "./MyRequests";
 import MySupervisorRequests from "./MySupervisorRequest";
 import Mytheme from "./Mytheme";
+import MyTeams from "./MyTeams";
 
 const RightSidebar = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
-  console.log(profile);
   return (
     <div className="bg- w-[20%]  flex py-5 flex-col items-center gap-4 h-screen mt-20 mr-0 fixed right-0 ">
       {/* User Info */}
@@ -36,7 +36,10 @@ const RightSidebar = () => {
       {/* Themes Section */}
       {(profile?.user_type === "teacher" ||
         profile?.user_type === "external") && (
-        <ThemesSection profile={profile} />
+        <>
+          <ThemesSection profile={profile} />
+          <MyTeams />
+        </>
       )}
 
       {profile?.user_type === "student" && <MyTeam />}

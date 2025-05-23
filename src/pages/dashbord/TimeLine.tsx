@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { useTimeLine } from "@/hooks/timeLine"; // Adjust the import path
+import { useTimeLine, useTimeLines } from "@/hooks/timeLine"; // Adjust the import path
 import TimeLeftPopup from "./TimeLeftPopup";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface Timeline {
   id: number;
@@ -92,10 +94,73 @@ const InfoCard: React.FC<CardProps> = ({
   );
 };
 
-const TimeLine = () => {
-  const { data: timelineData, isLoading, isError, error } = useTimeLine();
+const AcademicLevelSelector = ({ onSelect }: { onSelect: (academicYear: string) => void }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedLevel, setSelectedLevel] = useState("2ème année CP");
+  
+  const academicLevels = [
+    { label: "2ème année CP", value: "2" },
+    { label: "1ère année CS", value: "3" },
+    { label: "2ème année CS ISI", value: "4isi" },
+    { label: "2ème année CS IASD", value: "4iasd" },
+    { label: "2ème année CS SIW", value: "4siw" },
+    { label: "3ème année CS ISI", value: "5isi" },
+    { label: "3ème année CS IASD", value: "5iasd" },
+    { label: "3ème année CS SIW", value: "5siw" }
+  ];
 
-  const cards = timelineData?.results?.map((timeline: Timeline) => ({
+  return (
+    <div className="relative mt-12 w-64">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full px-4 py-2 text-white text-left bg-secondary border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#19488E]"
+      >
+        <span>{selectedLevel}</span>
+        <svg
+          className={`w-5 h-5 transition-transform ${isOpen ? "transform rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+          {academicLevels.map((level, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setSelectedLevel(level.label);
+                setIsOpen(false);
+                onSelect(level.value);
+              }}
+              className={`block w-full px-4 py-2 text-left ${
+                selectedLevel === level.label ? "bg-[#19488E] text-white" : ""
+              }`}
+            >
+              {level.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TimeLine = () => {
+  const [academicYear, setAcademicYear] = useState<string>("2"); // Default to 2ème année CP
+  const { data: timelineData, isLoading, isError, error } = useTimeLine();
+  const { data: timeline, isLoading: isLoadingA, isError: isErrorA, error: errorA } = useTimeLines(academicYear);
+
+  const profile = useSelector((state: RootState) => state.auth.profile);
+  const userType = profile?.user_type;
+
+  const SelectedTimeLine = userType === "student" ? timelineData : timeline;
+
+
+  const cards = SelectedTimeLine?.results?.map((timeline: Timeline) => ({
     startDate: new Date(timeline.start_date).toLocaleString("fr-FR", {
       day: "2-digit",
       month: "short",
@@ -125,17 +190,9 @@ const TimeLine = () => {
             <br className="hidden md:block" /> avec votre encadrant et votre
             équipe.
           </p>
-          <div className="flex mt-12 space-x-4">
-            <span className="px-4 py-2 h-8 w-28 bg-[#19488E] text-white rounded-md flex items-center justify-center">
-              Idéation
-            </span>
-            <span className="px-4 py-2 h-8 w-28 bg-gray-300 rounded-md flex items-center justify-center opacity-60">
-              Validation
-            </span>
-            <span className="px-4 py-2 h-8 w-28 bg-gray-300 rounded-md flex items-center justify-center opacity-60">
-              Finalisation
-            </span>
-          </div>
+          {userType === "student" ? "" : 
+            <AcademicLevelSelector onSelect={(value) => setAcademicYear(value)} />
+          }
         </div>
         <img
           src="../../../src/assets/timeLinePic.png"
@@ -146,10 +203,12 @@ const TimeLine = () => {
 
       {/* Timeline Section with Loading and Error States */}
       <div className="flex justify-center mt-2">
-        {isLoading ? (
+        {(isLoading && userType === "student") || (userType !== "student" && isLoadingA) ? (
           <div>Loading timeline...</div>
-        ) : isError ? (
-          <div className="text-red-500">{error}</div>
+        ) : (isError && userType === "student") || (userType !== "student" && isErrorA) ? (
+          <div className="text-red-500">
+            error
+          </div>
         ) : (
           cards?.map((card: CardProps, index: number) => (
             <InfoCard
@@ -159,7 +218,7 @@ const TimeLine = () => {
               title={card.title}
               description={card.description}
               isOpen={card.isOpen}
-              start_date={card.start_date} // Pass start_date to InfoCard
+              start_date={card.start_date}
             />
           ))
         )}

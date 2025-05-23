@@ -16,6 +16,7 @@ export const fetchTeams = async ({
   search,
   page_size,
   academic_year,
+  is_supervisor,
   next_url, // Add this new optional parameter
 }: {
   is_member?: boolean;
@@ -28,6 +29,7 @@ export const fetchTeams = async ({
   description?: string;
   search?: string;
   page_size?: string;
+  is_supervisor?:boolean;
   next_url?: string; // Add type definition
 }) => {
   const token = localStorage.getItem("access_token");
@@ -54,6 +56,8 @@ export const fetchTeams = async ({
     params.append("description", String(description)); // Fixed: was using ordering instead of description
   if (search !== undefined) params.append("search", String(search));
   if (page_size !== undefined) params.append("page_size", String(page_size));
+  if (is_supervisor !== undefined)
+    params.append("is_supervisor", String(is_supervisor));
 
   const response = await client.get(`teams/?${params.toString()}`, { headers });
   return response;

@@ -56,7 +56,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
   const [themeToDelete, setThemeToDelete] = useState<number | null>(null);
   const [currentTheme, setCurrentTheme] = useState<Theme | null>(null);
   const [isThemesOpen, setIsThemesOpen] = useState(true);
-  const [isThemesNonVerifyOpen, setIsThemesNonVerifyOpen] = useState(false);
+  const [isThemesNonVerifyOpen, setIsThemesNonVerifyOpen] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: themesDataSuper } = useThemes({
@@ -90,6 +90,7 @@ export const ThemesSection = ({ profile }: ThemesSectionProps) => {
     mutationFn: createTheme,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["themes"] });
+      setIsThemesNonVerifyOpen(true); 
       setIsAddThemeOpen(false);
     },
   });

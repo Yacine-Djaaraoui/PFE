@@ -13,7 +13,10 @@ import { useTeams } from "@/hooks/teams";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
-const Meetings = () => {
+interface MeetingsProps {
+  teamId: number;
+}
+const Meetings = ({ teamId }: MeetingsProps) => {
   const [isAddThemeOpen, setIsAddThemeOpen] = useState(false);
 
   const {
@@ -152,7 +155,9 @@ const Meetings = () => {
         (meeting: any) => meeting.status === "scheduled"
       ) &&
         Meetings?.results?.filter(
-          (meeting: any) => meeting.status === "scheduled"
+          (meeting: any) =>
+            meeting.status === "scheduled" &&
+            (profile?.user_type === "teacher" ? meeting.team === teamId : true)
         ).length > 0 && (
           <div className="rounded-[8px] p-[22px] border flex items-start relative justify-start gap-8 border-[#E3E6EA]">
             <div className="w-[76px] h-[76px] rounded-[32px] flex flex-col">

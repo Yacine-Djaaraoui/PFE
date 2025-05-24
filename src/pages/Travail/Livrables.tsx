@@ -27,19 +27,17 @@ import { toast } from "react-toastify";
 import { createDocument } from "@/api/document";
 import { useTeams } from "@/hooks/teams";
 
-const Livrables = () => {
+interface LivrablesProps {
+    teamId: number;
+  }
+
+const Livrables = ({teamId} : LivrablesProps) => {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedUpload, setSelectedUpload] = useState<any>(null);
   const [newComment, setNewComment] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const {
-      data,
-    } = useTeams({
-      is_member : true ,
-    });
-
-    const teamId = data?.results[0]?.id ;
+  
 
   // Fetch documents and uploads
   const { data: uploads, isLoading: isLoadingUploads } = useUploads();

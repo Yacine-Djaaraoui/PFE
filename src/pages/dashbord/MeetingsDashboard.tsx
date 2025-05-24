@@ -15,7 +15,10 @@ import {
 import { useCanceMetting } from "@/api/meetings";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
-const MeetingsDashboard = () => {
+interface teamIdProps {
+  teamId: number;
+}
+const MeetingsDashboard = ({ teamId }: teamIdProps) => {
   const cancelMeeting = useCanceMetting();
   const profile = useSelector((state: RootState) => state.auth.profile);
 
@@ -88,7 +91,11 @@ const MeetingsDashboard = () => {
   return (
     <div className=" w-full px-44">
       {Meetings?.results
-        ?.filter((meeting: any) => meeting.status === "scheduled") // Filter only scheduled meetings
+        ?.filter(
+          (meeting: any) =>
+            meeting.status === "scheduled" &&
+            (profile?.user_type === "teacher" ? meeting.team === teamId : true)
+        ) // Filter only scheduled meetings
         ?.slice(0, 3) // Take first 3 scheduled meetings
         ?.map((meeting: any) => {
           const { dateDisplay, timeDisplay } = formatMeetingDateTime(
@@ -122,6 +129,7 @@ const MeetingsDashboard = () => {
                   {/* Checkbox/Completed status */}
                   {profile?.user_type === "teacher" && (
                     <AlertDialog>
+                      {}
                       <AlertDialogTrigger asChild>
                         <button className="  cursor-pointer   bg-secondary text-white rounded-[3px] font-instrument px-2 py-1 hover:bg-secondary/80">
                           Cancel

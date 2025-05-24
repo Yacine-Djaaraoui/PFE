@@ -71,7 +71,7 @@ const ProfileCard: React.FC = () => {
   };
 
   const formatPhoneForDisplay = (phone: string | undefined): string => {
-    if (!phone || phone === "Not provided") return "";
+    if (!phone || phone === "Non fourni") return "";
 
     // If it's already in local format (05/06/07), return as is
     if (/^(05|06|07)\d{8}$/.test(phone)) return phone;
@@ -94,7 +94,7 @@ const ProfileCard: React.FC = () => {
       setEditing(null);
     },
     onError: (error: any) => {
-      console.error("Profile update failed:", error);
+      console.error("Échec de la mise à jour du profil:", error);
     },
   });
 
@@ -109,7 +109,9 @@ const ProfileCard: React.FC = () => {
     if (field === "phone_number") {
       const phone = valueToSend as string;
       if (!validatePhoneNumber(phone)) {
-        alert("Phone number must start with 05, 06, or 07 and have 10 digits");
+        alert(
+          "Le numéro de téléphone doit commencer par 05, 06 ou 07 et avoir 10 chiffres"
+        );
         return;
       }
       // Convert to international format (+213...)
@@ -197,7 +199,7 @@ const ProfileCard: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["myProfile"] });
       setEditing(null);
     } catch (error) {
-      console.error("Error updating skills:", error);
+      console.error("Erreur lors de la mise à jour des compétences:", error);
     }
   };
 
@@ -238,7 +240,7 @@ const ProfileCard: React.FC = () => {
       const file = e.target.files[0];
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("title", `Profile Picture - ${profile?.username}`);
+      formData.append("title", `Photo de profil - ${profile?.username}`);
       formData.append("document_type", "profile_picture");
 
       try {
@@ -247,7 +249,7 @@ const ProfileCard: React.FC = () => {
           profileMutation.mutate({ profile_picture_url: response.file });
         }
       } catch (error) {
-        console.error("Failed to upload profile picture:", error);
+        console.error("Échec du téléchargement de la photo de profil:", error);
       }
     }
   };
@@ -255,17 +257,17 @@ const ProfileCard: React.FC = () => {
   const proficiencyLevels = [
     {
       value: "beginner",
-      label: "Beginner",
+      label: "Débutant",
       percentage: 25,
     },
     {
       value: "intermediate",
-      label: "Intermediate",
+      label: "Intermédiaire",
       percentage: 50,
     },
     {
       value: "advanced",
-      label: "Advanced",
+      label: "Avancé",
       percentage: 75,
     },
     { value: "expert", label: "Expert", percentage: 90 },
@@ -273,7 +275,7 @@ const ProfileCard: React.FC = () => {
 
   const profileDetails = [
     {
-      label: "Profile Picture",
+      label: "Photo de profil",
       type: "image",
       value: profile?.profile_picture_url,
       editable: true,
@@ -292,35 +294,34 @@ const ProfileCard: React.FC = () => {
       icon: "🆔",
     },
     {
-      label: "Full Name",
+      label: "Nom complet",
       value: `${profile?.first_name || ""} ${profile?.last_name || ""}`,
       editable: false,
       icon: "👤",
     },
     {
-      label: "Username",
+      label: "Nom d'utilisateur",
       value: profile?.username,
       editable: true,
       field: "username",
       icon: "🏷️",
     },
-
     {
-      label: "Phone Number",
+      label: "Numéro de téléphone",
       value: formatPhoneForDisplay(profile?.phone_number),
       editable: true,
       field: "phone_number",
       icon: "📱",
     },
     {
-      label: "Year of Birth",
-      value: profile?.year_of_birth || "Not provided",
+      label: "Année de naissance",
+      value: profile?.year_of_birth || "Non fourni",
       editable: false,
       field: "year_of_birth",
       icon: "🎂",
     },
     {
-      label: "Location",
+      label: "Localisation",
       value: `${profile?.country || ""}${
         profile?.state ? `, ${profile.state}` : ""
       }`,
@@ -330,7 +331,7 @@ const ProfileCard: React.FC = () => {
     },
     {
       label: "Facebook",
-      value: profile?.facebook || "Not provided",
+      value: profile?.facebook || "Non fourni",
       editable: true,
       field: "facebook",
       icon: "👍",
@@ -338,7 +339,7 @@ const ProfileCard: React.FC = () => {
     },
     {
       label: "GitHub",
-      value: profile?.github || "Not provided",
+      value: profile?.github || "Non fourni",
       editable: true,
       field: "github",
       icon: "💻",
@@ -346,7 +347,7 @@ const ProfileCard: React.FC = () => {
     },
     {
       label: "Instagram",
-      value: profile?.instagram || "Not provided",
+      value: profile?.instagram || "Non fourni",
       editable: true,
       field: "instagram",
       icon: "📷",
@@ -354,7 +355,7 @@ const ProfileCard: React.FC = () => {
     },
     {
       label: "LinkedIn",
-      value: profile?.linkedin || "Not provided",
+      value: profile?.linkedin || "Non fourni",
       editable: true,
       field: "linkedin",
       icon: "🔗",
@@ -362,14 +363,14 @@ const ProfileCard: React.FC = () => {
     },
     {
       label: "Twitter",
-      value: profile?.twitter || "Not provided",
+      value: profile?.twitter || "Non fourni",
       editable: true,
       field: "twitter",
       icon: "🐦",
       type: "social",
     },
     {
-      label: "Skills",
+      label: "Compétences",
       type: "skills",
       value: profile?.profile?.skills,
       editable: true,
@@ -377,14 +378,13 @@ const ProfileCard: React.FC = () => {
       icon: "🛠️",
     },
     {
-      label: "Resume",
-      value: profile?.resume || "No resume yet",
+      label: "Résumé",
+      value: profile?.resume || "Aucun résumé",
       editable: true,
       field: "resume",
       isTextArea: true,
       icon: "📝",
     },
-    
   ];
 
   return (
@@ -397,7 +397,7 @@ const ProfileCard: React.FC = () => {
             <div className="relative h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-lg group">
               <img
                 src={editValues.profile_picture_url}
-                alt="Profile"
+                alt="Profil"
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -407,7 +407,7 @@ const ProfileCard: React.FC = () => {
                       document.getElementById("profile-picture-upload")?.click()
                     }
                     className="bg-white bg-opacity-80 text-gray-800 p-2 rounded-full hover:bg-opacity-100 transition-all"
-                    title="Edit"
+                    title="Modifier"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -423,7 +423,7 @@ const ProfileCard: React.FC = () => {
                       window.open(editValues.profile_picture_url, "_blank")
                     }
                     className="bg-white bg-opacity-80 text-gray-800 p-2 rounded-full hover:bg-opacity-100 transition-all"
-                    title="View"
+                    title="Voir"
                     disabled={!editValues.profile_picture_url}
                   >
                     <svg
@@ -460,7 +460,7 @@ const ProfileCard: React.FC = () => {
                 <div className="flex mt-2">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-secondary">
                     {getAcademicYearLabel(profile?.profile?.current_year) ||
-                      "Student"}
+                      "Étudiant"}
                   </span>
                   {profile?.profile?.matricule && (
                     <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -475,19 +475,17 @@ const ProfileCard: React.FC = () => {
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           {profileDetails.slice(1).map((detail, index) => {
-
-            
             if (
-              detail.label === "Profile Picture" ||
-              detail.label === "Full Name" ||
+              detail.label === "Photo de profil" ||
+              detail.label === "Nom complet" ||
               detail.label === "Email" ||
               detail.label === "Matricule" ||
-              (detail.label === "Skills" && profile?.user_type != "student")
+              (detail.label === "Compétences" &&
+                profile?.user_type != "student")
             ) {
               return null;
             }
 
-          
             if (detail.type === "skills" && profile?.user_type == "student") {
               return (
                 <div
@@ -505,7 +503,7 @@ const ProfileCard: React.FC = () => {
                         className="text-secondary text-sm font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
                         disabled={profileMutation.isPending}
                       >
-                        Edit Skills
+                        Modifier les compétences
                       </button>
                     )}
                   </div>
@@ -528,7 +526,7 @@ const ProfileCard: React.FC = () => {
                               )
                             }
                             className="border border-gray-300 rounded-lg p-2 mr-2 flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                            placeholder="Skill name"
+                            placeholder="Nom de la compétence"
                           />
                           <select
                             value={skill.proficiency_level}
@@ -550,7 +548,7 @@ const ProfileCard: React.FC = () => {
                           <button
                             onClick={() => handleRemoveSkill(skillIndex)}
                             className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-full transition-colors duration-200"
-                            aria-label="Remove skill"
+                            aria-label="Supprimer la compétence"
                           >
                             ×
                           </button>
@@ -560,14 +558,14 @@ const ProfileCard: React.FC = () => {
                         onClick={handleAddSkill}
                         className="mt-2 text-secondary hover:text-blue-800 font-medium flex items-center text-sm"
                       >
-                        <span className="mr-1">+</span> Add New Skill
+                        <span className="mr-1">+</span> Ajouter une compétence
                       </button>
                       <div className="flex justify-end mt-4 space-x-2">
                         <button
                           onClick={() => setEditing(null)}
                           className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm transition-colors duration-200"
                         >
-                          Cancel
+                          Annuler
                         </button>
                         <button
                           onClick={handleSaveSkills}
@@ -575,8 +573,8 @@ const ProfileCard: React.FC = () => {
                           disabled={profileMutation.isPending}
                         >
                           {profileMutation.isPending
-                            ? "Saving..."
-                            : "Save Skills"}
+                            ? "Enregistrement..."
+                            : "Enregistrer les compétences"}
                         </button>
                       </div>
                     </div>
@@ -617,7 +615,7 @@ const ProfileCard: React.FC = () => {
                         </div>
                       ) : (
                         <p className="text-gray-500 italic">
-                          No skills added yet
+                          Aucune compétence ajoutée
                         </p>
                       )}
                     </div>
@@ -643,7 +641,7 @@ const ProfileCard: React.FC = () => {
                         className="text-secondary text-sm font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
                         disabled={profileMutation.isPending}
                       >
-                        Edit
+                        Modifier
                       </button>
                     )}
                   </div>
@@ -659,28 +657,30 @@ const ProfileCard: React.FC = () => {
                         onChange={(e) => handleChange(e, detail.field!)}
                         className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                         rows={5}
-                        placeholder="Write a brief summary about yourself..."
+                        placeholder="Écrivez un résumé sur vous-même..."
                       />
                       <div className="flex justify-end mt-3 space-x-2">
                         <button
                           onClick={() => setEditing(null)}
                           className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm transition-colors duration-200"
                         >
-                          Cancel
+                          Annuler
                         </button>
                         <button
                           onClick={() => handleSave(detail.field!)}
                           className="px-4 py-2 bg-secondary text-white rounded-lg hover:opacity-80 font-medium text-sm shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
                           disabled={profileMutation.isPending}
                         >
-                          {profileMutation.isPending ? "Saving..." : "Save"}
+                          {profileMutation.isPending
+                            ? "Enregistrement..."
+                            : "Enregistrer"}
                         </button>
                       </div>
                     </div>
                   ) : (
                     <div className="bg-gray-50 p-4 rounded-lg mt-2">
                       <p className="text-gray-700 whitespace-pre-wrap">
-                        {detail.value || "No resume added yet"}
+                        {detail.value || "Aucun résumé ajouté"}
                       </p>
                     </div>
                   )}
@@ -700,7 +700,7 @@ const ProfileCard: React.FC = () => {
                       className="text-secondary text-xs font-medium hover:text-blue-800 transition-colors duration-200"
                       disabled={profileMutation.isPending}
                     >
-                      Edit
+                      Modifier
                     </button>
                   )}
                 </div>
@@ -736,23 +736,25 @@ const ProfileCard: React.FC = () => {
                         onClick={() => setEditing(null)}
                         className="px-3 py-1 text-gray-600 text-xs font-medium hover:text-gray-800 transition-colors duration-200"
                       >
-                        Cancel
+                        Annuler
                       </button>
                       <button
                         onClick={() => handleSave(detail.field!)}
                         className="px-3 py-1 bg-secondary text-white rounded-md hover:opacity-80 text-xs font-medium transition-colors duration-200 disabled:opacity-70"
                         disabled={profileMutation.isPending}
                       >
-                        {profileMutation.isPending ? "Saving..." : "Save"}
+                        {profileMutation.isPending
+                          ? "Enregistrement..."
+                          : "Enregistrer"}
                       </button>
                     </div>
                   </div>
                 ) : (
                   <p className="font-medium text-gray-800">
-                    {detail.label === "Phone Number"
+                    {detail.label === "Numéro de téléphone"
                       ? formatPhoneForDisplay(detail.value as string) ||
-                        "Not provided"
-                      : detail.value || "Not provided"}
+                        "Non fourni"
+                      : detail.value || "Non fourni"}
                   </p>
                 )}
               </div>

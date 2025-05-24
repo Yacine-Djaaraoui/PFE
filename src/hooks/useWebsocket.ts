@@ -21,6 +21,7 @@ export const useWebSocket = () => {
       try {
         const cleanedData = event.data.trim();
         const parsedData = JSON.parse(cleanedData);
+        console.log(parsedData)
         if (parsedData.type === "notification") {
           audio.play();
           queryClient.invalidateQueries({ queryKey: ["teams"] });

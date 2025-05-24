@@ -37,7 +37,7 @@ const Header = () => {
   const { messages } = useWebSocket();
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  console.log("new notifications ", messages);
+  console.log("new notifications ddddd", messages);
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 

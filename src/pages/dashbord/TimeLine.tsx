@@ -127,7 +127,7 @@ const AcademicLevelSelector = ({ onSelect }: { onSelect: (academicYear: string) 
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg ">
           {academicLevels.map((level, index) => (
             <button
               key={index}
@@ -136,7 +136,7 @@ const AcademicLevelSelector = ({ onSelect }: { onSelect: (academicYear: string) 
                 setIsOpen(false);
                 onSelect(level.value);
               }}
-              className={`block w-full px-4 py-2 text-left ${
+              className={`block cursor-pointer hover:bg-gray-200 w-full px-4 py-2 text-left ${
                 selectedLevel === level.label ? "bg-[#19488E] text-white" : ""
               }`}
             >

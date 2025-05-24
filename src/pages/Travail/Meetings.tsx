@@ -26,7 +26,7 @@ const Meetings = ({ teamId }: MeetingsProps) => {
     isError: getIsError,
     isFetching: getIsFetching,
   } = useMeetings({
-    ordering: "created_at",
+    ordering: "scheduled_at",
   });
 
   const {
@@ -91,7 +91,7 @@ const Meetings = ({ teamId }: MeetingsProps) => {
     createMeeting({
       title: formData.title,
       description: formData.description,
-      team: Number(formData.team),
+      team: teamId,
       scheduled_at: formData.scheduled_at,
       duration_minutes: formData.duration_minutes,
       location_type: formData.location_type,
@@ -209,7 +209,8 @@ const Meetings = ({ teamId }: MeetingsProps) => {
         )}
 
       {Meetings?.results?.filter(
-        (meeting: any) => meeting.status === "scheduled"
+        (meeting: any) =>
+          meeting.status === "scheduled" && meeting.team === teamId
       ).length === 0 &&
         profile?.user_type === "teacher" && (
           <div className="flex items-center gap-2 text-gray-700">
@@ -265,7 +266,7 @@ const Meetings = ({ teamId }: MeetingsProps) => {
               />
             </div>
 
-            <div className="mb-4 flex items-start">
+            {/* <div className="mb-4 flex items-start">
               <label className="inline text-gray-700 mb-0" htmlFor="team">
                 Team ID*
               </label>
@@ -278,7 +279,7 @@ const Meetings = ({ teamId }: MeetingsProps) => {
                 className="w-[300px] mr-4 ml-auto px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-            </div>
+            </div> */}
 
             <div className="mb-4 flex items-start">
               <label

@@ -29,7 +29,7 @@ const MeetingsDashboard = ({ teamId }: teamIdProps) => {
     isError: getIsError,
     isFetching: getIsFetching,
   } = useMeetings({
-    ordering: "created_at",
+    ordering: "scheduled_at",
   });
 
   // Function to format date and time

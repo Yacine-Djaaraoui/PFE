@@ -3,8 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useProfileById } from "@/hooks/profile";
 import WrapperByHeaderOnly from "@/hoc/WrapperByHeaderOnly";
 import getAcademicYearLabel from "@/hoc/GlobalFunctions";
-import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
-
+import {
+  FaFacebook,
+  FaGithub,
+  FaInstagram,
+  FaLinkedin,
+  FaTwitter,
+} from "react-icons/fa";
 
 const UserProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,15 +42,15 @@ const UserProfilePage: React.FC = () => {
             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <h2 className="text-2xl font-bold mb-2">Profile Not Found</h2>
+        <h2 className="text-2xl font-bold mb-2">Profil non trouvé</h2>
         <p className="text-gray-600 mb-4">
-          The requested profile could not be loaded.
+          Le profil demandé n'a pas pu être chargé.
         </p>
         <button
           onClick={() => navigate(-1)}
           className="px-4 py-2 bg-secondary text-white rounded-md hover:opacity-80 transition-colors"
         >
-          Go Back
+          Retour
         </button>
       </div>
     );
@@ -58,7 +63,6 @@ const UserProfilePage: React.FC = () => {
   const location = [profile.city, profile.state, profile.country]
     .filter(Boolean)
     .join(", ");
-
 
   // Calculate percentage for proficiency
   const getProficiencyPercentage = (level: string) => {
@@ -80,7 +84,7 @@ const UserProfilePage: React.FC = () => {
     if (!url) return null;
     try {
       const parsedUrl = new URL(url);
-      return parsedUrl.hostname.replace('www.', '');
+      return parsedUrl.hostname.replace("www.", "");
     } catch {
       return url;
     }
@@ -88,19 +92,39 @@ const UserProfilePage: React.FC = () => {
 
   const SocialMediaLinks = ({ profile }: { profile: any }) => {
     const socialLinks = [
-      { name: 'Facebook', url: profile.facebook, icon: <FaFacebook className="text-blue-600" /> },
-      { name: 'GitHub', url: profile.github, icon: <FaGithub className="text-gray-800" /> },
-      { name: 'Instagram', url: profile.instagram, icon: <FaInstagram className="text-pink-600" /> },
-      { name: 'LinkedIn', url: profile.linkedin, icon: <FaLinkedin className="text-blue-500" /> },
-      { name: 'Twitter', url: profile.twitter, icon: <FaTwitter className="text-blue-400" /> },
-    ].filter(link => link.url);
-  
+      {
+        name: "Facebook",
+        url: profile.facebook,
+        icon: <FaFacebook className="text-blue-600" />,
+      },
+      {
+        name: "GitHub",
+        url: profile.github,
+        icon: <FaGithub className="text-gray-800" />,
+      },
+      {
+        name: "Instagram",
+        url: profile.instagram,
+        icon: <FaInstagram className="text-pink-600" />,
+      },
+      {
+        name: "LinkedIn",
+        url: profile.linkedin,
+        icon: <FaLinkedin className="text-blue-500" />,
+      },
+      {
+        name: "Twitter",
+        url: profile.twitter,
+        icon: <FaTwitter className="text-blue-400" />,
+      },
+    ].filter((link) => link.url);
+
     if (socialLinks.length === 0) return null;
-  
+
     return (
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Social Media
+          Réseaux sociaux
         </h2>
         <div className="flex flex-wrap gap-4">
           {socialLinks.map((link, index) => (
@@ -137,7 +161,7 @@ const UserProfilePage: React.FC = () => {
                     src={
                       profile.profile_picture_url || "/api/placeholder/200/200"
                     }
-                    alt={`${profile.first_name || "User"}'s profile`}
+                    alt={`${profile.first_name || "Utilisateur"}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -150,17 +174,20 @@ const UserProfilePage: React.FC = () => {
                     <h1 className="text-2xl font-bold text-gray-900">
                       {profile.first_name} {profile.last_name}
                     </h1>
-                    {profile?.user_type == "student" && (<p className="text-secondary text-extrabold">
-                      {getAcademicYearLabel(profile.profile?.current_year) || "Student"}
-                    </p>)}
+                    {profile?.user_type == "student" && (
+                      <p className="text-secondary text-extrabold">
+                        {getAcademicYearLabel(profile.profile?.current_year) ||
+                          "Étudiant"}
+                      </p>
+                    )}
                     <p className="text-gray-500 text-sm mt-1">
-                      {location || "Location not specified"}
+                      {location || "Localisation non spécifiée"}
                     </p>
                   </div>
 
                   {/* <div className="mt-4 md:mt-0 flex space-x-2">
                     <button className="px-4 py-2 bg-secondary text-white rounded-md hover:opacity-80 transition-colors text-sm font-medium">
-                      ajouter
+                      Ajouter
                     </button>
                     <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium">
                       Contacter
@@ -169,52 +196,6 @@ const UserProfilePage: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            {/* Navigation Tabs */}
-            {/* <div className="px-6 border-t border-gray-100 mt-2">
-              <nav className="flex overflow-x-auto">
-                <button
-                  onClick={() => setActiveTab("about")}
-                  className={`px-4 py-4 text-sm font-medium whitespace-nowrap ${
-                    activeTab === "about"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-600 hover:text-blue-600"
-                  }`}
-                >
-                  About
-                </button>
-                <button
-                  onClick={() => setActiveTab("skills")}
-                  className={`px-4 py-4 text-sm font-medium whitespace-nowrap ${
-                    activeTab === "skills"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-600 hover:text-blue-600"
-                  }`}
-                >
-                  Skills
-                </button>
-                <button
-                  onClick={() => setActiveTab("projects")}
-                  className={`px-4 py-4 text-sm font-medium whitespace-nowrap ${
-                    activeTab === "projects"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-600 hover:text-blue-600"
-                  }`}
-                >
-                  Projects
-                </button>
-                <button
-                  onClick={() => setActiveTab("education")}
-                  className={`px-4 py-4 text-sm font-medium whitespace-nowrap ${
-                    activeTab === "education"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-600 hover:text-blue-600"
-                  }`}
-                >
-                  Education
-                </button>
-              </nav>
-            </div> */}
           </div>
         </div>
       </div>
@@ -226,7 +207,7 @@ const UserProfilePage: React.FC = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Quick Info
+                Informations rapides
               </h2>
 
               <div className="space-y-4">
@@ -266,7 +247,7 @@ const UserProfilePage: React.FC = () => {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-sm font-medium text-gray-900">
-                        Phone
+                        Téléphone
                       </h3>
                       <p className="text-sm text-gray-600">
                         {profile.phone_number}
@@ -293,7 +274,7 @@ const UserProfilePage: React.FC = () => {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-sm font-medium text-gray-900">
-                        Location
+                        Localisation
                       </h3>
                       <p className="text-sm text-gray-600">{location}</p>
                     </div>
@@ -318,7 +299,7 @@ const UserProfilePage: React.FC = () => {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-sm font-medium text-gray-900">
-                        Student ID
+                        Matricule
                       </h3>
                       <p className="text-sm text-gray-600">
                         {profile.profile.matricule}
@@ -330,48 +311,13 @@ const UserProfilePage: React.FC = () => {
             </div>
 
             <SocialMediaLinks profile={profile} />
-
-            {/* <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Skills
-              </h2>
-
-              {skills.length > 0 ? (
-                <div className="space-y-4">
-                  {skills.map((skill: any, index: number) => (
-                    <div key={index} className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium text-gray-900">
-                          {skill.name}
-                        </h3>
-                        <span className="text-xs text-gray-500 capitalize">
-                          {skill.proficiency_level}
-                        </span>
-                      </div>
-                      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full bg-blue-600`}
-                          style={{
-                            width: getProficiencyPercentage(
-                              skill.proficiency_level
-                            ),
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 italic">No skills listed</p>
-              )}
-            </div> */}
           </div>
 
           {/* Main Content Area */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                About
+                À propos
               </h2>
               <div className="prose max-w-none">
                 {profile.resume ? (
@@ -380,71 +326,73 @@ const UserProfilePage: React.FC = () => {
                   </p>
                 ) : (
                   <p className="text-gray-500 italic">
-                    No information provided
+                    Aucune information fournie
                   </p>
                 )}
               </div>
             </div>
 
-           
-
             {/* Skills Section */}
-            {profile?.user_type == "student" && (<div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Skills
-              </h2>
+            {profile?.user_type == "student" && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  Compétences
+                </h2>
 
-              {skills.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 text-center">
-                  {skills.map((skill: any, index: number) => {
-                    const percentage = getProficiencyPercentage(
-                      skill.proficiency_level
-                    );
-                    const numericPercentage = parseInt(percentage);
+                {skills.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 text-center">
+                    {skills.map((skill: any, index: number) => {
+                      const percentage = getProficiencyPercentage(
+                        skill.proficiency_level
+                      );
+                      const numericPercentage = parseInt(percentage);
 
-                    return (
-                      <div key={index} className="flex flex-col items-center">
-                        <div className="relative w-20 h-20 mb-2">
-                          <svg className="w-full h-full" viewBox="0 0 36 36">
-                            <path
-                              d="M18 2.0845
+                      return (
+                        <div key={index} className="flex flex-col items-center">
+                          <div className="relative w-20 h-20 mb-2">
+                            <svg className="w-full h-full" viewBox="0 0 36 36">
+                              <path
+                                d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
                     a 15.9155 15.9155 0 0 1 0 -31.831"
-                              fill="none"
-                              stroke="#e6e6e6"
-                              strokeWidth="2"
-                            />
-                            <path
-                              d="M18 2.0845
+                                fill="none"
+                                stroke="#e6e6e6"
+                                strokeWidth="2"
+                              />
+                              <path
+                                d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
                     a 15.9155 15.9155 0 0 1 0 -31.831"
-                              fill="none"
-                              stroke="#19488e"
-                              strokeWidth="2"
-                              strokeDasharray={`${numericPercentage}, 100`}
-                            />
-                            <text
-                              x="18"
-                              y="20.5"
-                              textAnchor="middle"
-                              fill="#19488e"
-                              fontSize="8"
-                            >
-                              {percentage}
-                            </text>
-                          </svg>
+                                fill="none"
+                                stroke="#19488e"
+                                strokeWidth="2"
+                                strokeDasharray={`${numericPercentage}, 100`}
+                              />
+                              <text
+                                x="18"
+                                y="20.5"
+                                textAnchor="middle"
+                                fill="#19488e"
+                                fontSize="8"
+                              >
+                                {percentage}
+                              </text>
+                            </svg>
+                          </div>
+                          <span className="text-sm font-medium text-gray-800">
+                            {skill.name}
+                          </span>
                         </div>
-                        <span className="text-sm font-medium text-gray-800">
-                          {skill.name}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 italic">No skills listed</p>
-              )}
-            </div>)}
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">
+                    Aucune compétence listée
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

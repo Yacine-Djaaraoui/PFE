@@ -10,22 +10,14 @@ import {
   Trash2,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  fetchUploads,
-  getUploadDetails,
-  createUpload,
-  deleteUpload,
-  addCommentToUpload,
-} from "@/api/uploads";
-import {
-  useDocuments,
-  useCreateDocument,
-  useDeleteDocument,
-} from "@/hooks/document";
+import { createUpload, deleteUpload, addCommentToUpload } from "@/api/uploads";
+import {} from "@/hooks/document";
 import { useUploads, useUploadDetails } from "@/hooks/uploads";
 import { toast } from "react-toastify";
 import { createDocument } from "@/api/document";
-import { useTeams } from "@/hooks/teams";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface LivrablesProps {
   teamId: number;
@@ -37,16 +29,16 @@ const Livrables = ({ teamId }: LivrablesProps) => {
   const [selectedUpload, setSelectedUpload] = useState<any>(null);
   const [newComment, setNewComment] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const navigate = useNavigate();
+  const profile = useSelector((state: RootState) => state.auth.profile);
 
   // Fetch documents and uploads
-  const { data: uploads, isLoading: isLoadingUploads } = useUploads();
+  const { data: uploads, isLoading: isLoadingUploads } = useUploads({
+    teamId: teamId,
+  });
   const { data: uploadDetails, refetch: refetchUploadDetails } =
     useUploadDetails(selectedUpload?.id);
 
-  // Mutations
-
-  const deleteDocumentMutation = useDeleteDocument();
-  // Create Upload Mutation
   const createUploadMutation = useMutation({
     mutationFn: (data: {
       team: number;
@@ -55,7 +47,7 @@ const Livrables = ({ teamId }: LivrablesProps) => {
       description?: string;
     }) => createUpload(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(["uploads"]);
+      queryClient.invalidateQueries({ queryKey: ["uploads"] });
       toast.success("Livrable ajouté avec succès");
     },
     onError: (error: Error) => {
@@ -68,7 +60,7 @@ const Livrables = ({ teamId }: LivrablesProps) => {
   const deleteUploadMutation = useMutation({
     mutationFn: (id: number) => deleteUpload(id),
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries(["uploads"]);
+      queryClient.invalidateQueries({ queryKey: ["uploads"] });
       toast.success("Livrable supprimé avec succès");
       if (selectedUpload?.id === id) {
         setSelectedUpload(null);
@@ -85,7 +77,9 @@ const Livrables = ({ teamId }: LivrablesProps) => {
     mutationFn: ({ id, content }: { id: number; content: string }) =>
       addCommentToUpload(id, { content }),
     onSuccess: () => {
-      queryClient.invalidateQueries(["upload", selectedUpload?.id]);
+      queryClient.invalidateQueries({
+        queryKey: ["uploads", selectedUpload?.id],
+      });
       setNewComment("");
       toast.success("Commentaire ajouté");
     },
@@ -147,24 +141,12 @@ const Livrables = ({ teamId }: LivrablesProps) => {
       try {
         await deleteUploadMutation.mutateAsync(id);
         toast.success("Livrable supprimé avec succès");
-        queryClient.invalidateQueries(["uploads"]);
+        queryClient.invalidateQueries({ queryKey: ["uploads"] });
         if (selectedUpload?.id === id) {
           setSelectedUpload(null);
         }
       } catch (error) {
         toast.error("Erreur lors de la suppression du livrable");
-      }
-    }
-  };
-
-  const handleDeleteDocument = async (id: number) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce document ?")) {
-      try {
-        await deleteDocumentMutation.mutateAsync(id);
-        toast.success("Document supprimé avec succès");
-        queryClient.invalidateQueries(["documents"]);
-      } catch (error) {
-        toast.error("Erreur lors de la suppression du document");
       }
     }
   };
@@ -243,7 +225,8 @@ const Livrables = ({ teamId }: LivrablesProps) => {
                             {upload.title}
                           </p>
                           <p className="text-sm text-gray-500">
-                            Ajouté par : {upload.author?.username || "Inconnu"}
+                            Ajouté par :{" "}
+                            {upload?.uploaded_by?.username || "Inconnu"}
                           </p>
                         </div>
                       </div>
@@ -254,15 +237,17 @@ const Livrables = ({ teamId }: LivrablesProps) => {
                             {upload.comments?.length || 0}
                           </span>
                         </div>
-                        <button
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteUpload(upload.id);
-                          }}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {profile?.id === upload?.uploaded_by?.id && (
+                          <button
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteUpload(upload.id);
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                         <a
                           href={upload.url}
                           target="_blank"
@@ -349,9 +334,15 @@ const Livrables = ({ teamId }: LivrablesProps) => {
               ) : (
                 uploadDetails?.comments?.map((comment: any) => (
                   <div key={comment.id} className="flex gap-3">
-                    <div className="w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">
-                      {comment.author?.username?.charAt(0).toUpperCase() || "U"}
-                    </div>
+                    <img
+                      className="cursor-pointer w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0"
+                      src={comment?.author?.profile_picture_url}
+                      alt="pic"
+                      onClick={() =>
+                        navigate(`/profile/${comment?.author?.id}`)
+                      }
+                    />
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-gray-900 text-sm">

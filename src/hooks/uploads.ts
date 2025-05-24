@@ -7,6 +7,7 @@ import {
   
   export const useUploads = (
     {
+      teamId,
       search,
       ordering,
       page,
@@ -14,12 +15,13 @@ import {
       search?: string;
       ordering?: string;
       page?: number;
+      teamId?:number;
     } = {},
     options?: UseQueryOptions
   ): UseQueryResult => {
     return useQuery({
-      queryKey: ["uploads", search, ordering, page],
-      queryFn: () => fetchUploads({ search, ordering, page }),
+      queryKey: ["uploads", search, ordering, page , teamId],
+      queryFn: () => fetchUploads({ search, ordering, page , teamId }),
       refetchOnWindowFocus: false,
       retry: false,
       ...options,

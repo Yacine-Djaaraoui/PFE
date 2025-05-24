@@ -40,7 +40,7 @@ const Livrables = ({teamId} : LivrablesProps) => {
   
 
   // Fetch documents and uploads
-  const { data: uploads, isLoading: isLoadingUploads } = useUploads();
+  const { data: uploads, isLoading: isLoadingUploads } = useUploads({teamId : teamId});
   const { data: uploadDetails, refetch: refetchUploadDetails } = useUploadDetails(
     selectedUpload?.id
   );

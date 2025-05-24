@@ -15,10 +15,12 @@ export const fetchTeams = async ({
   description,
   search,
   page_size,
+  page,
   academic_year,
   is_supervisor,
   next_url, // Add this new optional parameter
 }: {
+  page: string;
   is_member?: boolean;
   has_capacity?: boolean;
   is_owner?: boolean;
@@ -29,7 +31,7 @@ export const fetchTeams = async ({
   description?: string;
   search?: string;
   page_size?: string;
-  is_supervisor?:boolean;
+  is_supervisor?: boolean;
   next_url?: string; // Add type definition
 }) => {
   const token = localStorage.getItem("access_token");
@@ -51,7 +53,10 @@ export const fetchTeams = async ({
     params.append("match_student_profile", String(match_student_profile));
   if (ordering !== undefined) params.append("ordering", String(ordering));
   if (name !== undefined) params.append("name", String(name));
-  if (academic_year !== undefined) params.append("academic_year", String(academic_year));
+  if (academic_year !== undefined)
+    params.append("academic_year", String(academic_year));
+  if (page) params.append("page", page);
+
   if (description !== undefined)
     params.append("description", String(description)); // Fixed: was using ordering instead of description
   if (search !== undefined) params.append("search", String(search));

@@ -21,6 +21,7 @@ import { useGetMembers } from "@/hooks/useGetMembers";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Filter } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import Pagination1 from "./pagination";
 
 const Teams = () => {
   const searchResults = useSelector((state: RootState) => state.SearchResult);
@@ -35,6 +36,7 @@ const Teams = () => {
   const [success, setSuccess] = useState("");
   const [fetchMoreTeams, setFetchMoreTeams] = useState(false);
   const [teams, setTeams] = useState({});
+  const [dataTeams, setDataTeams] = useState();
   const isMounted = useRef(true);
   const profile = useSelector((state: RootState) => state.auth.profile);
   const [teamIdForgetMembers, setTeamIdForGetMembers] = useState<number | null>(
@@ -44,7 +46,8 @@ const Teams = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [academicYearFilter, setAcademicYearFilter] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   useEffect(() => {
     return () => {
       // Set to false when component unmounts
@@ -58,42 +61,53 @@ const Teams = () => {
     isFetching,
     isError,
   } = useTeams({
-    next_url: fetchMoreTeams && nextUrl ? teams.next : teams.next,
     match_student_profile: true,
     academic_year: academicYearFilter || undefined,
     ordering: "-created_at",
+    page: currentPage,
+    search: searchResults.searchTerm,
+
+    page_size: 9,
   });
   const { data: Myteam, error: MyteamsError } = useTeams({
     match_student_profile: true,
     is_member: true,
   });
   useEffect(() => {
-    if (searchResults.searchResult) {
-      setNextUrl(searchResults.searchResult.next);
-      setTeams(searchResults.searchResult);
-    }
-  }, [searchResults.searchResult]);
+    setTotalPages(dataTeams?.total_pages);
+  }, [dataTeams]);
   useEffect(() => {
-    if (nextUrl) {
-      console.log(nextUrl);
-      setNextUrl(teams?.next);
-      console.log("dfd");
-      setTeams((prev) => ({
-        ...prev, // Keep all existing state
-        status: data.status, // Update status
-        count: data.count, // Update total count
-        next: data.next, // Update next page URL
-        previous: data.previous, // Update previous page URL
-        current_page: data.current_page, // Update current page
-        total_pages: data.total_pages, // Update total pages
-        page_size: data.page_size, // Update page size
-        results: [...prev.results, ...data.results], // Append new results to existing ones
-      }));
-    }
-  }, [fetchMoreTeams]);
-  useEffect(() => {
-    console.log(teams);
-  }, [teams]);
+    setDataTeams(data);
+    console.log("cureent", currentPage);
+  }, [currentPage, data]);
+  // useEffect(() => {
+  //   setDataTeams(searchResults.searchResult);
+  // }, [searchResults.searchResult]);
+  // useEffect(() => {
+  //   if (searchResults.searchResult) {
+  //     setNextUrl(searchResults.searchResult.next);
+  //     setTeams(searchResults.searchResult);
+  //   }
+  // }, [searchResults.searchResult]);
+  // useEffect(() => {
+  //   if (nextUrl) {
+  //     console.log(nextUrl);
+  //     setNextUrl(teams?.next);
+  //     console.log("dfd");
+  //     setTeams((prev) => ({
+  //       ...prev, // Keep all existing state
+  //       status: data.status, // Update status
+  //       count: data.count, // Update total count
+  //       next: data.next, // Update next page URL
+  //       previous: data.previous, // Update previous page URL
+  //       current_page: data.current_page, // Update current page
+  //       total_pages: data.total_pages, // Update total pages
+  //       page_size: data.page_size, // Update page size
+  //       results: [...prev.results, ...data.results], // Append new results to existing ones
+  //     }));
+  //   }
+  // }, [fetchMoreTeams]);
+
   const handleJoinRequest = (teamId: string, message: string) => {
     joinMutation.mutate(
       { teamId, message },
@@ -144,6 +158,10 @@ const Teams = () => {
 
   const toggleFilterDropdown = () => {
     setShowFilterDropdown(!showFilterDropdown);
+  };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 350, behavior: "smooth" }); // Scrolls to top
   };
   return (
     <div className=" h-screen py-10 pl-8 w-full  ">
@@ -335,11 +353,11 @@ const Teams = () => {
               : searchResults.searchResultError.message}
           </p>
         ) : (
-          <div className="grid grid-cols-3 gap-2 p-1 mt-6 w-full">
-            {teams?.results
-              ?.filter((team1) =>
-                data?.results?.some((team2) => team2.id === team1.id)
-              )
+          <div className="grid grid-cols-3 gap-2 p-1 mt-6 w-full  ">
+            {dataTeams?.results
+              // ?.filter((team1) =>
+              //   data?.results?.some((team2) => team2.id === team1.id)
+              // )
               .map((group) => (
                 <div
                   key={group.id}
@@ -349,7 +367,7 @@ const Teams = () => {
                     <span className="text-[12px] bg-white rounded-xl py-1 px-1 -ml-1">
                       Groupe n°{group.id}
                     </span>
-                    {!group.has_capacity && Myteam?.results?.length === 0 && (
+                    {!group.has_capacity && (
                       <span className="bg-white">🔒</span>
                     )}
                   </div>
@@ -463,7 +481,7 @@ const Teams = () => {
                                   to={`/profile/${
                                     membersData.results?.filter(
                                       (member) => member.role === "owner"
-                                    )[0]?.id
+                                    )[0]?.user?.id
                                   }`}
                                   className={`w-fit`}
                                 >
@@ -488,7 +506,7 @@ const Teams = () => {
                                 <div className="flex flex-wrap gap-2 ">
                                   {membersData.results?.map((member, index) => (
                                     <NavLink
-                                      to={`/profile/${member?.id}`}
+                                      to={`/profile/${member?.user?.id}`}
                                       className={`w-fit`}
                                     >
                                       <span
@@ -501,7 +519,7 @@ const Teams = () => {
                                            className="w-6 h-6 rounded-full"
                                            /> */}
                                         {member.user.first_name}{" "}
-                                        {member.user.first_name}
+                                        {member.user.last_name}
                                       </span>
                                     </NavLink>
                                   ))}
@@ -544,7 +562,7 @@ const Teams = () => {
               ))}
           </div>
         )}
-        {teams?.next && (
+        {/* {teams?.next && (
           <div className="flex justify-center items-center w-full">
             <button
               onClick={() => setFetchMoreTeams((prev) => !prev)}
@@ -553,6 +571,13 @@ const Teams = () => {
               plus
             </button>
           </div>
+        )} */}
+        {(dataTeams?.results?.length > 0 && totalPages !== 1) && (
+          <Pagination1
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+          />
         )}
       </div>
     </div>

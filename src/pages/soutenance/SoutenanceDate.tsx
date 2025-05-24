@@ -443,9 +443,11 @@ const SoutenanceDate = () => {
       </div>
       {profile?.user_type === "teacher" && (
         <div className=" w-full mt-8 ">
-          <h2 className="text-black font-medium mb-3 text-xl">
-            Mes soutenances
-          </h2>
+          {Meetings?.results?.length > 0 && (
+            <h2 className="text-black font-medium mb-3 text-xl">
+              Mes soutenances
+            </h2>
+          )}
           {Meetings?.results
             ?.filter((meeting: any) => meeting.status === "scheduled") // Filter only scheduled meetings
             ?.slice(0, 3) // Take first 3 scheduled meetings

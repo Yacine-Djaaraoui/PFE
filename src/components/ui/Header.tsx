@@ -32,6 +32,7 @@ import { setSearchResult } from "@/redux/reducers/SearchReducer";
 import { NavLink, useLocation, useParams } from "react-router-dom";
 import { useStudents } from "@/hooks/useStudents";
 import { useThemes } from "@/hooks/themes";
+import { current } from "@reduxjs/toolkit";
 const Header = () => {
   const { messages } = useWebSocket();
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -70,6 +71,7 @@ const Header = () => {
         search: DebouncerSearchTerm,
         match_student_profile: true,
         ordering: "-last_name",
+        page_size: 10,
       }),
       [DebouncerSearchTerm]
     ),
@@ -171,7 +173,7 @@ const Header = () => {
   const profile = useSelector((state: RootState) => state.auth.profile);
 
   return (
-    <header className="flex items-center justify-between h-20  bg fixed w-[83%] pr-9 mt-0 bg-white ">
+    <header className="flex  items-center justify-between h-20  bg fixed w-[83%] pr-9 mt-0 bg-white z-[50] ">
       {/* Search Input */}
       <div className="w-[60%] flex items-center h-full justify-between">
         <div className="relative w-[85%] bg-[#DBDBDB] ml-7 h-11 rounded-md flex items-center pl-12">

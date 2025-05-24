@@ -14,6 +14,7 @@ export const useActionToJoinRequest = () => {
     onSuccess: () => {
       // Invalidate and refetch the teams list after deletion
       queryClient.invalidateQueries({ queryKey: ["teams"] });
+      queryClient.invalidateQueries({ queryKey: ["team"] });
       queryClient.invalidateQueries({ queryKey: ["members"] });
     },
     // Pass parameter// Pass parameter
@@ -28,6 +29,7 @@ export const useActionToInvitaion = () => {
     onSuccess: () => {
       // Invalidate and refetch the teams list after deletion
       queryClient.invalidateQueries({ queryKey: ["teams"] });
+      queryClient.invalidateQueries({ queryKey: ["team"] });
       queryClient.invalidateQueries({ queryKey: ["members"] });
     },
   });

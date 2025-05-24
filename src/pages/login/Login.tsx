@@ -68,7 +68,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex flex-row w-full h-[100vh] overflow-hidden">
-      <div className="relative w-[56%] bg-secondary flex flex-col items-start justify-center pl-[10%] text-white font-poppins">
+      <div className="relative w-[56%] bg-secondary flex flex-col items-start justify-center pl-[10%] text-white font-roboto">
       <img
           src={image}
           alt="icon"

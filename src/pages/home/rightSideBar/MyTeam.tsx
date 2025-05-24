@@ -99,7 +99,7 @@ const MyTeam = () => {
               to={`/profile/${
                 membersData.results?.filter(
                   (member) => member.role === "owner"
-                )[0].id
+                )[0].user?.id
               }`}
               className={`w-fit`}
             >
@@ -120,12 +120,12 @@ const MyTeam = () => {
           </div>
           <div className="flex items-start gap-2 mt-2">
             <p className="text-gray-600 text-sm ">Membres </p>
-            <div className="flex flex-wrap gap-2 mb-2">
+            <div className="flex flex-wrap gap-2 mb-2 text-left">
               {membersData.results?.map((member, index) => (
-                <NavLink to={`/profile/${member?.id}`} className={`w-fit`}>
+                <NavLink to={`/profile/${member?.user?.id}`} className={`w-fit`}>
                   <span
                     key={index}
-                    className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0] hover:bg-secondary hover:text-white"
+                    className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0] hover:bg-secondary hover:text-white text-left"
                   >
                     {/* <img
                   src={member.avatar}

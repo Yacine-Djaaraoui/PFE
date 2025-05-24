@@ -29,7 +29,7 @@ const MeetingsDashboard = ({ teamId }: teamIdProps) => {
     isError: getIsError,
     isFetching: getIsFetching,
   } = useMeetings({
-    ordering: "-created_at",
+    ordering: "created_at",
   });
 
   // Function to format date and time
@@ -89,13 +89,9 @@ const MeetingsDashboard = ({ teamId }: teamIdProps) => {
   if (getIsError) return <div>Error loading meetings</div>;
 
   return (
-    <div className=" w-full px-44">
+    <div className=" w-full left-0 right-auto px-12">
       {Meetings?.results
-        ?.filter(
-          (meeting: any) =>
-            meeting.status === "scheduled" &&
-            (profile?.user_type === "teacher" ? meeting.team === teamId : true)
-        ) // Filter only scheduled meetings
+        ?.filter((meeting: any) => meeting.status === "scheduled") // Filter only scheduled meetings
         ?.slice(0, 3) // Take first 3 scheduled meetings
         ?.map((meeting: any) => {
           const { dateDisplay, timeDisplay } = formatMeetingDateTime(
@@ -122,7 +118,9 @@ const MeetingsDashboard = ({ teamId }: teamIdProps) => {
                     <div className="flex items-center">
                       <span className="mr-2">{icon}</span>
                       <span className="text-md text-black ">
-                        {meeting.title} {meeting.description}{" "}
+                        {meeting.title} {meeting.description}
+                        {profile?.user_type === "teacher" &&
+                          `( groupe N°${meeting.team})`}
                       </span>
                     </div>
                   </div>

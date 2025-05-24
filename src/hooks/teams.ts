@@ -15,12 +15,14 @@ export const useTeams = (
     name,
     description,
     search,
+    page,
     page_size,
     next_url,
     academic_year,
     is_supervisor,
   }: {
-    is_member?: boolean;
+      is_member?: boolean;
+    page?: string; 
     has_capacity?: boolean;
     is_owner?: boolean;
     match_student_profile?: boolean;
@@ -45,6 +47,7 @@ export const useTeams = (
         match_student_profile,
         ordering,
         name,
+        page,
         description,
         search,
         page_size,
@@ -67,6 +70,7 @@ export const useTeams = (
         academic_year,
         is_supervisor,
         next_url,
+        page,
       }),
     refetchOnWindowFocus: false,
     retry: false,

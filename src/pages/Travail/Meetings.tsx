@@ -26,7 +26,7 @@ const Meetings = ({ teamId }: MeetingsProps) => {
     isError: getIsError,
     isFetching: getIsFetching,
   } = useMeetings({
-    ordering: "-created_at",
+    ordering: "created_at",
   });
 
   const {
@@ -49,7 +49,7 @@ const Meetings = ({ teamId }: MeetingsProps) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    team: "",
+    team: teamId,
     scheduled_at: "",
     duration_minutes: 30,
     location_type: "online" as "online" | "physical",

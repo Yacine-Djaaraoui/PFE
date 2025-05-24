@@ -213,7 +213,7 @@ const Notification = () => {
                                   to={`/profile/${
                                     membersData.results?.filter(
                                       (member) => member.role === "owner"
-                                    )[0]?.id
+                                    )[0]?.user?.id
                                   }`}
                                   className={`w-fit`}
                                 >
@@ -238,7 +238,7 @@ const Notification = () => {
                                 <div className="flex flex-wrap gap-2 ">
                                   {membersData.results?.map((member, index) => (
                                     <NavLink
-                                      to={`/profile/${member?.id}`}
+                                      to={`/profile/${member?.user?.id}`}
                                       className={`w-fit`}
                                     >
                                       <span
@@ -250,7 +250,8 @@ const Notification = () => {
                                            alt={member.name}  
                                            className="w-6 h-6 rounded-full"
                                            /> */}
-                                        {member.user.first_name}{" "}{member.user.last_name}
+                                        {member.user.first_name}{" "}
+                                        {member.user.last_name}
                                       </span>
                                     </NavLink>
                                   ))}

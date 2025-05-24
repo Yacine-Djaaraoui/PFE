@@ -9,7 +9,7 @@ import editSquare from "@/assets/Edit-Square.svg";
 const MyTeams = () => {
   const [showTeams, setShowTeams] = useState(false);
   const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
-  const { data: teamsData } = useTeams({ is_supervisor: true});
+  const { data: teamsData } = useTeams({ is_supervisor: true });
 
   const toggleTeams = () => {
     setShowTeams((prev) => !prev);
@@ -104,20 +104,17 @@ const TeamDetails = ({ team }: { team: any }) => {
         <NavLink
           to={`/profile/${
             membersData.results?.filter((member) => member.role === "owner")[0]
-              .id
+              .user?.id
           }`}
           className={`w-fit`}
         >
           <span className="text-sm font-medium rounded-2xl border px-2 py-1 border-[#E6E4F0] hover:bg-secondary hover:text-white">
-            {
+            {membersData.results?.filter((member) => member.role === "owner")[0]
+              .user?.first_name +
+              " " +
               membersData.results?.filter(
                 (member) => member.role === "owner"
-              )[0].user?.first_name +
-
-              " " +membersData.results?.filter(
-                (member) => member.role === "owner"
-              )[0].user?.last_name 
-            }
+              )[0].user?.last_name}
           </span>
         </NavLink>
       </div>
@@ -125,12 +122,12 @@ const TeamDetails = ({ team }: { team: any }) => {
       {/* Members */}
       <div className="flex items-start gap-2 mt-2">
         <p className="text-gray-600 text-sm ">Membres </p>
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="flex flex-wrap gap-2 mb-2 text-left">
           {membersData.results?.map((member, index) => (
-            <NavLink to={`/profile/${member?.id}`} className={`w-fit`}>
+            <NavLink to={`/profile/${member?.user?.id}`} className={`w-fit`}>
               <span
                 key={index}
-                className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0] hover:bg-secondary hover:text-white"
+                className=" text-sm px-2 py-1 rounded-full border border-[#E6E4F0] hover:bg-secondary hover:text-white text-left"
               >
                 {/* <img
                         src={member.avatar}
@@ -149,22 +146,20 @@ const TeamDetails = ({ team }: { team: any }) => {
 
       {/* Status */}
       <div className="flex items-center gap-8  mt-1">
-            <p className="text-gray-600 text-sm">Status </p>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 bg-secondary rounded-full"></span>
-              <span className="text-sm">
-                {team?.has_capacity ? "incomplet" : "complet"}
-              </span>
-            </div>
-          </div>
+        <p className="text-gray-600 text-sm">Status </p>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 bg-secondary rounded-full"></span>
+          <span className="text-sm">
+            {team?.has_capacity ? "incomplet" : "complet"}
+          </span>
+        </div>
+      </div>
 
       {/* Academic Year */}
       <div className="flex items-center gap-12  mt-3">
-            <p className="text-gray-600 text-sm">Year </p>
-            <span className="text-sm">
-              {team?.academic_year}
-            </span>
-          </div>
+        <p className="text-gray-600 text-sm">Year </p>
+        <span className="text-sm">{team?.academic_year}</span>
+      </div>
     </div>
   );
 };

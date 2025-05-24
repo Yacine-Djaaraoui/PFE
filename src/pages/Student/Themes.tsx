@@ -23,6 +23,7 @@ import { useSupervisorRequest } from "@/hooks/useSupervisorRequest";
 import { useTeams } from "@/hooks/teams";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
+import Pagination1 from "./pagination";
 
 export const ThemeDetailsDialog = ({
   isOpen,
@@ -130,9 +131,6 @@ export const ThemeDetailsDialog = ({
 
 const Themes = () => {
   const searchResults = useSelector((state: RootState) => state.SearchResult);
-  const [fetchMoreThemes, setFetchMoreThemes] = useState(false);
-  const [nextUrl, setNextUrl] = useState("");
-  const [themes, setThemes] = useState({});
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -153,15 +151,25 @@ const Themes = () => {
   const [academicYearFilter, setAcademicYearFilter] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [dataThemes, setDataThemes] = useState();
+
   const { data, isLoading, error, isFetching } = useThemes({
-    next_url: fetchMoreThemes && nextUrl ? themes?.next : themes?.next,
     ordering: "created_at",
-    academic_year: currentUser?.user_type === "student" ? currentUser?.profile?.current_year : academicYearFilter || undefined,
+    academic_year:
+      currentUser?.user_type === "student"
+        ? currentUser?.profile?.current_year
+        : academicYearFilter || undefined,
     proposed_by:
       activeFilter === "proposed_by_me" ? currentUser?.id : undefined,
     co_supervised_by:
       activeFilter === "co_supervised_by_me" ? currentUser?.id : undefined,
     is_verified: true,
+    page: currentPage,
+    page_size: 9,
+    search: searchResults.searchTerm,
   });
 
   useEffect(() => {
@@ -177,40 +185,12 @@ const Themes = () => {
   }, []);
 
   useEffect(() => {
-    if ((searchResults.searchResult || data) && !fetchMoreThemes) {
-      if (searchResults.searchTerm !== "") {
-        setThemes(searchResults.searchResult);
-        setNextUrl(searchResults.searchResult?.next || "");
-      } else {
-        setThemes(data);
-        setNextUrl(data?.next || "");
-      }
-    }
-  }, [searchResults.searchResult, data]);
-  useEffect(() => {}, [searchResults.searchResult, data]);
+    setTotalPages(dataThemes?.total_pages);
+  }, [dataThemes]);
 
   useEffect(() => {
-    if (nextUrl && fetchMoreThemes) {
-      setNextUrl(themes?.next);
-      setThemes((prev) => ({
-        ...prev,
-        status: data.status,
-        count: data.count,
-        next: data.next,
-        previous: data.previous,
-        current_page: data.current_page,
-        total_pages: data.total_pages,
-        page_size: data.page_size,
-        results: [...prev.results, ...data.results],
-      }));
-    }
-  }, [fetchMoreThemes]);
-
-  const loadMoreThemes = () => {
-    if (themes?.next) {
-      setFetchMoreThemes((prev) => !prev);
-    }
-  };
+    setDataThemes(data);
+  }, [currentPage, data]);
 
   const handleOpenDialog = (theme) => {
     setSelectedTheme(theme);
@@ -244,16 +224,23 @@ const Themes = () => {
     setActiveFilter(filter);
     setAcademicYearFilter("");
     setShowFilterDropdown(false);
+    setCurrentPage(1); // Reset to first page when filter changes
   };
 
   const handleAcademicYearChange = (year: string) => {
     setAcademicYearFilter(year);
     setActiveFilter("all");
     setShowFilterDropdown(false);
+    setCurrentPage(1); // Reset to first page when filter changes
   };
 
   const toggleFilterDropdown = () => {
     setShowFilterDropdown(!showFilterDropdown);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 350, behavior: "smooth" }); // Scrolls to top
   };
 
   return (
@@ -276,11 +263,6 @@ const Themes = () => {
           <h2 className="font-semibold text-primaryTitle">
             Liste des thèmes disponibles
           </h2>
-          {success && (
-            <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-              <p> {success}</p>
-            </div>
-          )}
 
           {/* Display errors from the join request */}
           {error && (
@@ -426,10 +408,12 @@ const Themes = () => {
       )}
 
       <div className="flex flex-col min-h-[calc(100vh-250px)]">
-        {isLoading ||
-        ((searchResults.searchResultLoading ||
-          searchResults.searchResultIsFetching) &&
-          !fetchMoreThemes) ? (
+        {searchResults.searchResultLoading ||
+        searchResults.searchResultIsFetching ? (
+          <div className="flex justify-center items-center w-full mt-16">
+            <div className="w-12 h-12 border-4 border-gray-300 border-t-secondary rounded-full animate-spin"></div>
+          </div>
+        ) : isLoading ? (
           <div className="grid grid-cols-3 gap-4 p-1 mt-4 w-full">
             {[...Array(9)].map((_, i) => (
               <div
@@ -444,106 +428,98 @@ const Themes = () => {
             ))}
           </div>
         ) : error ? (
-          <div className="text-red-500 p-4 border border-red-200 bg-red-50 rounded-md">
-            Error loading themes. Please try again later.
-          </div>
+          <p className="mx-auto text-2xl text-center w-full mt-16 text-red-300 font-semibold">
+            {error.message}
+          </p>
         ) : (
           <>
             <div className="grid grid-cols-3 gap-4 p-1 mt-4 w-full">
-              {themes?.results
-                ?.filter((theme1) =>
-                  data?.results?.some((theme2) => theme2.id === theme1.id)
-                )
-                .map((theme) => (
-                  <div
-                    key={theme?.id}
-                    className="bg-accent/10 font-inter p-4 rounded-lg relative w-full shadow-md"
-                  >
-                    <div className="flex justify-start items-center">
-                      <p className="text-[14px] bg-white rounded-xl py-1 px-2 -ml-1">
-                        Théme n°{theme?.id}
-                      </p>
-                    </div>
-                    <h3 className="text-[14px] font-inter font-bold my-2">
-                      {theme.title}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Encadrant: {theme?.proposed_by?.first_name}
+              {dataThemes?.results?.map((theme) => (
+                <div
+                  key={theme?.id}
+                  className="bg-accent/10 font-inter p-4 rounded-lg relative w-full shadow-md"
+                >
+                  <div className="flex justify-start items-center">
+                    <p className="text-[14px] bg-white rounded-xl py-1 px-2 -ml-1">
+                      Théme n°{theme?.id}
                     </p>
+                  </div>
+                  <h3 className="text-[14px] font-inter font-bold my-2">
+                    {theme.title}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Encadrant: {theme?.proposed_by?.first_name}
+                  </p>
 
-                    <div className="flex items-center justify-between mt-3 text-[#5A5A5A] text-xs">
-                      <div className="flex items-center">
-                        {theme.documents && theme.documents.length > 0 && (
-                          <div className="flex items-center text-gray-500">
-                            <FileText className="h-4 w-4 mr-1" />
-                            <span>{theme.documents.length}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
-                          onClick={() => handleOpenDialog(theme)}
-                        >
-                          Voir plus
-                        </Button>
-                        {teamId && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
+                  <div className="flex items-center justify-between mt-3 text-[#5A5A5A] text-xs">
+                    <div className="flex items-center">
+                      {theme.documents && theme.documents.length > 0 && (
+                        <div className="flex items-center text-gray-500">
+                          <FileText className="h-4 w-4 mr-1" />
+                          <span>{theme.documents.length}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
+                        onClick={() => handleOpenDialog(theme)}
+                      >
+                        Voir plus
+                      </Button>
+                      {teamId && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              className="bg-secondary text-white px-4 py-1.5 rounded-sm text-xs"
+                            >
+                              Demander
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Demander ce encadrant ?{" "}
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Une fois inscrit, vous devrez demander à
+                                l'administration pour changer de groupe.
+                                <label className="font-medium block mt-2 mb-2">
+                                  Ajouter un message a l'encadrant
+                                </label>
+                                <textarea
+                                  type="text"
+                                  value={message}
+                                  onChange={handleChange}
+                                  className="border block w-[300px] border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  placeholder={`message`}
+                                  rows={4}
+                                />
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="hover:bg-secondary hover:text-white">
+                                Annuler
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => {
+                                  handleJoinRequest(teamId, message, theme.id);
+                                }}
                               >
                                 Demander
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Demander ce encadrant ?{" "}
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Une fois inscrit, vous devrez demander à
-                                  l'administration pour changer de groupe.
-                                  <label className="font-medium block mt-2 mb-2">
-                                    Ajouter un message a l'encadrant
-                                  </label>
-                                  <textarea
-                                    type="text"
-                                    value={message}
-                                    onChange={handleChange}
-                                    className="border block w-[300px] border-gray-300 rounded-lg mb-3 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder={`message`}
-                                    rows={4}
-                                  />
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel className="hover:bg-secondary hover:text-white">
-                                  Annuler
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => {
-                                    handleJoinRequest(
-                                      teamId,
-                                      message,
-                                      theme.id
-                                    );
-                                  }}
-                                >
-                                  Demander
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
-                      </div>
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
 
             <ThemeDetailsDialog
@@ -552,21 +528,12 @@ const Themes = () => {
               theme={selectedTheme}
             />
 
-            {isFetching && fetchMoreThemes && (
-              <div className="flex justify-center items-center w-full mt-4">
-                <div className="w-8 h-8 border-4 border-gray-300 border-t-secondary rounded-full animate-spin"></div>
-              </div>
-            )}
-
-            {themes?.next && (
-              <div className="flex justify-center items-center w-full mt-4">
-                <button
-                  onClick={loadMoreThemes}
-                  className="mt-4 cursor-pointer hover:bg-primary/90 bg-primary hover:bg-primarydark text-white px-8 py-2 rounded-[67px]"
-                >
-                  Plus
-                </button>
-              </div>
+            {dataThemes?.results?.length > 0 && totalPages !== 1 && (
+              <Pagination1
+                currentPage={currentPage}
+                totalPages={totalPages}
+                handlePageChange={handlePageChange}
+              />
             )}
           </>
         )}

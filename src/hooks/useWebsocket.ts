@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import notificationSound from "@/assets/notification-sound.mp3";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useWebSocket = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
 
   const audio = new Audio(notificationSound);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -21,6 +23,12 @@ export const useWebSocket = () => {
         const parsedData = JSON.parse(cleanedData);
         if (parsedData.type === "notification") {
           audio.play();
+          queryClient.invalidateQueries({ queryKey: ["teams"] });
+          queryClient.invalidateQueries({ queryKey: ["themes"] });
+          queryClient.invalidateQueries({ queryKey: ["members"] });
+          queryClient.invalidateQueries({ queryKey: ["uploads"] });
+          queryClient.invalidateQueries({ queryKey: ["meetings"] });
+          queryClient.invalidateQueries({ queryKey: ["soutenance"] });
         }
         setMessages((prevMessages) => [...prevMessages, parsedData]);
       } catch (error) {

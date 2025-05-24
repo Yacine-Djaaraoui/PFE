@@ -12,7 +12,11 @@ import {
 import { useTeams } from "@/hooks/teams";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-const Meetings = () => {
+
+interface MeetingsProps {
+  teamId: number;
+}
+const Meetings =  ({ teamId }: MeetingsProps) => {
   const [isAddThemeOpen, setIsAddThemeOpen] = useState(false);
 
   const {

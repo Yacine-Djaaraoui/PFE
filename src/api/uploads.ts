@@ -23,7 +23,7 @@ export const fetchUploads = async ({
   if (search) params.append("search", search);
   if (ordering) params.append("ordering", ordering);
   if (page) params.append("page", page.toString());
-  if (teamId) params.append("team_id", teamId.toString());
+  if (teamId) params.append("team", teamId.toString());
 
   const response = await client.get(`uploads/?${params.toString()}`, { headers });
   return response;

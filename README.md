@@ -24,5 +24,5 @@ ProjectTrack is a comprehensive academic project management platform developed d
 - Redis for caching
 
 # Run the development server
-npm install
-npm run dev
+- npm install 
+- npm run dev
